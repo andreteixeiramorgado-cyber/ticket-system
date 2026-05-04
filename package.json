@@ -1,24 +1,19 @@
 {
   "name": "ticket-system",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "main": "server.js",
   "scripts": {
     "start": "node server.js"
-  }
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
-    "express": "^5.2.1",
-    "firebase-admin": "^13.8.0",
-    "nodemailer": "^8.0.6",
+    "express": "^4.18.2",
+    "firebase-admin": "^12.0.0",
+    "qrcode": "^1.5.3",
     "pdf-lib": "^1.17.1",
-    "qrcode": "^1.5.4",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "nodemailer": "^6.9.0"
   }
 }
