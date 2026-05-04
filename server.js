@@ -3,6 +3,11 @@ const path = require("path");
 const db = require("./firebase");
 
 const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log("Server running on port", PORT);
+});
 app.use(express.static("public"));
 
 // validar bilhete
