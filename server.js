@@ -12,8 +12,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: true,       // 🔥 obrigatório no Render (https)
-    sameSite: "none"
+    secure: false   // 🔥 MUITO IMPORTANTE
   }
 }));
 
@@ -72,7 +71,7 @@ app.get("/api/status/:id", async (req, res) => {
   return res.json({ status: "valid" });
 });
 
-app.get("/api/activate/:id", checkAuth, async (req, res) => {
+app.get("/api/activate/:id", async (req, res) => {
   const id = req.params.id;
 
   const doc = await db.collection("tickets").doc(id).get();
