@@ -8,42 +8,84 @@
 <body style="text-align:center;font-family:sans-serif;">
   <h2>📦 Ativação de Bilhetes</h2>
 
+  <!-- 🔥 NOME -->
+  <input id="nome" placeholder="Nome do cliente" style="padding:10px;"><br><br>
+
   <div id="reader" style="width:300px;margin:auto;"></div>
   <h1 id="result">Aguardando scan...</h1>
 
   <script>
-  async function ativarQR(texto) {
-    try {
-      const id = texto.split("/t/")[1];
-      const nome = document.getElementById("nome").value;
+    const resultEl = document.getElementById("result");
+    let scanning = true;
 
-      if (!id) {
-        document.getElementById("result").innerHTML = "QR inválido";
-        return;
+    async function ativarQR(texto) {
+      try {
+        const id = texto.split("/t/")[1];
+        const nome = document.getElementById("nome").value;
+
+        if (!id) {
+          resultEl.innerHTML = "QR inválido";
+          return;
+        }
+
+        const res = await fetch("/api/activate/" + id, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ nome })
+        });
+
+        const data = await res.json();
+
+        if (data.status === "activated") {
+          resultEl.innerHTML = "🟡 Ativado: " + nome;
+          resultEl.style.color = "orange";
+        } else {
+          resultEl.innerHTML = "Erro";
+        }
+
+      } catch (err) {
+        console.error(err);
+        resultEl.innerHTML = "Erro ao ativar";
       }
-
-      const res = await fetch("/api/activate/" + id, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ nome })
-      });
-
-      const data = await res.json();
-
-      if (data.status === "activated") {
-        document.getElementById("result").innerHTML = "🟡 Ativado: " + nome;
-      } else {
-        document.getElementById("result").innerHTML = "Erro";
-      }
-
-    } catch (err) {
-      console.error(err);
-      document.getElementById("result").innerHTML = "Erro ao ativar";
     }
-  }
-</script>
+
+    function onScanSuccess(decodedText) {
+      if (!scanning) return;
+
+      scanning = false;
+      ativarQR(decodedText);
+
+      setTimeout(() => scanning = true, 2000);
+    }
+
+    function startScanner() {
+      const html5QrCode = new Html5Qrcode("reader");
+
+      html5QrCode.start(
+        { facingMode: "environment" },
+        {
+          fps: 10,
+          qrbox: { width: 250, height: 250 }
+        },
+        onScanSuccess
+      ).catch(err => {
+        console.error(err);
+        resultEl.innerHTML = "Erro na câmara";
+      });
+    }
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        stream.getTracks().forEach(track => track.stop());
+        startScanner();
+      })
+      .catch(err => {
+        console.error(err);
+        resultEl.innerHTML = "Permissão negada";
+      });
+  </script>
 
 </body>
 </html>
