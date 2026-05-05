@@ -8,7 +8,7 @@
 <body style="text-align:center;font-family:sans-serif;">
   <h2>📦 Ativação de Bilhetes</h2>
 
-    <div id="reader" style="width:300px;margin:auto;"></div>
+  <div id="reader" style="width:300px;margin:auto;"></div>
   <h1 id="result">Aguardando scan...</h1>
 
   <script>
@@ -18,7 +18,6 @@
     async function ativarQR(texto) {
       try {
         const id = texto.split("/t/")[1];
-        const nome = document.getElementById("nome").value;
 
         if (!id) {
           resultEl.innerHTML = "QR inválido";
@@ -30,13 +29,13 @@
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ nome })
+          body: JSON.stringify({})
         });
 
         const data = await res.json();
 
         if (data.status === "activated") {
-          resultEl.innerHTML = "🟡 Ativado: " + nome;
+          resultEl.innerHTML = "🟡 Bilhete ativado";
           resultEl.style.color = "orange";
         } else {
           resultEl.innerHTML = "Erro";
