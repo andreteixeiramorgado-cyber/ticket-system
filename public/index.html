@@ -17,15 +17,27 @@
 
   <p>Escolhe a função:</p>
 
-  <!-- BOTÕES -->
-  <button onclick="login('ativar')" style="padding:15px;margin:10px;font-size:16px;">
-    📦 ATIVAR BILHETES na Entrega ao Cliente
+ <div style="margin-top:20px;">
+
+  <button onclick="login('ativar')" 
+    style="padding:15px;margin:10px;font-size:16px;">
+    📦 ATIVAR BILHETES na entrega ao cliente
   </button>
 
-  <button onclick="login('scanner')" style="padding:15px;margin:10px;font-size:16px;">
-    🎟️ SCANNER ENTRADA Sala Refeição
+  <button onclick="login('scanner')" 
+    style="padding:15px;margin:10px;font-size:16px;">
+    🎟️ SCANNER ENTRADA na sala de refeição
   </button>
 
+</div>
+
+<!-- BOTÃO DASHBOARD -->
+<div>
+  <button onclick="login('dashboard')" 
+    style="padding:15px;margin:10px;font-size:16px;background:#444;color:white;">
+    📊 DASHBOARD - control bilhética "on time"
+  </button>
+</div>
   <script>
     async function login(tipo) {
 
