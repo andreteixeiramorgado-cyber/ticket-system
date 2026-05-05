@@ -52,6 +52,21 @@ app.get("/api/status/:id", async (req, res) => {
   return res.json({ status: "valid" });
 });
 
+app.get("/api/activate/:id", async (req, res) => {
+  const id = req.params.id;
+
+  const doc = await db.collection("tickets").doc(id).get();
+
+  if (!doc.exists) return res.json({ status: "invalid" });
+
+  await db.collection("tickets").doc(id).update({
+    active: true,
+    activated_at: new Date()
+  });
+
+  return res.json({ status: "activated" });
+});
+
 // ✅ VALIDAR (scanner)
 app.get("/api/check/:id", checkAuth, async (req, res) => {
   const id = req.params.id;
