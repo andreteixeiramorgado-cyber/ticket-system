@@ -11,78 +11,78 @@
   <div id="reader" style="width:300px;margin:auto;"></div>
   <h1 id="result">Aguardando scan...</h1>
 
-  <script>
-    const resultEl = document.getElementById("result");
+ <script>
+  const resultEl = document.getElementById("result");
+  let scanning = true;
 
-    async function validarQR(texto) {
-      try {
-        const id = texto.split("/t/")[1];
+  async function validarQR(texto) {
+    try {
+      const id = texto.split("/t/")[1];
 
-        if (!id) {
-          resultEl.innerHTML = "QR inválido";
-          return;
-        }
-
-        const res = await fetch("/api/check/" + id);
-        const data = await res.json();
-
-        if (data.status === "valid") {
-          resultEl.innerHTML = "✅ Entrada válida";
-          resultEl.style.color = "green";
-        } else if (data.status === "used") {
-          resultEl.innerHTML = "❌ Já utilizado";
-          resultEl.style.color = "red";
-        } else {
-          resultEl.innerHTML = "⚠️ Inválido";
-        }
-
-      } catch (err) {
-        console.error(err);
-        resultEl.innerHTML = "Erro ao validar";
+      if (!id) {
+        resultEl.innerHTML = "QR inválido";
+        return;
       }
+
+      const res = await fetch("/api/check/" + id);
+      const data = await res.json();
+
+      if (data.status === "valid") {
+        resultEl.innerHTML = "✅ Entrada válida";
+        resultEl.style.color = "green";
+      } 
+      else if (data.status === "used") {
+        resultEl.innerHTML = "❌ Já utilizado";
+        resultEl.style.color = "red";
+      } 
+      else if (data.status === "not_active") {
+        resultEl.innerHTML = "🟡 Não ativado";
+        resultEl.style.color = "orange";
+      } 
+      else {
+        resultEl.innerHTML = "⚠️ Inválido";
+      }
+
+    } catch (err) {
+      console.error(err);
+      resultEl.innerHTML = "Erro ao validar";
     }
+  }
 
-    let scanning = true;
+  function onScanSuccess(decodedText) {
+    if (!scanning) return;
 
-    function onScanSuccess(decodedText) {
-      if (!scanning) return;
+    scanning = false;
+    validarQR(decodedText);
 
-      scanning = false;
-      validarQR(decodedText);
+    setTimeout(() => scanning = true, 2000);
+  }
 
-      setTimeout(() => scanning = true, 2000);
-    }
-else if (data.status === "not_active") {
-  el.innerHTML = "🟡 Não ativado";
-  el.style.color = "orange";
-}
-    function startScanner() {
-      const html5QrCode = new Html5Qrcode("reader");
+  function startScanner() {
+    const html5QrCode = new Html5Qrcode("reader");
 
-      html5QrCode.start(
-        { facingMode: "environment" }, // traseira
-        {
-          fps: 10,
-          qrbox: { width: 250, height: 250 }
-        },
-        onScanSuccess
-      ).catch(err => {
-        console.error(err);
-        resultEl.innerHTML = "Erro ao abrir câmara";
-      });
-    }
+    html5QrCode.start(
+      { facingMode: "environment" },
+      {
+        fps: 10,
+        qrbox: { width: 250, height: 250 }
+      },
+      onScanSuccess
+    ).catch(err => {
+      console.error(err);
+      resultEl.innerHTML = "Erro na câmara";
+    });
+  }
 
-    // pedir permissão primeiro
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => {
-        stream.getTracks().forEach(track => track.stop());
-        startScanner();
-      })
-      .catch(err => {
-        console.error(err);
-        resultEl.innerHTML = "Permissão de câmara negada";
-      });
-
-  </script>
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => {
+      stream.getTracks().forEach(track => track.stop());
+      startScanner();
+    })
+    .catch(err => {
+      console.error(err);
+      resultEl.innerHTML = "Permissão negada";
+    });
+</script>
 </body>
 </html>
