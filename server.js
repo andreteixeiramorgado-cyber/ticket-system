@@ -21,7 +21,7 @@ app.use(express.static("public"));
 
 // 👤 login simples
 const USER = "admin";
-const PASS = "1234";
+const PASS = "3764";
 
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
@@ -69,7 +69,19 @@ app.get("/t/:id", (req, res) => {
 app.get("/scanner.html", checkAuth, (req, res) => {
   res.sendFile(path.join(__dirname, "public/scanner.html"));
 });
+app.get("/api/status/:id", async (req, res) => {
+  const id = req.params.id;
 
+  const doc = await db.collection("tickets").doc(id).get();
+
+  if (!doc.exists) return res.json({ status: "invalid" });
+
+  const ticket = doc.data();
+
+  if (ticket.used) return res.json({ status: "used" });
+
+  return res.json({ status: "valid" });
+});
 // logout
 app.get("/logout", (req, res) => {
   req.session.destroy();
