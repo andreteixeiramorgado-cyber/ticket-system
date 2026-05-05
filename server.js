@@ -41,7 +41,9 @@ function checkAuth(req, res, next) {
 }
 
 // validar bilhete (protegido)
-app.get("/api/check/:id", checkAuth, async (req, res) => {
+app.get("/t/:id", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/ticket.html"));
+});
   const id = req.params.id;
 
   const doc = await db.collection("tickets").doc(id).get();
