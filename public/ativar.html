@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ativar Bilhete</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+
+<body style="text-align:center;font-family:sans-serif;">
+  <h2>📦 Ativação de Bilhetes</h2>
+
+  <div id="reader" style="width:300px;margin:auto;"></div>
+  <h1 id="result">Aguardando scan...</h1>
+
+  <script>
+    const resultEl = document.getElementById("result");
+    let scanning = true;
+
+    async function ativarQR(texto) {
+      try {
+        const id = texto.split("/t/")[1];
+
+        if (!id) {
+          resultEl.innerHTML = "QR inválido";
+          return;
+        }
+
+        const res = await fetch("/api/activate/" + id);
+        const data = await res.json();
+
+        if (data.status === "activated") {
+          resultEl.innerHTML = "🟡 Bilhete ativado";
+          resultEl.style.color = "orange";
+        } else {
+          resultEl.innerHTML = "Erro";
+        }
+
+      } catch (err) {
+        console.error(err);
+        resultEl.innerHTML = "Erro ao ativar";
+      }
+    }
+
+    function onScanSuccess(decodedText) {
+      if (!scanning) return;
+
+      scanning = false;
+      ativarQR(decodedText);
+
+      setTimeout(() => scanning = true, 2000);
+    }
+
+    function startScanner() {
+      const html5QrCode = new Html5Qrcode("reader");
+
+      html5QrCode.start(
+        { facingMode: "environment" },
+        {
+          fps: 10,
+          qrbox: { width: 250, height: 250 }
+        },
+        onScanSuccess
+      ).catch(err => {
+        console.error(err);
+        resultEl.innerHTML = "Erro na câmara";
+      });
+    }
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        stream.getTracks().forEach(track => track.stop());
+        startScanner();
+      })
+      .catch(err => {
+        console.error(err);
+        resultEl.innerHTML = "Permissão negada";
+      });
+  </script>
+
+</body>
+</html>
