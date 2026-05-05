@@ -2,9 +2,6 @@ const express = require("express");
 const path = require("path");
 const session = require("express-session");
 const db = require("./firebase");
-const QRCode = require("qrcode");
-const { PDFDocument } = require("pdf-lib");
-const fs = require("fs");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,7 +16,7 @@ app.use(session({
 app.use(express.json());
 app.use(express.static("public"));
 
-// 👤 login simples
+// 👤 login
 const USER = "admin";
 const PASS = "3764";
 
@@ -34,13 +31,13 @@ app.post("/login", (req, res) => {
   res.status(401).json({ success: false });
 });
 
-// 🔒 proteger rotas
+// 🔒 proteção
 function checkAuth(req, res, next) {
   if (req.session.auth) return next();
   res.status(401).send("Não autorizado");
 }
 
-// validar bilhete (protegido)
+// 📊 VER ESTADO (QR)
 app.get("/api/status/:id", async (req, res) => {
   const id = req.params.id;
 
@@ -54,6 +51,9 @@ app.get("/api/status/:id", async (req, res) => {
 
   return res.json({ status: "valid" });
 });
+
+// ✅ VALIDAR (scanner)
+app.get("/api/check/:id", checkAuth, async (req, res) => {
   const id = req.params.id;
 
   const doc = await db.collection("tickets").doc(id).get();
@@ -72,35 +72,23 @@ app.get("/api/status/:id", async (req, res) => {
   return res.json({ status: "valid" });
 });
 
-// página QR
+// 🎟️ página do bilhete
 app.get("/t/:id", (req, res) => {
-  res.sendFile(path.join(__dirname, "public/index.html"));
+  res.sendFile(path.join(__dirname, "public/ticket.html"));
 });
 
 // 🔒 scanner protegido
 app.get("/scanner.html", checkAuth, (req, res) => {
   res.sendFile(path.join(__dirname, "public/scanner.html"));
 });
-app.get("/api/status/:id", async (req, res) => {
-  const id = req.params.id;
 
-  const doc = await db.collection("tickets").doc(id).get();
-
-  if (!doc.exists) return res.json({ status: "invalid" });
-
-  const ticket = doc.data();
-
-  if (ticket.used) return res.json({ status: "used" });
-
-  return res.json({ status: "valid" });
-});
 // logout
 app.get("/logout", (req, res) => {
   req.session.destroy();
   res.redirect("/");
 });
 
-// 🚀 servidor (APENAS UMA VEZ)
+// 🚀 servidor
 app.listen(PORT, () => {
   console.log("Server running on port", PORT);
 });
