@@ -134,7 +134,21 @@ app.get("/t/:id", (req, res) => {
 
 // 🔒 scanner protegido
 app.get("/scanner.html", checkAuth, (req, res) => {
+
+  if (req.session.user !== "Odisseia") {
+    return res.status(403).send("Acesso negado");
+  }
+
   res.sendFile(path.join(__dirname, "public/scanner.html"));
+});
+
+app.get("/ativar.html", checkAuth, (req, res) => {
+
+  if (req.session.user !== "Raceready" && req.session.user !== "Odisseia") {
+    return res.status(403).send("Acesso negado");
+  }
+
+  res.sendFile(path.join(__dirname, "public/ativar.html"));
 });
 
 app.get("/dashboard.html", checkAuth, (req, res) => {
