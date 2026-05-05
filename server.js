@@ -20,9 +20,6 @@ app.use(session({
 app.use(express.json());
 app.use(express.static("public"));
 
-// 👤 login
-const USER = "Admin";
-const PASS = "3764";
 
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
