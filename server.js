@@ -10,7 +10,11 @@ const PORT = process.env.PORT || 3000;
 app.use(session({
   secret: "segredo_super_forte_123",
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: false,
+  cookie: {
+    secure: true,       // 🔥 obrigatório no Render (https)
+    sameSite: "none"
+  }
 }));
 
 app.use(express.json());
