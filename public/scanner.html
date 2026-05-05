@@ -41,10 +41,34 @@
     function onScanSuccess(decodedText) {
       validarQR(decodedText);
     }
+function startScanner() {
+  const html5QrCode = new Html5Qrcode("reader");
 
+  html5QrCode.start(
+    { facingMode: "environment" }, // 🔥 força câmara traseira
+    {
+      fps: 10,
+      qrbox: { width: 250, height: 250 }
+    },
+    onScanSuccess
+  ).catch(err => {
+    console.error(err);
+    document.getElementById("result").innerHTML = "Erro na câmara";
+  });
+}
+
+navigator.mediaDevices.getUserMedia({ video: true })
+  .then(stream => {
+    stream.getTracks().forEach(track => track.stop());
+    startScanner();
+  })
+  .catch(err => {
+    console.error(err);
+    document.getElementById("result").innerHTML = "Permissão negada";
+  });
     const html5QrCode = new Html5Qrcode("reader");
 
-    Html5Qrcode.getCameras().then(devices => {
+  
       if (devices.length) {
         html5QrCode.start(
           devices[0].id,
