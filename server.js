@@ -23,21 +23,31 @@ const PASS = "3764";
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
-  if (password !== "3764") {
-    return res.status(401).json({ success: false });
+  // 👤 RACEREADY
+  if (username === "Raceready" && password === "2468") {
+    req.session.auth = true;
+    req.session.role = "ativar"; // só ativar
+    req.session.user = "Raceready";
+
+    return res.json({
+      success: true,
+      role: "ativar",
+      dashboard: true
+    });
   }
 
-  // 👇 definir tipo de utilizador
-  if (username === "Ativar") {
+  // 👤 ODISSEIA
+  if (username === "Odisseia" && password === "3764") {
     req.session.auth = true;
-    req.session.role = "ativar";
-    return res.json({ success: true, role: "ativar" });
-  }
+    req.session.role = "scanner"; // pode validar
+    req.session.user = "Odisseia";
 
-  if (username === "Refeicao") {
-    req.session.auth = true;
-    req.session.role = "scanner";
-    return res.json({ success: true, role: "scanner" });
+    return res.json({
+      success: true,
+      role: "scanner",
+      dashboard: true,
+      ativar: true
+    });
   }
 
   res.status(401).json({ success: false });
