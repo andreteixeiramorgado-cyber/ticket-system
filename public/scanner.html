@@ -52,7 +52,10 @@
 
       setTimeout(() => scanning = true, 2000);
     }
-
+else if (data.status === "not_active") {
+  el.innerHTML = "🟡 Não ativado";
+  el.style.color = "orange";
+}
     function startScanner() {
       const html5QrCode = new Html5Qrcode("reader");
 
