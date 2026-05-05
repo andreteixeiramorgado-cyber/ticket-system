@@ -1,82 +1,64 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Scanner Check-in</title>
-  <script src="https://unpkg.com/html5-qrcode"></script>
-</head>
+<script>
+  const resultEl = document.getElementById("result");
 
-<body style="text-align:center;font-family:sans-serif;">
-  <h2>📷 Scanner de Bilhetes</h2>
+  async function validarQR(texto) {
+    try {
+      const id = texto.split("/t/")[1];
 
-  <div id="reader" style="width:300px;margin:auto;"></div>
-  <h1 id="result">Aguardando scan...</h1>
+      const res = await fetch(`/api/check/${id}`);
+      const data = await res.json();
 
-  <script>
-    async function validarQR(texto) {
-      try {
-        // extrair ID do link
-        const id = texto.split("/t/")[1];
-
-        const res = await fetch(`/api/check/${id}`);
-        const data = await res.json();
-
-        const el = document.getElementById("result");
-
-        if (data.status === "valid") {
-          el.innerHTML = "✅ Entrada válida";
-          el.style.color = "green";
-        } else if (data.status === "used") {
-          el.innerHTML = "❌ Já utilizado";
-          el.style.color = "red";
-        } else {
-          el.innerHTML = "⚠️ Inválido";
-          el.style.color = "black";
-        }
-
-      } catch (err) {
-        console.error(err);
+      if (data.status === "valid") {
+        resultEl.innerHTML = "✅ Entrada válida";
+        resultEl.style.color = "green";
+      } else if (data.status === "used") {
+        resultEl.innerHTML = "❌ Já utilizado";
+        resultEl.style.color = "red";
+      } else {
+        resultEl.innerHTML = "⚠️ Inválido";
+        resultEl.style.color = "black";
       }
+
+    } catch (err) {
+      console.error(err);
+      resultEl.innerHTML = "Erro ao validar";
     }
+  }
 
-    function onScanSuccess(decodedText) {
-      validarQR(decodedText);
-    }
-function startScanner() {
-  const html5QrCode = new Html5Qrcode("reader");
+  let scanning = true;
 
-  html5QrCode.start(
-    { facingMode: "environment" }, // 🔥 força câmara traseira
-    {
-      fps: 10,
-      qrbox: { width: 250, height: 250 }
-    },
-    onScanSuccess
-  ).catch(err => {
-    console.error(err);
-    document.getElementById("result").innerHTML = "Erro na câmara";
-  });
-}
+  function onScanSuccess(decodedText) {
+    if (!scanning) return;
 
-navigator.mediaDevices.getUserMedia({ video: true })
-  .then(stream => {
-    stream.getTracks().forEach(track => track.stop());
-    startScanner();
-  })
-  .catch(err => {
-    console.error(err);
-    document.getElementById("result").innerHTML = "Permissão negada";
-  });
+    scanning = false;
+    validarQR(decodedText);
+
+    setTimeout(() => scanning = true, 2000);
+  }
+
+  function startScanner() {
     const html5QrCode = new Html5Qrcode("reader");
 
-  
-      if (devices.length) {
-        html5QrCode.start(
-          devices[0].id,
-          { fps: 10, qrbox: 250 },
-          onScanSuccess
-        );
-      }
+    html5QrCode.start(
+      { facingMode: "environment" }, // 🔥 força traseira
+      {
+        fps: 10,
+        qrbox: { width: 250, height: 250 }
+      },
+      onScanSuccess
+    ).catch(err => {
+      console.error(err);
+      resultEl.innerHTML = "Erro na câmara";
     });
-  </script>
-</body>
-</html>
+  }
+
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => {
+      stream.getTracks().forEach(track => track.stop());
+      startScanner();
+    })
+    .catch(err => {
+      console.error(err);
+      resultEl.innerHTML = "❌ Permissão negada";
+    });
+</script>
