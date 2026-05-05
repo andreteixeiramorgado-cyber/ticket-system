@@ -1,28 +1,61 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Check-in</title>
+  <title>Race Ready - Acesso</title>
 </head>
-<body style="text-align:center;font-family:sans-serif;">
-  <h2>A validar...</h2>
+
+<body style="text-align:center;font-family:sans-serif;background:#111;color:white;">
+
+  <!-- LOGO -->
+  <img src="/logo.png" style="width:300px;margin-top:30px;"><br><br>
+
+  <h2>Acesso ao Sistema</h2>
+
+  <input id="user" placeholder="Utilizador" style="padding:10px;"><br><br>
+  <input id="pass" type="password" placeholder="Password" style="padding:10px;"><br><br>
+
+  <p>Escolhe a função:</p>
+
+  <!-- BOTÕES -->
+  <button onclick="login('ativar')" style="padding:15px;margin:10px;font-size:16px;">
+    📦 ATIVAR BILHETES
+  </button>
+
+  <button onclick="login('scanner')" style="padding:15px;margin:10px;font-size:16px;">
+    🎟️ SCANNER ENTRADA
+  </button>
 
   <script>
-    async function check() {
-      const id = window.location.pathname.split("/t/")[1];
+    async function login(tipo) {
 
-      const res = await fetch("/api/check/" + id);
+      const username = document.getElementById("user").value;
+      const password = document.getElementById("pass").value;
+
+      const res = await fetch("/login", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ username, password })
+      });
+
       const data = await res.json();
 
-      if (data.status === "valid") {
-        document.body.innerHTML = "<h1 style='color:green'>✅ Entrada válida</h1>";
-      } else if (data.status === "used") {
-        document.body.innerHTML = "<h1 style='color:red'>❌ Já utilizado</h1>";
-      } else {
-        document.body.innerHTML = "<h1>⚠️ Inválido</h1>";
+      if (!data.success) {
+        alert("Login inválido");
+        return;
+      }
+
+      // 🔥 valida se o botão corresponde ao user
+      if (tipo === "ativar" && data.role === "ativar") {
+        window.location = "/ativar.html";
+      } 
+      else if (tipo === "scanner" && data.role === "scanner") {
+        window.location = "/scanner.html";
+      } 
+      else {
+        alert("Não tens acesso a esta função");
       }
     }
-
-    check();
   </script>
+
 </body>
 </html>
