@@ -41,8 +41,18 @@ function checkAuth(req, res, next) {
 }
 
 // validar bilhete (protegido)
-app.get("/t/:id", (req, res) => {
-  res.sendFile(path.join(__dirname, "public/ticket.html"));
+app.get("/api/status/:id", async (req, res) => {
+  const id = req.params.id;
+
+  const doc = await db.collection("tickets").doc(id).get();
+
+  if (!doc.exists) return res.json({ status: "invalid" });
+
+  const ticket = doc.data();
+
+  if (ticket.used) return res.json({ status: "used" });
+
+  return res.json({ status: "valid" });
 });
   const id = req.params.id;
 
