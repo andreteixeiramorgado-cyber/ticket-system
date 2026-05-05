@@ -69,24 +69,42 @@ app.get("/api/activate/:id", async (req, res) => {
 
 // ✅ VALIDAR (scanner)
 app.get("/api/check/:id", checkAuth, async (req, res) => {
-  const id = req.params.id;
+  try {
+    const id = req.params.id;
 
-  const doc = await db.collection("tickets").doc(id).get();
+    const docRef = db.collection("tickets").doc(id);
+    const doc = await docRef.get();
 
-  if (!doc.exists) return res.json({ status: "invalid" });
+    // ❌ não existe
+    if (!doc.exists) {
+      return res.json({ status: "invalid" });
+    }
 
-  const ticket = doc.data();
+    const ticket = doc.data();
 
-  if (ticket.used) return res.json({ status: "used" });
+    // ❌ NÃO ATIVADO (🔥 importante)
+    if (!ticket.active) {
+      return res.json({ status: "not_active" });
+    }
 
-  await db.collection("tickets").doc(id).update({
-    used: true,
-    checkin_time: new Date()
-  });
+    // ❌ já usado
+    if (ticket.used) {
+      return res.json({ status: "used" });
+    }
 
-  return res.json({ status: "valid" });
+    // ✅ marcar como usado
+    await docRef.update({
+      used: true,
+      checkin_time: new Date()
+    });
+
+    return res.json({ status: "valid" });
+
+  } catch (err) {
+    console.error("Erro no check:", err);
+    return res.status(500).json({ status: "error" });
+  }
 });
-
 // 🎟️ página do bilhete
 app.get("/t/:id", (req, res) => {
   res.sendFile(path.join(__dirname, "public/ticket.html"));
