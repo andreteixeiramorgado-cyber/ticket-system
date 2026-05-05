@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<body style="text-align:center;font-family:sans-serif;background:#f5f5f5;">
+
+  <h1>📊 Dashboard Evento</h1>
+
+  <h2>Total: <span id="total">0</span></h2>
+  <h2>🟡 Ativados: <span id="ativos">0</span></h2>
+  <h2>🔴 Entradas: <span id="usados">0</span></h2>
+
+  <script>
+    async function carregar() {
+      const res = await fetch("/api/dashboard");
+      const data = await res.json();
+
+      document.getElementById("total").innerText = data.total;
+      document.getElementById("ativos").innerText = data.ativos;
+      document.getElementById("usados").innerText = data.usados;
+    }
+
+    // atualizar automaticamente
+    setInterval(carregar, 3000);
+
+    carregar();
+  </script>
+
+</body>
+</html>
