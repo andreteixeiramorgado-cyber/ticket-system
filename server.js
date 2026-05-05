@@ -75,7 +75,7 @@ app.post("/api/activate/:id", checkAuth, async (req, res) => {
   }
 
   res.status(401).json({ success: false });
-});
+
 
 // 🔒 proteção
 function checkAuth(req, res, next) {
