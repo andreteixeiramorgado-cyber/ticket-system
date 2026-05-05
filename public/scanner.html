@@ -50,13 +50,21 @@
   }
 
   function onScanSuccess(decodedText) {
-    if (!scanning) return;
+  if (!scanning) return;
 
-    scanning = false;
-    validarQR(decodedText);
+  scanning = false;
 
-    setTimeout(() => scanning = true, 2000);
-  }
+  validarQR(decodedText);
+
+  // mostrar que está bloqueado
+  resultEl.innerHTML += "<br><small>A aguardar 5 segundos...</small>";
+
+  setTimeout(() => {
+    scanning = true;
+    resultEl.innerHTML = "Aguardando scan...";
+    resultEl.style.color = "black";
+  }, 5000);
+}
 
   function startScanner() {
     const html5QrCode = new Html5Qrcode("reader");
