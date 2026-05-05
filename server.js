@@ -23,9 +23,21 @@ const PASS = "3764";
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
-  if (username === USER && password === PASS) {
+  if (password !== "3764") {
+    return res.status(401).json({ success: false });
+  }
+
+  // 👇 definir tipo de utilizador
+  if (username === "ativar") {
     req.session.auth = true;
-    return res.json({ success: true });
+    req.session.role = "ativar";
+    return res.json({ success: true, role: "ativar" });
+  }
+
+  if (username === "refeicao") {
+    req.session.auth = true;
+    req.session.role = "scanner";
+    return res.json({ success: true, role: "scanner" });
   }
 
   res.status(401).json({ success: false });
