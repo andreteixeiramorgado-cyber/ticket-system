@@ -8,62 +8,60 @@ const QRCode = require("qrcode");
 const { PDFDocument } = require("pdf-lib");
 const fs = require("fs");
 
-function gerarID() {
-  return "EVT-" + Math.random().toString(36).substring(2, 10).toUpperCase();
+async function criarBilhete() {
+  const id = gerarID();
+  const url = `http://192.168.1.193:3000/t/${id}`; // ⚠️ mete o teu IP
+
+  // guardar no Firebase
+  await db.collection("tickets").doc(id).set({
+    used: false,
+    created_at: new Date()
+  });
+
+  // gerar QR em base64
+  const qrBase64 = await QRCode.toDataURL(url);
+
+  // carregar imagem do template
+  const existingImageBytes = fs.readFileSync('./ticket.png');
+
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage([1200, 600]); // ajusta se necessário
+
+  const bgImage = await pdfDoc.embedPng(existingImageBytes);
+
+  // desenhar fundo (teu design)
+  page.drawImage(bgImage, {
+    x: 0,
+    y: 0,
+    width: 1200,
+    height: 600
+  });
+
+  // converter QR
+  const qrImageBytes = Buffer.from(qrBase64.split(',')[1], 'base64');
+  const qrImage = await pdfDoc.embedPng(qrImageBytes);
+
+  // 📍 POSIÇÃO DO QR (ajusta fino aqui)
+  page.drawImage(qrImage, {
+    x: 400,
+    y: 110,
+    width: 360,
+    height: 360
+  });
+
+  // 🔢 Código visível
+  page.drawText(id, {
+    x: 500,
+    y: 70,
+    size: 20
+  });
+
+  // guardar PDF
+  const pdfBytes = await pdfDoc.save();
+  fs.writeFileSync(`ticket-${id}.pdf`, pdfBytes);
+
+  console.log("🎟️ Bilhete criado:", id);
 }
-
-app.get("/create", async (req, res) => {
-  try {
-    const id = gerarID();
-    const url = `https://ticket-system-ow17.onrender.com/t/${id}`;
-
-    // guardar no Firebase
-    if (db) {
-      await db.collection("tickets").doc(id).set({
-        used: false,
-        created_at: new Date()
-      });
-    }
-
-    // gerar QR
-    const qrBase64 = await QRCode.toDataURL(url);
-
-    // carregar template
-    const templateBytes = fs.readFileSync('./ticket.png');
-
-    const pdfDoc = await PDFDocument.create();
-    const page = pdfDoc.addPage([800, 400]);
-
-    const bg = await pdfDoc.embedPng(templateBytes);
-    page.drawImage(bg, { x: 0, y: 0, width: 800, height: 400 });
-
-    const qrBytes = Buffer.from(qrBase64.split(',')[1], 'base64');
-    const qrImage = await pdfDoc.embedPng(qrBytes);
-
-    page.drawImage(qrImage, {
-      x: 320,
-      y: 110,
-      width: 160,
-      height: 160
-    });
-
-    page.drawText(id, {
-      x: 350,
-      y: 80,
-      size: 10
-    });
-
-    const pdfBytes = await pdfDoc.save();
-
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename=ticket-${id}.pdf`);
-    res.send(pdfBytes);
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Erro ao criar bilhete");
-  }
-});
 app.listen(PORT, () => {
   console.log("Server running on port", PORT);
 });
