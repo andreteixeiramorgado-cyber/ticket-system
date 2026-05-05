@@ -127,6 +127,35 @@ app.get("/scanner.html", checkAuth, (req, res) => {
   res.sendFile(path.join(__dirname, "public/scanner.html"));
 });
 
+app.get("/api/dashboard", checkAuth, async (req, res) => {
+  try {
+    const snapshot = await db.collection("tickets").get();
+
+    let total = 0;
+    let ativos = 0;
+    let usados = 0;
+
+    snapshot.forEach(doc => {
+      total++;
+
+      const t = doc.data();
+
+      if (t.active) ativos++;
+      if (t.used) usados++;
+    });
+
+    res.json({
+      total,
+      ativos,
+      usados
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: true });
+  }
+});
+
 // logout
 app.get("/logout", (req, res) => {
   req.session.destroy();
