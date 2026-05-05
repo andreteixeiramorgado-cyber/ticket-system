@@ -8,23 +8,29 @@
 
   <button onclick="login()">Entrar</button>
 
-  <script>
-    async function login() {
-      const res = await fetch("/login", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-          username: document.getElementById("user").value,
-          password: document.getElementById("pass").value
-        })
-      });
+<script>
+  async function login() {
+    const res = await fetch("/login", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        username: document.getElementById("user").value,
+        password: document.getElementById("pass").value
+      })
+    });
 
-      if (res.ok) {
+    const data = await res.json();
+
+    if (data.success) {
+      if (data.role === "ativar") {
+        window.location = "/ativar.html";
+      } else if (data.role === "scanner") {
         window.location = "/scanner.html";
-      } else {
-        alert("Login inválido");
       }
+    } else {
+      alert("Login inválido");
     }
-  </script>
+  }
+</script>
 </body>
 </html>
