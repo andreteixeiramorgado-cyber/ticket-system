@@ -17,6 +17,8 @@
 
     async function ativarQR(texto) {
       try {
+        console.log("QR lido:", texto);
+
         const id = texto.split("/t/")[1];
 
         if (!id) {
@@ -24,14 +26,8 @@
           return;
         }
 
-        const res = await fetch("/api/activate/" + id, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({})
-        });
-
+        // 🔥 chamada simples (GET)
+        const res = await fetch("/api/activate/" + id);
         const data = await res.json();
 
         if (data.status === "activated") {
@@ -53,7 +49,8 @@
       scanning = false;
       ativarQR(decodedText);
 
-      setTimeout(() => scanning = true, 2000);
+      // 🔥 evita múltiplos scans
+      setTimeout(() => scanning = true, 3000);
     }
 
     function startScanner() {
@@ -81,6 +78,7 @@
         console.error(err);
         resultEl.innerHTML = "Permissão negada";
       });
+
   </script>
 
 </body>
