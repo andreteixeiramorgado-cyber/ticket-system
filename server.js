@@ -24,8 +24,28 @@ app.use(express.static("public"));
 const USER = "Admin";
 const PASS = "3764";
 
-app.post("/login", (req, res) => {
-  const { username, password } = req.body;
+app.post("/api/activate/:id", checkAuth, async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { nome } = req.body;
+
+    const doc = await db.collection("tickets").doc(id).get();
+
+    if (!doc.exists) return res.json({ status: "invalid" });
+
+    await db.collection("tickets").doc(id).update({
+      active: true,
+      nome: nome || "",
+      activated_at: new Date()
+    });
+
+    return res.json({ status: "activated" });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ status: "error" });
+  }
+});
 
   // 👤 RACEREADY
   if (username === "Raceready" && password === "2468") {
