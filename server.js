@@ -127,6 +127,10 @@ app.get("/scanner.html", checkAuth, (req, res) => {
   res.sendFile(path.join(__dirname, "public/scanner.html"));
 });
 
+app.get("/dashboard.html", checkAuth, (req, res) => {
+  res.sendFile(path.join(__dirname, "public/dashboard.html"));
+});
+
 app.get("/api/dashboard", checkAuth, async (req, res) => {
   try {
     const snapshot = await db.collection("tickets").get();
