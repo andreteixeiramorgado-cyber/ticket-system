@@ -17,7 +17,7 @@ app.use(express.json());
 app.use(express.static("public"));
 
 // 👤 login
-const USER = "admin";
+const USER = "Admin";
 const PASS = "3764";
 
 app.post("/login", (req, res) => {
@@ -28,7 +28,7 @@ app.post("/login", (req, res) => {
   }
 
   // 👇 definir tipo de utilizador
-  if (username === "ativar") {
+  if (username === "Ativar") {
     req.session.auth = true;
     req.session.role = "ativar";
     return res.json({ success: true, role: "ativar" });
