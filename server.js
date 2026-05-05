@@ -24,58 +24,35 @@ app.use(express.static("public"));
 const USER = "Admin";
 const PASS = "3764";
 
-app.post("/api/activate/:id", checkAuth, async (req, res) => {
-  try {
-    const id = req.params.id;
-    const { nome } = req.body;
+app.post("/login", (req, res) => {
+  const { username, password } = req.body;
 
-    const doc = await db.collection("tickets").doc(id).get();
-
-    if (!doc.exists) return res.json({ status: "invalid" });
-
-    await db.collection("tickets").doc(id).update({
-      active: true,
-      nome: nome || "",
-      activated_at: new Date()
-    });
-
-    return res.json({ status: "activated" });
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ status: "error" });
-  }
-});
-
-  // 👤 RACEREADY
+  // RACEREADY
   if (username === "Raceready" && password === "2468") {
     req.session.auth = true;
-    req.session.role = "ativar"; // só ativar
+    req.session.role = "ativar";
     req.session.user = "Raceready";
 
     return res.json({
       success: true,
-      role: "ativar",
-      dashboard: true
+      role: "ativar"
     });
   }
 
-  // 👤 ODISSEIA
+  // ODISSEIA
   if (username === "Odisseia" && password === "3764") {
     req.session.auth = true;
-    req.session.role = "scanner"; // pode validar
+    req.session.role = "scanner";
     req.session.user = "Odisseia";
 
     return res.json({
       success: true,
-      role: "scanner",
-      dashboard: true,
-      ativar: true
+      role: "scanner"
     });
   }
 
   res.status(401).json({ success: false });
-
+});
 
 // 🔒 proteção
 function checkAuth(req, res, next) {
