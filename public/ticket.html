@@ -12,7 +12,7 @@
     document.getElementById("code").innerText = id;
 
     async function check() {
-      const res = await fetch("/api/check/" + id);
+      const res = await fetch("/api/status/" + id);
       const data = await res.json();
 
       const el = document.getElementById("status");
