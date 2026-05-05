@@ -34,7 +34,7 @@ app.post("/login", (req, res) => {
     return res.json({ success: true, role: "ativar" });
   }
 
-  if (username === "refeicao") {
+  if (username === "Refeicao") {
     req.session.auth = true;
     req.session.role = "scanner";
     return res.json({ success: true, role: "scanner" });
