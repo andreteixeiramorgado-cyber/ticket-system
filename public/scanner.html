@@ -2,34 +2,256 @@
 <html>
 <head>
   <title>Scanner Check-in</title>
+
   <script src="https://unpkg.com/html5-qrcode"></script>
+
+  <style>
+
+    body{
+      text-align:center;
+      font-family:sans-serif;
+      background:#f5f5f5;
+      margin:0;
+      padding:30px;
+    }
+
+    h2{
+      margin-bottom:20px;
+    }
+
+    #reader{
+      width:320px;
+      margin:auto;
+      border-radius:12px;
+      overflow:hidden;
+    }
+
+    #result{
+      margin-top:25px;
+      font-size:32px;
+      font-weight:bold;
+    }
+
+    .info{
+      margin-top:10px;
+      font-size:18px;
+      color:#666;
+    }
+
+  </style>
 </head>
 
-<body style="text-align:center;font-family:sans-serif;">
+<body>
+
   <h2>📷 Scanner de Bilhetes</h2>
 
-  <div id="reader" style="width:300px;margin:auto;"></div>
-  <h1 id="result">Aguardando scan...</h1>
+  <div id="reader"></div>
 
- <script>
-  const resultEl = document.getElementById("result");
-  let scanning = true;
+  <h1 id="result">
+    Aguardando scan...
+  </h1>
 
-  async function validarQR(texto) {
-    try {
-      const id = texto.split("/t/")[1];
+  <div class="info">
+    Sistema de validação ativo
+  </div>
 
-      if (!id) {
-        resultEl.innerHTML = "QR inválido";
-        return;
+
+<script>
+
+const resultEl = document.getElementById("result");
+
+let scanning = true;
+
+
+// ======================================================
+// VALIDAR QR
+// ======================================================
+
+async function validarQR(texto) {
+
+  try {
+
+    const id = texto.split("/t/")[1];
+
+    if (!id) {
+
+      resultEl.innerHTML = "⚠️ QR inválido";
+      resultEl.style.color = "black";
+
+      return;
+    }
+
+    const res = await fetch("/api/check/" + id);
+
+    const data = await res.json();
+
+
+    // ======================================================
+    // VÁLIDO
+    // ======================================================
+
+    if (data.status === "valid") {
+
+      resultEl.innerHTML = "✅ Entrada válida";
+
+      resultEl.style.color = "green";
+    }
+
+
+    // ======================================================
+    // JÁ UTILIZADO
+    // ======================================================
+
+    else if (data.status === "used") {
+
+      resultEl.innerHTML = "❌ Já utilizado";
+
+      resultEl.style.color = "red";
+    }
+
+
+    // ======================================================
+    // NÃO ATIVADO
+    // ======================================================
+
+    else if (data.status === "not_active") {
+
+      resultEl.innerHTML = "🟡 Não ativado";
+
+      resultEl.style.color = "orange";
+    }
+
+
+    // ======================================================
+    // LIMITE ATINGIDO
+    // ======================================================
+
+    else if (data.status === "limit") {
+
+      resultEl.innerHTML = "⛔ Limite atingido";
+
+      resultEl.style.color = "red";
+    }
+
+
+    // ======================================================
+    // INVÁLIDO
+    // ======================================================
+
+    else {
+
+      resultEl.innerHTML = "⚠️ Bilhete inválido";
+
+      resultEl.style.color = "black";
+    }
+
+  }
+  catch(err){
+
+    console.error(err);
+
+    resultEl.innerHTML = "Erro ao validar";
+
+    resultEl.style.color = "red";
+  }
+}
+
+
+// ======================================================
+// SCAN SUCESSO
+// ======================================================
+
+function onScanSuccess(decodedText) {
+
+  if (!scanning) return;
+
+  scanning = false;
+
+  validarQR(decodedText);
+
+  resultEl.innerHTML +=
+    "<br><small>A aguardar 5 segundos...</small>";
+
+  setTimeout(() => {
+
+    scanning = true;
+
+    resultEl.innerHTML =
+      "Aguardando scan...";
+
+    resultEl.style.color = "black";
+
+  }, 5000);
+}
+
+
+// ======================================================
+// START SCANNER
+// ======================================================
+
+function startScanner() {
+
+  const html5QrCode =
+    new Html5Qrcode("reader");
+
+  html5QrCode.start(
+
+    { facingMode: "environment" },
+
+    {
+      fps: 10,
+
+      qrbox: {
+        width: 260,
+        height: 260
       }
+    },
 
-      const res = await fetch("/api/check/" + id);
-      const data = await res.json();
+    onScanSuccess
 
-      if (data.status === "valid") {
-        resultEl.innerHTML = "✅ Entrada válida";
-        resultEl.style.color = "green";
+  ).catch(err => {
+
+    console.error(err);
+
+    resultEl.innerHTML =
+      "Erro ao abrir câmara";
+
+    resultEl.style.color = "red";
+  });
+}
+
+
+// ======================================================
+// PERMISSÃO CÂMARA
+// ======================================================
+
+navigator.mediaDevices.getUserMedia({
+  video: true
+})
+
+.then(stream => {
+
+  stream.getTracks().forEach(track =>
+    track.stop()
+  );
+
+  startScanner();
+})
+
+.catch(err => {
+
+  console.error(err);
+
+  resultEl.innerHTML =
+    "Permissão de câmara negada";
+
+  resultEl.style.color = "red";
+});
+
+</script>
+
+</body>
+</html>
       } 
       else if (data.status === "used") {
         resultEl.innerHTML = "❌ Já utilizado";
