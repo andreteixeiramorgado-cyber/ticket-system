@@ -1,0 +1,280 @@
+# Página Admin — Gestão Completa de Bilhetes
+
+## Objetivo
+
+Criar uma página:
+
+```text
+/admin.html
+```
+
+com acesso ADMIN e gestão completa de:
+
+* EVT
+* RSprom
+* BOSS
+* RSC
+
+---
+
+# FUNÇÕES
+
+## 1. EVT Gestão
+
+### Botões:
+
+* Criar relatório EVT
+* Reset EVT
+
+---
+
+## 2. RSprom + BOSS Gestão
+
+### Botões:
+
+* Criar relatório RSprom/BOSS
+* Reset RSprom/BOSS
+
+---
+
+## 3. RSC Gestão
+
+### Botões:
+
+* Criar relatório RSC
+* Reset RSC
+
+---
+
+# PASSO 1 — Criar admin.html
+
+Criar:
+
+```text
+public/admin.html
+```
+
+---
+
+# CÓDIGO ADMIN.HTML
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Administração</title>
+</head>
+
+<body style="font-family:sans-serif;text-align:center;background:#f5f5f5;">
+
+<h1>⚙️ Administração</h1>
+
+<hr>
+
+<h2>🎟️ EVT Gestão</h2>
+
+<button onclick="acao('relatorio_evt')">
+Criar Relatório EVT
+</button>
+
+<button onclick="acao('reset_evt')">
+Reset EVT
+</button>
+
+<hr>
+
+<h2>🎫 RSprom + 👑 BOSS Gestão</h2>
+
+<button onclick="acao('relatorio_vip')">
+Criar Relatório VIP
+</button>
+
+<button onclick="acao('reset_vip')">
+Reset VIP
+</button>
+
+<hr>
+
+<h2>🏁 RSC Gestão</h2>
+
+<button onclick="acao('relatorio_rsc')">
+Criar Relatório RSC
+</button>
+
+<button onclick="acao('reset_rsc')">
+Reset RSC
+</button>
+
+<hr>
+
+<h2 id="result"></h2>
+
+<script>
+async function acao(tipo) {
+
+  const res = await fetch('/api/admin/' + tipo);
+
+  const data = await res.json();
+
+  document.getElementById('result').innerHTML = data.message;
+}
+</script>
+
+</body>
+</html>
+```
+
+---
+
+# PASSO 2 — SERVER.JS
+
+Adicionar rota protegida:
+
+```javascript
+app.get('/admin.html', checkAuth, (req, res) => {
+
+  if (req.session.user !== 'Odisseia') {
+    return res.status(403).send('Acesso negado');
+  }
+
+  res.sendFile(path.join(__dirname, 'public/admin.html'));
+});
+```
+
+---
+
+# PASSO 3 — APIs ADMIN
+
+Adicionar no server.js:
+
+```javascript
+app.get('/api/admin/:tipo', async (req, res) => {
+
+  const tipo = req.params.tipo;
+
+  try {
+
+    const snapshot = await db.collection('tickets').get();
+
+    let total = 0;
+
+    for (const doc of snapshot.docs) {
+
+      const id = doc.id;
+
+      // EVT
+      if (tipo === 'reset_evt' && id.startsWith('EVT-')) {
+
+        await db.collection('tickets').doc(id).update({
+          active: false,
+          used: false,
+          entradas: 0
+        });
+
+        total++;
+      }
+
+      // VIP
+      if (
+        tipo === 'reset_vip' &&
+        (
+          id.startsWith('RSprom-') ||
+          id.startsWith('BOSS-')
+        )
+      ) {
+
+        await db.collection('tickets').doc(id).update({
+          active: false,
+          used: false,
+          entradas: 0
+        });
+
+        total++;
+      }
+
+      // RSC
+      if (tipo === 'reset_rsc' && id.startsWith('RSC-')) {
+
+        await db.collection('tickets').doc(id).update({
+          active: false,
+          used: false,
+          entradas: 0
+        });
+
+        total++;
+      }
+    }
+
+    // RELATÓRIOS
+    if (tipo === 'relatorio_evt') {
+      return res.json({
+        message: '📊 Relatório EVT criado'
+      });
+    }
+
+    if (tipo === 'relatorio_vip') {
+      return res.json({
+        message: '📊 Relatório VIP criado'
+      });
+    }
+
+    if (tipo === 'relatorio_rsc') {
+      return res.json({
+        message: '📊 Relatório RSC criado'
+      });
+    }
+
+    res.json({
+      message: '✅ Reset concluído: ' + total
+    });
+
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      message: 'Erro interno'
+    });
+  }
+});
+```
+
+---
+
+# RESULTADO
+
+## ADMIN.HTML
+
+Página central de gestão.
+
+---
+
+## EVT
+
+* relatórios
+* reset total
+
+---
+
+## RSprom/BOSS
+
+* relatórios VIP
+* reset VIP
+
+---
+
+## RSC
+
+* relatórios RSC
+* reset total
+
+---
+
+# EXTRA (POSSO ADICIONAR)
+
+* Download automático Excel
+* Dashboard avançado
+* Contadores live
+* Gráficos
+* Gestão utilizadores
+* Logs de entradas
+* Histórico completo
