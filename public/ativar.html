@@ -30,6 +30,7 @@
       margin-top:25px;
       font-size:32px;
       font-weight:bold;
+      min-height:80px;
     }
 
     .info{
@@ -38,51 +39,72 @@
       color:#666;
     }
 
+    .nav-btn{
+      margin-top:20px;
+      padding:14px 25px;
+      border:none;
+      border-radius:10px;
+      background:#1976d2;
+      color:white;
+      font-size:16px;
+      cursor:pointer;
+    }
+
   </style>
 </head>
 
 <body>
 
-  <h2>📦 Ativação de Bilhetes</h2>
+<h2>📦 Ativação de Bilhetes</h2>
 
-  <div id="reader"></div>
+<div id="reader"></div>
 
-  <h1 id="result">
-    Aguardando scan...
-  </h1>
+<h1 id="result">
+  Aguardando scan...
+</h1>
 
-  <div class="info">
-    Sistema de ativação ativo
-  </div>
+<div class="info">
+  Sistema de ativação ativo
+</div>
 
+<button
+  class="nav-btn"
+  onclick="window.location='/scanner.html'">
+
+  📷 Ir para Scanner
+
+</button>
 
 <script>
 
-const resultEl = document.getElementById("result");
+const resultEl =
+  document.getElementById("result");
 
 let scanning = true;
 
 
 // ======================================================
-// ATIVAR QR
+// ATIVAR
 // ======================================================
 
-async function ativarQR(texto) {
+async function ativarQR(texto){
 
-  try {
+  try{
 
     const id = texto.split("/t/")[1];
 
-    if (!id) {
+    if(!id){
 
-      resultEl.innerHTML = "⚠️ QR inválido";
+      resultEl.innerHTML =
+        "⚠️ QR inválido";
 
       resultEl.style.color = "black";
 
       return;
     }
 
-    const res = await fetch("/api/activate/" + id);
+    const res =
+      await fetch("/api/activate/" + id);
 
     const data = await res.json();
 
@@ -91,7 +113,7 @@ async function ativarQR(texto) {
     // ATIVADO
     // ======================================================
 
-    if (data.status === "activated") {
+    if(data.status === "activated"){
 
       resultEl.innerHTML =
         "🟡 Bilhete ativado";
@@ -104,7 +126,7 @@ async function ativarQR(texto) {
     // INVÁLIDO
     // ======================================================
 
-    else if (data.status === "invalid") {
+    else{
 
       resultEl.innerHTML =
         "⚠️ Bilhete inválido";
@@ -114,18 +136,22 @@ async function ativarQR(texto) {
 
 
     // ======================================================
-    // ERRO
+    // 3 SEGUNDOS
     // ======================================================
 
-    else {
+    setTimeout(() => {
+
+      scanning = true;
 
       resultEl.innerHTML =
-        "Erro na ativação";
+        "📦 Ler novo bilhete";
 
-      resultEl.style.color = "red";
-    }
+      resultEl.style.color = "black";
+
+    }, 3000);
 
   }
+
   catch(err){
 
     console.error(err);
@@ -134,43 +160,31 @@ async function ativarQR(texto) {
       "Erro ao ativar";
 
     resultEl.style.color = "red";
+
+    scanning = true;
   }
 }
 
 
 // ======================================================
-// SCAN SUCESSO
+// SCAN SUCCESS
 // ======================================================
 
-function onScanSuccess(decodedText) {
+function onScanSuccess(decodedText){
 
-  if (!scanning) return;
+  if(!scanning) return;
 
   scanning = false;
 
   ativarQR(decodedText);
-
-  resultEl.innerHTML +=
-    "<br><small>A aguardar 5 segundos...</small>";
-
-  setTimeout(() => {
-
-    scanning = true;
-
-    resultEl.innerHTML =
-      "Aguardando scan...";
-
-    resultEl.style.color = "black";
-
-  }, 5000);
 }
 
 
 // ======================================================
-// START SCANNER
+// START CAMERA
 // ======================================================
 
-function startScanner() {
+function startScanner(){
 
   const html5QrCode =
     new Html5Qrcode("reader");
@@ -182,9 +196,9 @@ function startScanner() {
     {
       fps: 10,
 
-      qrbox: {
-        width: 260,
-        height: 260
+      qrbox:{
+        width:260,
+        height:260
       }
     },
 
@@ -196,18 +210,16 @@ function startScanner() {
 
     resultEl.innerHTML =
       "Erro ao abrir câmara";
-
-    resultEl.style.color = "red";
   });
 }
 
 
 // ======================================================
-// PERMISSÃO CÂMARA
+// CAMERA PERMISSION
 // ======================================================
 
 navigator.mediaDevices.getUserMedia({
-  video: true
+  video:true
 })
 
 .then(stream => {
@@ -225,8 +237,6 @@ navigator.mediaDevices.getUserMedia({
 
   resultEl.innerHTML =
     "Permissão de câmara negada";
-
-  resultEl.style.color = "red";
 });
 
 </script>
