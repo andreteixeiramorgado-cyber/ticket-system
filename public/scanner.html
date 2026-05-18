@@ -39,9 +39,13 @@
         resultEl.innerHTML = "🟡 Não ativado";
         resultEl.style.color = "orange";
       } 
-      else {
-        resultEl.innerHTML = "⚠️ Inválido";
-      }
+    else if (data.status === "limit") {
+  resultEl.innerHTML = "⛔ Limite atingido";
+  resultEl.style.color = "red";
+}
+else {
+  resultEl.innerHTML = "⚠️ Inválido";
+}
 
     } catch (err) {
       console.error(err);
