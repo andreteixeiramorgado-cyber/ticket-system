@@ -30,6 +30,7 @@
       margin-top:25px;
       font-size:32px;
       font-weight:bold;
+      min-height:80px;
     }
 
     .info{
@@ -38,50 +39,85 @@
       color:#666;
     }
 
+    .nav-btn{
+      margin-top:20px;
+      padding:14px 25px;
+      border:none;
+      border-radius:10px;
+      background:#f57c00;
+      color:white;
+      font-size:16px;
+      cursor:pointer;
+    }
+
+    #counter{
+      margin-top:25px;
+      font-size:22px;
+      font-weight:bold;
+      color:#1976d2;
+    }
+
   </style>
 </head>
 
 <body>
 
-  <h2>📷 Scanner de Bilhetes</h2>
+<h2>📷 Scanner de Bilhetes</h2>
 
-  <div id="reader"></div>
+<div id="reader"></div>
 
-  <h1 id="result">
-    Aguardando scan...
-  </h1>
+<h1 id="result">
+  Aguardando scan...
+</h1>
 
-  <div class="info">
-    Sistema de validação ativo
-  </div>
+<div class="info">
+  Sistema de validação ativo
+</div>
 
+<div id="counter">
+  Entradas hoje: 0
+</div>
+
+<button
+  class="nav-btn"
+  onclick="window.location='/ativar.html'">
+
+  📦 Ir para Ativar
+
+</button>
 
 <script>
 
 const resultEl = document.getElementById("result");
 
+const counterEl = document.getElementById("counter");
+
 let scanning = true;
+
+let totalEntradas = 0;
 
 
 // ======================================================
 // VALIDAR QR
 // ======================================================
 
-async function validarQR(texto) {
+async function validarQR(texto){
 
-  try {
+  try{
 
     const id = texto.split("/t/")[1];
 
-    if (!id) {
+    if(!id){
 
       resultEl.innerHTML = "⚠️ QR inválido";
+
       resultEl.style.color = "black";
 
       return;
     }
 
-    const res = await fetch("/api/check/" + id);
+    const res =
+      await fetch("/api/check/" + id);
 
     const data = await res.json();
 
@@ -90,9 +126,15 @@ async function validarQR(texto) {
     // VÁLIDO
     // ======================================================
 
-    if (data.status === "valid") {
+    if(data.status === "valid"){
 
-      resultEl.innerHTML = "✅ Entrada válida";
+      totalEntradas++;
+
+      counterEl.innerHTML =
+        "Entradas hoje: " + totalEntradas;
+
+      resultEl.innerHTML =
+        "✅ Entrada válida";
 
       resultEl.style.color = "green";
     }
@@ -102,9 +144,10 @@ async function validarQR(texto) {
     // JÁ UTILIZADO
     // ======================================================
 
-    else if (data.status === "used") {
+    else if(data.status === "used"){
 
-      resultEl.innerHTML = "❌ Já utilizado";
+      resultEl.innerHTML =
+        "❌ Já utilizado";
 
       resultEl.style.color = "red";
     }
@@ -114,21 +157,23 @@ async function validarQR(texto) {
     // NÃO ATIVADO
     // ======================================================
 
-    else if (data.status === "not_active") {
+    else if(data.status === "not_active"){
 
-      resultEl.innerHTML = "🟡 Não ativado";
+      resultEl.innerHTML =
+        "🟡 Não ativado";
 
       resultEl.style.color = "orange";
     }
 
 
     // ======================================================
-    // LIMITE ATINGIDO
+    // LIMITE
     // ======================================================
 
-    else if (data.status === "limit") {
+    else if(data.status === "limit"){
 
-      resultEl.innerHTML = "⛔ Limite atingido";
+      resultEl.innerHTML =
+        "⛔ Limite atingido";
 
       resultEl.style.color = "red";
     }
@@ -138,58 +183,79 @@ async function validarQR(texto) {
     // INVÁLIDO
     // ======================================================
 
-    else {
+    else{
 
-      resultEl.innerHTML = "⚠️ Bilhete inválido";
+      resultEl.innerHTML =
+        "⚠️ Bilhete inválido";
 
       resultEl.style.color = "black";
     }
 
+
+    // ======================================================
+    // 3 SEGUNDOS RESULTADO
+    // ======================================================
+
+    setTimeout(() => {
+
+      resultEl.innerHTML =
+        "⏳ Aguarde 2 segundos...";
+
+      resultEl.style.color = "gray";
+
+    }, 3000);
+
+
+    // ======================================================
+    // 5 SEGUNDOS TOTAL
+    // ======================================================
+
+    setTimeout(() => {
+
+      scanning = true;
+
+      resultEl.innerHTML =
+        "Aguardando scan...";
+
+      resultEl.style.color = "black";
+
+    }, 5000);
+
   }
+
   catch(err){
 
     console.error(err);
 
-    resultEl.innerHTML = "Erro ao validar";
+    resultEl.innerHTML =
+      "Erro ao validar";
 
     resultEl.style.color = "red";
+
+    scanning = true;
   }
 }
 
 
 // ======================================================
-// SCAN SUCESSO
+// SCAN SUCCESS
 // ======================================================
 
-function onScanSuccess(decodedText) {
+function onScanSuccess(decodedText){
 
-  if (!scanning) return;
+  if(!scanning) return;
 
   scanning = false;
 
   validarQR(decodedText);
-
-  resultEl.innerHTML +=
-    "<br><small>A aguardar 5 segundos...</small>";
-
-  setTimeout(() => {
-
-    scanning = true;
-
-    resultEl.innerHTML =
-      "Aguardando scan...";
-
-    resultEl.style.color = "black";
-
-  }, 5000);
 }
 
 
 // ======================================================
-// START SCANNER
+// START CAMERA
 // ======================================================
 
-function startScanner() {
+function startScanner(){
 
   const html5QrCode =
     new Html5Qrcode("reader");
@@ -201,9 +267,9 @@ function startScanner() {
     {
       fps: 10,
 
-      qrbox: {
-        width: 260,
-        height: 260
+      qrbox:{
+        width:260,
+        height:260
       }
     },
 
@@ -215,18 +281,16 @@ function startScanner() {
 
     resultEl.innerHTML =
       "Erro ao abrir câmara";
-
-    resultEl.style.color = "red";
   });
 }
 
 
 // ======================================================
-// PERMISSÃO CÂMARA
+// CAMERA PERMISSION
 // ======================================================
 
 navigator.mediaDevices.getUserMedia({
-  video: true
+  video:true
 })
 
 .then(stream => {
@@ -244,8 +308,6 @@ navigator.mediaDevices.getUserMedia({
 
   resultEl.innerHTML =
     "Permissão de câmara negada";
-
-  resultEl.style.color = "red";
 });
 
 </script>
