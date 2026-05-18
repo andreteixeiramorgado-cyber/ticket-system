@@ -4,12 +4,13 @@
   <title>Administração</title>
 
   <style>
+
     body{
       font-family:sans-serif;
       background:#f5f5f5;
-      text-align:center;
       margin:0;
-      padding:40px;
+      padding:30px;
+      text-align:center;
     }
 
     h1{
@@ -21,18 +22,27 @@
       max-width:500px;
       margin:20px auto;
       padding:25px;
-      border-radius:12px;
-      box-shadow:0 2px 10px rgba(0,0,0,0.1);
+      border-radius:14px;
+      box-shadow:0 2px 12px rgba(0,0,0,0.1);
+    }
+
+    h2{
+      margin-bottom:20px;
     }
 
     button{
       width:100%;
-      padding:15px;
+      padding:16px;
       margin-top:10px;
       border:none;
-      border-radius:8px;
+      border-radius:10px;
       font-size:16px;
       cursor:pointer;
+      transition:0.2s;
+    }
+
+    button:hover{
+      opacity:0.9;
     }
 
     .report{
@@ -46,10 +56,11 @@
     }
 
     #result{
-      margin-top:30px;
-      font-size:20px;
+      margin-top:35px;
+      font-size:22px;
       font-weight:bold;
     }
+
   </style>
 </head>
 
@@ -57,85 +68,129 @@
 
 <h1>⚙️ Painel Administração</h1>
 
+
+<!-- ====================================================== -->
 <!-- EVT -->
+<!-- ====================================================== -->
+
 <div class="box">
 
   <h2>🎟️ EVT Gestão</h2>
 
-  <button class="report"
+  <button
+    class="report"
     onclick="acao('relatorio_evt')">
+
     📊 Criar Relatório EVT
+
   </button>
 
-  <button class="reset"
+  <button
+    class="reset"
     onclick="acao('reset_evt')">
+
     ♻️ Reset EVT
+
   </button>
 
 </div>
 
+
+<!-- ====================================================== -->
 <!-- VIP -->
+<!-- ====================================================== -->
+
 <div class="box">
 
   <h2>🎫 RSprom + 👑 BOSS</h2>
 
-  <button class="report"
+  <button
+    class="report"
     onclick="acao('relatorio_vip')">
+
     📊 Criar Relatório VIP
+
   </button>
 
-  <button class="reset"
+  <button
+    class="reset"
     onclick="acao('reset_vip')">
+
     ♻️ Reset VIP
+
   </button>
 
 </div>
 
+
+<!-- ====================================================== -->
 <!-- RSC -->
+<!-- ====================================================== -->
+
 <div class="box">
 
   <h2>🏁 RSC Gestão</h2>
 
-  <button class="report"
+  <button
+    class="report"
     onclick="acao('relatorio_rsc')">
+
     📊 Criar Relatório RSC
+
   </button>
 
-  <button class="reset"
+  <button
+    class="reset"
     onclick="acao('reset_rsc')">
+
     ♻️ Reset RSC
+
   </button>
 
 </div>
 
+
 <h2 id="result"></h2>
+
 
 <script>
 
+// ======================================================
+// ADMIN ACTION
+// ======================================================
+
 async function acao(tipo){
 
-  const key = prompt("Password Admin");
+  const key = prompt(
+    "Password Admin"
+  );
 
   if(!key) return;
 
   try{
 
     const res = await fetch(
-      "/api/admin/" + tipo + "?key=" + key
+
+      "/api/admin/" +
+      tipo +
+      "?key=" +
+      key
+
     );
 
     const data = await res.json();
 
-    document.getElementById("result").innerHTML =
-      data.message;
+    document.getElementById("result")
+      .innerHTML = data.message;
 
   }
+
   catch(err){
 
     console.error(err);
 
-    document.getElementById("result").innerHTML =
-      "Erro interno";
+    document.getElementById("result")
+      .innerHTML = "Erro interno";
   }
 }
 
