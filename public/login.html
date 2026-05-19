@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<body style="text-align:center;font-family:sans-serif;">
+  <h2>Login Staff</h2>
+
+  <input id="user" placeholder="Utilizador"><br><br>
+  <input id="pass" type="password" placeholder="Password"><br><br>
+
+  <button onclick="login()">Entrar</button>
+
+<script>
+async function login(tipo) {
+
+  const username = document.getElementById("user").value;
+  const password = document.getElementById("pass").value;
+
+  const res = await fetch("/login", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ username, password })
+  });
+
+  const data = await res.json();
+
+  if (!data.success) {
+    alert("Login inválido");
+    return;
+  }
+
+  // 🔥 DASHBOARD (qualquer user pode entrar)
+  if (tipo === "dashboard") {
+    window.location = "/dashboard.html";
+    return;
+  }
+
+  // 🔐 restante com controlo
+  if (tipo === "ativar" && data.role === "ativar") {
+    window.location = "/ativar.html";
+  } 
+  else if (tipo === "scanner" && data.role === "scanner") {
+    window.location = "/scanner.html";
+  } 
+  else {
+    alert("Não tens acesso a esta função");
+  }
+}
+</script>
+</body>
+</html>

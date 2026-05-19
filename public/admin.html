@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Administração</title>
+
+  <style>
+
+    body{
+      font-family:sans-serif;
+      background:#f5f5f5;
+      margin:0;
+      padding:30px;
+      text-align:center;
+    }
+
+    h1{
+      margin-bottom:40px;
+    }
+
+    .box{
+      background:white;
+      max-width:500px;
+      margin:20px auto;
+      padding:25px;
+      border-radius:14px;
+      box-shadow:0 2px 12px rgba(0,0,0,0.1);
+    }
+
+    h2{
+      margin-bottom:20px;
+    }
+
+    button{
+      width:100%;
+      padding:16px;
+      margin-top:10px;
+      border:none;
+      border-radius:10px;
+      font-size:16px;
+      cursor:pointer;
+      transition:0.2s;
+    }
+
+    button:hover{
+      opacity:0.9;
+    }
+
+    .report{
+      background:#1976d2;
+      color:white;
+    }
+
+    .reset{
+      background:#d32f2f;
+      color:white;
+    }
+
+    #result{
+      margin-top:35px;
+      font-size:22px;
+      font-weight:bold;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<h1>⚙️ Painel Administração</h1>
+
+
+<!-- ====================================================== -->
+<!-- EVT -->
+<!-- ====================================================== -->
+
+<div class="box">
+
+  <h2>🎟️ EVT Gestão</h2>
+
+  <button
+    class="report"
+    onclick="acao('relatorio_evt')">
+
+    📊 Criar Relatório EVT
+
+  </button>
+
+  <button
+    class="reset"
+    onclick="acao('reset_evt')">
+
+    ♻️ Reset EVT
+
+  </button>
+
+</div>
+
+
+<!-- ====================================================== -->
+<!-- VIP -->
+<!-- ====================================================== -->
+
+<div class="box">
+
+  <h2>🎫 RSprom + 👑 BOSS</h2>
+
+  <button
+    class="report"
+    onclick="acao('relatorio_vip')">
+
+    📊 Criar Relatório VIP
+
+  </button>
+
+  <button
+    class="reset"
+    onclick="acao('reset_vip')">
+
+    ♻️ Reset VIP
+
+  </button>
+
+</div>
+
+
+<!-- ====================================================== -->
+<!-- RSC -->
+<!-- ====================================================== -->
+
+<div class="box">
+
+  <h2>🏁 RSC Gestão</h2>
+
+  <button
+    class="report"
+    onclick="acao('relatorio_rsc')">
+
+    📊 Criar Relatório RSC
+
+  </button>
+
+  <button
+    class="reset"
+    onclick="acao('reset_rsc')">
+
+    ♻️ Reset RSC
+
+  </button>
+
+</div>
+
+
+<h2 id="result"></h2>
+
+
+<script>
+
+// ======================================================
+// ADMIN ACTION
+// ======================================================
+
+async function acao(tipo){
+
+  const key = prompt(
+    "Password Admin"
+  );
+
+  if(!key) return;
+
+  try{
+
+    const res = await fetch(
+
+      "/api/admin/" +
+      tipo +
+      "?key=" +
+      key
+
+    );
+
+    const data = await res.json();
+
+    document.getElementById("result")
+      .innerHTML = data.message;
+
+  }
+
+  catch(err){
+
+    console.error(err);
+
+    document.getElementById("result")
+      .innerHTML = "Erro interno";
+  }
+}
+
+</script>
+
+</body>
+</html>

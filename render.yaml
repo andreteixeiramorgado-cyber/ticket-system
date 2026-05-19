@@ -1,7 +1,16 @@
+
 services:
   - type: web
     name: ticket-system
     env: node
     plan: free
     buildCommand: "npm install"
+
+services:
+  - type: web
+    name: ticket-system
+    env: node
+    plan: free
+    buildCommand: "npm install"
+
     startCommand: "node server.js"

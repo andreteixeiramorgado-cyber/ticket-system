@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<body style="text-align:center;font-family:sans-serif;background:#111;color:white;">
+
+  <h1>🎟️ Bilhete</h1>
+  <h2 id="status">A verificar...</h2>
+  <p id="code"></p>
+
+  <script>
+    const id = window.location.pathname.split("/t/")[1];
+
+    document.getElementById("code").innerText = id;
+
+    async function check() {
+      const res = await fetch("/api/status/" + id);
+      const data = await res.json();
+
+      const el = document.getElementById("status");
+
+      if (data.status === "valid") {
+        el.innerText = "🟢 Válido";
+        el.style.color = "lime";
+      } else if (data.status === "used") {
+        el.innerText = "🔴 Já utilizado";
+        el.style.color = "red";
+      } else {
+        el.innerText = "⚠️ Inválido";
+      }
+    }
+
+    check();
+  </script>
+
+</body>
+</html>

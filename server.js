@@ -6,6 +6,7 @@ const db = require("./firebase");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+
 // ======================================================
 // SESSION
 // ======================================================
@@ -94,10 +95,10 @@ app.get("/api/check/:id", checkAuth, async (req, res) => {
 
     // tipos especiais
     const rsProm =
-      id.startsWith("RSprom");
+      id.includes("RSprom");
 
     const boss =
-      id.startsWith("BOSS");
+      id.includes("BOSS");
 
     const entradas =
       ticket.entradas || 0;
@@ -114,7 +115,7 @@ app.get("/api/check/:id", checkAuth, async (req, res) => {
       });
     }
 
-    // limite
+    // limite RSprom
     if(
       rsProm &&
       entradas >= 3
@@ -126,7 +127,10 @@ app.get("/api/check/:id", checkAuth, async (req, res) => {
     }
 
 
-    // EVT NORMAL
+    // ======================================================
+    // BILHETE NORMAL
+    // ======================================================
+
     if(!rsProm && !boss){
 
       await docRef.update({
@@ -138,7 +142,10 @@ app.get("/api/check/:id", checkAuth, async (req, res) => {
     }
 
 
+    // ======================================================
     // RSprom
+    // ======================================================
+
     else if(rsProm){
 
       await docRef.update({
@@ -150,7 +157,10 @@ app.get("/api/check/:id", checkAuth, async (req, res) => {
     }
 
 
+    // ======================================================
     // BOSS
+    // ======================================================
+
     else if(boss){
 
       await docRef.update({
@@ -179,7 +189,7 @@ app.get("/api/check/:id", checkAuth, async (req, res) => {
 
 
 // ======================================================
-// ATIVAR
+// ATIVAR BILHETE
 // ======================================================
 
 app.get("/api/activate/:id", checkAuth, async (req, res) => {
@@ -225,7 +235,7 @@ app.get("/api/activate/:id", checkAuth, async (req, res) => {
 
 
 // ======================================================
-// ADMIN
+// ADMIN RESET
 // ======================================================
 
 app.get("/api/admin/:tipo", async (req, res) => {
@@ -250,15 +260,18 @@ app.get("/api/admin/:tipo", async (req, res) => {
 
     for(const doc of snapshot.docs){
 
-	console.log("ID:", doc.id);
-
       const id = doc.id;
 
+      console.log("ID FIREBASE:", id);
 
-      // EVT
+
+      // ======================================================
+      // RESET EVT
+      // ======================================================
+
       if(
         tipo === "reset_evt" &&
-        id.startsWith("EVT-")
+        id.includes("EVT")
       ){
 
         await db.collection("tickets")
@@ -278,14 +291,17 @@ app.get("/api/admin/:tipo", async (req, res) => {
       }
 
 
-      // VIP
+      // ======================================================
+      // RESET VIP
+      // ======================================================
+
       if(
-  tipo === "reset_vip" &&
-  (
-    id.includes("RSprom") ||
-    id.includes("BOSS")
-  )
-){
+        tipo === "reset_vip" &&
+        (
+          id.includes("RSprom") ||
+          id.includes("BOSS")
+        )
+      ){
 
         await db.collection("tickets")
         .doc(id)
@@ -304,10 +320,13 @@ app.get("/api/admin/:tipo", async (req, res) => {
       }
 
 
-      // RSC
+      // ======================================================
+      // RESET RSC
+      // ======================================================
+
       if(
         tipo === "reset_rsc" &&
-        id.startsWith("RSC -")
+        id.includes("RSC")
       ){
 
         await db.collection("tickets")
@@ -327,9 +346,10 @@ app.get("/api/admin/:tipo", async (req, res) => {
       }
     }
 
-    res.json({
+    return res.json({
+
       message:
-        "✅ Reset concluído: " + total
+      "✅ Reset concluído: " + total
     });
 
   }
@@ -340,6 +360,56 @@ app.get("/api/admin/:tipo", async (req, res) => {
 
     res.status(500).json({
       message:"Erro interno"
+    });
+  }
+});
+
+
+// ======================================================
+// DASHBOARD
+// ======================================================
+
+app.get("/api/dashboard", checkAuth, async (req, res) => {
+
+  try{
+
+    const snapshot =
+      await db.collection("tickets").get();
+
+    let total = 0;
+    let ativos = 0;
+    let usados = 0;
+
+    snapshot.forEach(doc => {
+
+      total++;
+
+      const t = doc.data();
+
+      if(t.active) ativos++;
+
+      if(
+        t.used ||
+        (t.entradas && t.entradas > 0)
+      ){
+        usados++;
+      }
+    });
+
+    res.json({
+      total,
+      ativos,
+      usados
+    });
+
+  }
+
+  catch(err){
+
+    console.error(err);
+
+    res.status(500).json({
+      error:true
     });
   }
 });
@@ -369,6 +439,18 @@ checkAuth,
     path.join(
       __dirname,
       "public/ativar.html"
+    )
+  );
+});
+
+app.get("/dashboard.html",
+checkAuth,
+(req,res)=>{
+
+  res.sendFile(
+    path.join(
+      __dirname,
+      "public/dashboard.html"
     )
   );
 });
