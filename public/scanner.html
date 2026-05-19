@@ -1,10 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
 
   <meta charset="UTF-8">
 
-  <title>Ticket System</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Scanner</title>
+
+  <script src="https://unpkg.com/html5-qrcode"></script>
 
   <style>
 
@@ -17,16 +25,17 @@
       justify-content:center;
       align-items:center;
 
-      height:100vh;
+      min-height:100vh;
     }
 
     .box{
 
       background:white;
 
-      width:350px;
+      width:90%;
+      max-width:450px;
 
-      padding:40px;
+      padding:35px;
 
       border-radius:20px;
 
@@ -35,21 +44,13 @@
       text-align:center;
     }
 
-    input{
+    h1{
+      margin-bottom:25px;
+    }
 
+    #reader{
       width:100%;
-
-      padding:15px;
-
-      margin-top:15px;
-
-      border-radius:10px;
-
-      border:1px solid #ccc;
-
-      font-size:16px;
-
-      box-sizing:border-box;
+      margin:auto;
     }
 
     button{
@@ -67,141 +68,334 @@
       font-size:18px;
 
       cursor:pointer;
-    }
 
-    .scanner{
-      background:#1976d2;
       color:white;
     }
 
-    .ativar{
+    .orange{
       background:#f57c00;
-      color:white;
     }
 
-    .admin{
+    .dark{
       background:#333;
-      color:white;
     }
 
-    h1{
-      margin-bottom:30px;
-    }
+    #result{
 
-    #msg{
-      margin-top:20px;
-      color:red;
+      margin-top:25px;
+
+      font-size:28px;
+
       font-weight:bold;
     }
 
+    #stats{
+
+      margin-top:30px;
+
+      background:#f0f0f0;
+
+      padding:20px;
+
+      border-radius:15px;
+
+      font-size:18px;
+    }
+
+    .line{
+      margin-top:10px;
+    }
+
   </style>
+
 </head>
 
 <body>
 
 <div class="box">
 
-  <h1>🎟️ Ticket System</h1>
+  <h1>📷 Scanner Check-in</h1>
 
-  <input
-    id="user"
-    placeholder="Utilizador"
+  <div id="reader"></div>
+
+  <div id="result">
+
+    Aguardando scan...
+
+  </div>
+
+
+  <!-- STATS -->
+  <div id="stats">
+
+    <div class="line">
+
+      🎟️ Entradas:
+      <span id="total">0</span>
+
+    </div>
+
+    <div class="line">
+
+      🔥 Último:
+      <span id="ultimo">-</span>
+
+    </div>
+
+  </div>
+
+
+  <!-- BOTÕES -->
+  <button
+    class="orange"
+    onclick="window.location='/ativar.html'"
   >
 
-  <input
-    id="pass"
-    type="password"
-    placeholder="Password"
+    📦 Ir para Ativar
+
+  </button>
+
+  <button
+    class="dark"
+    onclick="window.location='/dashboard.html'"
   >
 
-  <button
-    class="scanner"
-    onclick="login('scanner')">
+    📊 Dashboard
 
-    📷 Scanner
   </button>
-
-  <button
-    class="ativar"
-    onclick="login('ativar')">
-
-    📦 Ativar
-  </button>
-
-  <button
-    class="admin"
-    onclick="admin()">
-
-    ⚙️ Administração
-  </button>
-
-  <div id="msg"></div>
 
 </div>
 
 
 <script>
 
-async function login(tipo){
+// ======================================================
+// VARS
+// ======================================================
 
-  const username =
-    document.getElementById("user").value;
+const resultEl =
+  document.getElementById("result");
 
-  const password =
-    document.getElementById("pass").value;
+const totalEl =
+  document.getElementById("total");
 
-  const res = await fetch("/login",{
+const ultimoEl =
+  document.getElementById("ultimo");
 
-    method:"POST",
+let total = 0;
 
-    headers:{
-      "Content-Type":"application/json"
+let scanning = true;
+
+
+// ======================================================
+// VALIDAR QR
+// ======================================================
+
+async function validarQR(texto){
+
+  try{
+
+    const id =
+      texto.split("/t/")[1];
+
+    if(!id){
+
+      resultEl.innerHTML =
+        "⚠️ QR inválido";
+
+      resultEl.style.color =
+        "red";
+
+      return;
+    }
+
+    const res =
+      await fetch("/api/check/" + id);
+
+    const data =
+      await res.json();
+
+
+    // VALID
+    if(data.status === "valid"){
+
+      total++;
+
+      totalEl.innerHTML =
+        total;
+
+      ultimoEl.innerHTML =
+        id;
+
+      resultEl.innerHTML =
+        "✅ Entrada válida";
+
+      resultEl.style.color =
+        "green";
+    }
+
+
+    // USED
+    else if(data.status === "used"){
+
+      resultEl.innerHTML =
+        "❌ Já utilizado";
+
+      resultEl.style.color =
+        "red";
+    }
+
+
+    // LIMIT
+    else if(data.status === "limit"){
+
+      resultEl.innerHTML =
+        "⛔ Limite atingido";
+
+      resultEl.style.color =
+        "red";
+    }
+
+
+    // NOT ACTIVE
+    else if(data.status === "not_active"){
+
+      resultEl.innerHTML =
+        "🟡 Não ativado";
+
+      resultEl.style.color =
+        "orange";
+    }
+
+
+    // INVALID
+    else{
+
+      resultEl.innerHTML =
+        "⚠️ Inválido";
+
+      resultEl.style.color =
+        "red";
+    }
+
+
+    // ======================================================
+    // DELAY
+    // ======================================================
+
+    scanning = false;
+
+
+    // mostrar espera após 3s
+    setTimeout(()=>{
+
+      resultEl.innerHTML =
+        "⌛ Aguarde 2 segundos...";
+
+      resultEl.style.color =
+        "black";
+
+    },3000);
+
+
+    // reset total após 5s
+    setTimeout(()=>{
+
+      scanning = true;
+
+      resultEl.innerHTML =
+        "Aguardando scan...";
+
+      resultEl.style.color =
+        "black";
+
+    },5000);
+
+  }
+
+  catch(err){
+
+    console.error(err);
+
+    resultEl.innerHTML =
+      "Erro validação";
+
+    resultEl.style.color =
+      "red";
+  }
+}
+
+
+// ======================================================
+// SCAN SUCCESS
+// ======================================================
+
+function onScanSuccess(decodedText){
+
+  if(!scanning) return;
+
+  validarQR(decodedText);
+}
+
+
+// ======================================================
+// START SCANNER
+// ======================================================
+
+function startScanner(){
+
+  const html5QrCode =
+    new Html5Qrcode("reader");
+
+  html5QrCode.start(
+
+    { facingMode:"environment" },
+
+    {
+      fps:10,
+
+      qrbox:{
+        width:250,
+        height:250
+      }
     },
 
-    body:JSON.stringify({
-      username,
-      password
-    })
+    onScanSuccess
+
+  )
+
+  .catch(err=>{
+
+    console.error(err);
+
+    resultEl.innerHTML =
+      "Erro câmara";
   });
-
-  const data = await res.json();
-
-  if(data.success){
-
-    if(tipo === "scanner"){
-      window.location = "/scanner.html";
-    }
-
-    if(tipo === "ativar"){
-      window.location = "/ativar.html";
-    }
-
-  }
-
-  else{
-
-    document.getElementById("msg")
-    .innerHTML = "Login inválido";
-  }
 }
 
 
-function admin(){
+// ======================================================
+// CAMERA
+// ======================================================
 
-  const pass =
-    prompt("Password Admin");
+navigator.mediaDevices
+.getUserMedia({ video:true })
 
-  if(pass === "admin2468"){
+.then(stream=>{
 
-    window.location =
-      "/admin.html";
-  }
+  stream.getTracks()
+  .forEach(track=>track.stop());
 
-  else{
+  startScanner();
+})
 
-    alert("Password errada");
-  }
-}
+.catch(err=>{
+
+  console.error(err);
+
+  resultEl.innerHTML =
+    "Permissão negada";
+});
 
 </script>
 
