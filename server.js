@@ -168,6 +168,16 @@ async (req,res)=>{
 
     if(!rsProm && !boss){
 
+      const refeicoes =
+        ticket.refeicoes || [];
+
+      if(
+        !refeicoes.includes(refeicao)
+      ){
+
+        refeicoes.push(refeicao);
+      }
+
       await docRef.update({
 
         used:true,
@@ -175,8 +185,7 @@ async (req,res)=>{
         checkin_time:
           new Date(),
 
-        ultima_refeicao:
-          refeicao
+        refeicoes
       });
     }
 
@@ -187,6 +196,16 @@ async (req,res)=>{
 
     else if(rsProm){
 
+      const refeicoes =
+        ticket.refeicoes || [];
+
+      if(
+        !refeicoes.includes(refeicao)
+      ){
+
+        refeicoes.push(refeicao);
+      }
+
       await docRef.update({
 
         entradas:
@@ -195,8 +214,7 @@ async (req,res)=>{
         last_checkin:
           new Date(),
 
-        ultima_refeicao:
-          refeicao
+        refeicoes
       });
     }
 
@@ -207,6 +225,16 @@ async (req,res)=>{
 
     else if(boss){
 
+      const refeicoes =
+        ticket.refeicoes || [];
+
+      if(
+        !refeicoes.includes(refeicao)
+      ){
+
+        refeicoes.push(refeicao);
+      }
+
       await docRef.update({
 
         entradas:
@@ -215,8 +243,7 @@ async (req,res)=>{
         last_checkin:
           new Date(),
 
-        ultima_refeicao:
-          refeicao
+        refeicoes
       });
     }
 
@@ -379,7 +406,9 @@ async (req,res)=>{
 
           id.includes("EVT") &&
 
-          t.ultima_refeicao === refeicao
+          t.refeicoes &&
+
+          t.refeicoes.includes(refeicao)
 
         ){
 
@@ -400,12 +429,13 @@ async (req,res)=>{
 
           id.includes("RSprom") &&
 
-          t.ultima_refeicao === refeicao
+          t.refeicoes &&
+
+          t.refeicoes.includes(refeicao)
 
         ){
 
-          total +=
-            t.entradas || 0;
+          total++;
         }
 
 
@@ -414,12 +444,13 @@ async (req,res)=>{
 
           id.includes("BOSS") &&
 
-          t.ultima_refeicao === refeicao
+          t.refeicoes &&
+
+          t.refeicoes.includes(refeicao)
 
         ){
 
-          total +=
-            t.entradas || 0;
+          total++;
         }
 
 
@@ -428,7 +459,9 @@ async (req,res)=>{
 
           id.includes("RSC") &&
 
-          t.ultima_refeicao === refeicao
+          t.refeicoes &&
+
+          t.refeicoes.includes(refeicao)
 
         ){
 
@@ -582,7 +615,8 @@ async (req,res)=>{
           activated_at:null,
           checkin_time:null,
           last_checkin:null,
-          ultima_refeicao:null
+
+          refeicoes:[]
         });
 
         total++;
@@ -612,7 +646,8 @@ async (req,res)=>{
           activated_at:null,
           checkin_time:null,
           last_checkin:null,
-          ultima_refeicao:null
+
+          refeicoes:[]
         });
 
         total++;
@@ -638,7 +673,8 @@ async (req,res)=>{
           activated_at:null,
           checkin_time:null,
           last_checkin:null,
-          ultima_refeicao:null
+
+          refeicoes:[]
         });
 
         total++;
