@@ -99,11 +99,7 @@
 
       border-radius:15px;
 
-      font-size:18px;
-    }
-
-    .line{
-      margin-top:10px;
+      font-size:22px;
     }
 
   </style>
@@ -114,7 +110,11 @@
 
 <div class="box">
 
-  <h1>📷 Scanner Check-in</h1>
+  <h1 id="titulo">
+
+    📷 Scanner
+
+  </h1>
 
   <div id="reader"></div>
 
@@ -128,19 +128,11 @@
   <!-- STATS -->
   <div id="stats">
 
-    <div class="line">
+    <span id="statsText">
 
-      🎟️ Entradas:
-      <span id="total">0</span>
+      Entradas: 0
 
-    </div>
-
-    <div class="line">
-
-      🔥 Último:
-      <span id="ultimo">-</span>
-
-    </div>
+    </span>
 
   </div>
 
@@ -170,21 +162,209 @@
 <script>
 
 // ======================================================
+// GRUPO
+// ======================================================
+
+let grupo = null;
+
+let refeicao = null;
+
+
+// ======================================================
+// ESCOLHER GRUPO
+// ======================================================
+
+const escolha = prompt(
+
+`Selecionar Grupo:
+
+1 = Race Ready
+2 = Rally Series`
+
+);
+
+
+// ======================================================
+// RACE READY
+// ======================================================
+
+if(escolha === "1"){
+
+  grupo = "evt";
+
+  document.getElementById("titulo")
+  .innerHTML =
+    "🎟️ Scanner Race Ready";
+
+
+  const ref = prompt(
+
+`Selecionar Refeição:
+
+1 = Dia 1 Almoço
+2 = Dia 1 Jantar
+3 = Dia 2 Almoço
+4 = Dia 2 Jantar
+5 = Dia 3 Almoço`
+
+  );
+
+
+  if(ref === "1"){
+
+    refeicao =
+      "dia1_almoco";
+  }
+
+  else if(ref === "2"){
+
+    refeicao =
+      "dia1_jantar";
+  }
+
+  else if(ref === "3"){
+
+    refeicao =
+      "dia2_almoco";
+  }
+
+  else if(ref === "4"){
+
+    refeicao =
+      "dia2_jantar";
+  }
+
+  else{
+
+    refeicao =
+      "dia3_almoco";
+  }
+}
+
+
+// ======================================================
+// RALLY SERIES
+// ======================================================
+
+else{
+
+  grupo = "rally";
+
+  document.getElementById("titulo")
+  .innerHTML =
+    "🏁 Scanner Rally Series";
+
+
+  const ref = prompt(
+
+`Selecionar Refeição:
+
+1 = Dia 1 Almoço
+2 = Dia 1 Jantar
+3 = Dia 2 Almoço`
+
+  );
+
+
+  if(ref === "1"){
+
+    refeicao =
+      "dia1_almoco";
+  }
+
+  else if(ref === "2"){
+
+    refeicao =
+      "dia1_jantar";
+  }
+
+  else{
+
+    refeicao =
+      "dia2_almoco";
+  }
+}
+
+
+// ======================================================
 // VARS
 // ======================================================
 
 const resultEl =
   document.getElementById("result");
 
-const totalEl =
-  document.getElementById("total");
-
-const ultimoEl =
-  document.getElementById("ultimo");
-
-let total = 0;
-
 let scanning = true;
+
+
+// ======================================================
+// LOAD STATS
+// ======================================================
+
+async function loadStats(){
+
+  try{
+
+    const res =
+      await fetch(
+
+        "/api/stats/" +
+        grupo +
+        "/" +
+        refeicao
+      );
+
+    const data =
+      await res.json();
+
+
+    // ======================================================
+    // EVT
+    // ======================================================
+
+    if(grupo === "evt"){
+
+      document.getElementById("statsText")
+      .innerHTML =
+
+        "🎟️ Race Ready<br><br>" +
+
+        refeicao
+        .replaceAll("_"," ") +
+
+        "<br><br>" +
+
+        "Entradas: " +
+        data.total;
+    }
+
+
+    // ======================================================
+    // RALLY
+    // ======================================================
+
+    else{
+
+      document.getElementById("statsText")
+      .innerHTML =
+
+        "🏁 Rally Series<br><br>" +
+
+        refeicao
+        .replaceAll("_"," ") +
+
+        "<br><br>" +
+
+        "Entradas: " +
+        data.total;
+    }
+
+  }
+
+  catch(err){
+
+    console.error(err);
+  }
+}
 
 
 // ======================================================
@@ -209,33 +389,82 @@ async function validarQR(texto){
       return;
     }
 
+
+    // ======================================================
+    // FILTRO EVT
+    // ======================================================
+
+    if(
+      grupo === "evt" &&
+      !id.includes("EVT")
+    ){
+
+      resultEl.innerHTML =
+        "❌ Não pertence Race Ready";
+
+      resultEl.style.color =
+        "red";
+
+      return;
+    }
+
+
+    // ======================================================
+    // FILTRO RALLY
+    // ======================================================
+
+    if(
+      grupo === "rally" &&
+      !(
+        id.includes("RSprom") ||
+        id.includes("BOSS") ||
+        id.includes("RSC")
+      )
+    ){
+
+      resultEl.innerHTML =
+        "❌ Não pertence Rally";
+
+      resultEl.style.color =
+        "red";
+
+      return;
+    }
+
+
     const res =
-      await fetch("/api/check/" + id);
+      await fetch(
+
+        "/api/check/" +
+        id +
+        "?refeicao=" +
+        refeicao
+      );
 
     const data =
       await res.json();
 
 
+    // ======================================================
     // VALID
+    // ======================================================
+
     if(data.status === "valid"){
-
-      total++;
-
-      totalEl.innerHTML =
-        total;
-
-      ultimoEl.innerHTML =
-        id;
 
       resultEl.innerHTML =
         "✅ Entrada válida";
 
       resultEl.style.color =
         "green";
+
+      loadStats();
     }
 
 
+    // ======================================================
     // USED
+    // ======================================================
+
     else if(data.status === "used"){
 
       resultEl.innerHTML =
@@ -246,7 +475,10 @@ async function validarQR(texto){
     }
 
 
+    // ======================================================
     // LIMIT
+    // ======================================================
+
     else if(data.status === "limit"){
 
       resultEl.innerHTML =
@@ -257,7 +489,10 @@ async function validarQR(texto){
     }
 
 
+    // ======================================================
     // NOT ACTIVE
+    // ======================================================
+
     else if(data.status === "not_active"){
 
       resultEl.innerHTML =
@@ -268,7 +503,10 @@ async function validarQR(texto){
     }
 
 
+    // ======================================================
     // INVALID
+    // ======================================================
+
     else{
 
       resultEl.innerHTML =
@@ -279,14 +517,11 @@ async function validarQR(texto){
     }
 
 
-    // ======================================================
-    // DELAY
-    // ======================================================
-
+    // bloquear imediato
     scanning = false;
 
 
-    // mostrar espera após 3s
+    // 3 segundos
     setTimeout(()=>{
 
       resultEl.innerHTML =
@@ -298,7 +533,7 @@ async function validarQR(texto){
     },3000);
 
 
-    // reset total após 5s
+    // reset
     setTimeout(()=>{
 
       scanning = true;
@@ -334,12 +569,14 @@ function onScanSuccess(decodedText){
 
   if(!scanning) return;
 
+  scanning = false;
+
   validarQR(decodedText);
 }
 
 
 // ======================================================
-// START SCANNER
+// START
 // ======================================================
 
 function startScanner(){
@@ -387,6 +624,9 @@ navigator.mediaDevices
   .forEach(track=>track.stop());
 
   startScanner();
+
+  loadStats();
+
 })
 
 .catch(err=>{
