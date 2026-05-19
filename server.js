@@ -129,11 +129,14 @@ async (req,res)=>{
     const boss =
       id.includes("BOSS");
 
+    const rsc =
+      id.includes("RSC");
+
     const entradas =
       ticket.entradas || 0;
 
 
-    // EVT já usado
+    // EVT / RSC já usado
     if(
 
       !rsProm &&
@@ -166,7 +169,10 @@ async (req,res)=>{
     // EVT NORMAL
     // ======================================================
 
-    if(!rsProm && !boss){
+    if(
+      !rsProm &&
+      !boss
+    ){
 
       const refeicoes =
         ticket.refeicoes || [];
@@ -196,15 +202,10 @@ async (req,res)=>{
 
     else if(rsProm){
 
-      const refeicoes =
-        ticket.refeicoes || [];
+      const historico =
+        ticket.historico_refeicoes || [];
 
-      if(
-        !refeicoes.includes(refeicao)
-      ){
-
-        refeicoes.push(refeicao);
-      }
+      historico.push(refeicao);
 
       await docRef.update({
 
@@ -214,7 +215,8 @@ async (req,res)=>{
         last_checkin:
           new Date(),
 
-        refeicoes
+        historico_refeicoes:
+          historico
       });
     }
 
@@ -225,15 +227,10 @@ async (req,res)=>{
 
     else if(boss){
 
-      const refeicoes =
-        ticket.refeicoes || [];
+      const historico =
+        ticket.historico_refeicoes || [];
 
-      if(
-        !refeicoes.includes(refeicao)
-      ){
-
-        refeicoes.push(refeicao);
-      }
+      historico.push(refeicao);
 
       await docRef.update({
 
@@ -243,7 +240,8 @@ async (req,res)=>{
         last_checkin:
           new Date(),
 
-        refeicoes
+        historico_refeicoes:
+          historico
       });
     }
 
@@ -429,13 +427,16 @@ async (req,res)=>{
 
           id.includes("RSprom") &&
 
-          t.refeicoes &&
-
-          t.refeicoes.includes(refeicao)
+          t.historico_refeicoes
 
         ){
 
-          total++;
+          total +=
+            t.historico_refeicoes.filter(
+
+              r => r === refeicao
+
+            ).length;
         }
 
 
@@ -444,13 +445,16 @@ async (req,res)=>{
 
           id.includes("BOSS") &&
 
-          t.refeicoes &&
-
-          t.refeicoes.includes(refeicao)
+          t.historico_refeicoes
 
         ){
 
-          total++;
+          total +=
+            t.historico_refeicoes.filter(
+
+              r => r === refeicao
+
+            ).length;
         }
 
 
@@ -616,7 +620,8 @@ async (req,res)=>{
           checkin_time:null,
           last_checkin:null,
 
-          refeicoes:[]
+          refeicoes:[],
+          historico_refeicoes:[]
         });
 
         total++;
@@ -647,7 +652,8 @@ async (req,res)=>{
           checkin_time:null,
           last_checkin:null,
 
-          refeicoes:[]
+          refeicoes:[],
+          historico_refeicoes:[]
         });
 
         total++;
@@ -674,7 +680,8 @@ async (req,res)=>{
           checkin_time:null,
           last_checkin:null,
 
-          refeicoes:[]
+          refeicoes:[],
+          historico_refeicoes:[]
         });
 
         total++;
