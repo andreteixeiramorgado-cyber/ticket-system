@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Scanner Check-in</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+
+<body style="text-align:center;font-family:sans-serif;">
+  <h2>📷 Scanner de Bilhetes</h2>
+
+  <div id="reader" style="width:300px;margin:auto;"></div>
+  <h1 id="result">Aguardando scan...</h1>
+
+  <script>
+    async function validarQR(texto) {
+      try {
+        // extrair ID do link
+        const id = texto.split("/t/")[1];
+
+        const res = await fetch(`/api/check/${id}`);
+        const data = await res.json();
+
+        const el = document.getElementById("result");
+
+        if (data.status === "valid") {
+          el.innerHTML = "✅ Entrada válida";
+          el.style.color = "green";
+        } else if (data.status === "used") {
+          el.innerHTML = "❌ Já utilizado";
+          el.style.color = "red";
+        } else {
+          el.innerHTML = "⚠️ Inválido";
+          el.style.color = "black";
+        }
+
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function onScanSuccess(decodedText) {
+      validarQR(decodedText);
+    }
+
+    const html5QrCode = new Html5Qrcode("reader");
+
+    Html5Qrcode.getCameras().then(devices => {
+      if (devices.length) {
+        html5QrCode.start(
+          devices[0].id,
+          { fps: 10, qrbox: 250 },
+          onScanSuccess
+        );
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Check-in</title>
+</head>
+<body style="text-align:center;font-family:sans-serif;">
+  <h2>A validar...</h2>
+
+  <script>
+    async function check() {
+      const id = window.location.pathname.split("/t/")[1];
+
+      const res = await fetch("/api/check/" + id);
+      const data = await res.json();
+
+      if (data.status === "valid") {
+        document.body.innerHTML = "<h1 style='color:green'>✅ Entrada válida</h1>";
+      } else if (data.status === "used") {
+        document.body.innerHTML = "<h1 style='color:red'>❌ Já utilizado</h1>";
+      } else {
+        document.body.innerHTML = "<h1>⚠️ Inválido</h1>";
+      }
+    }
+
+    check();
+  </script>
+</body>
+</html>
