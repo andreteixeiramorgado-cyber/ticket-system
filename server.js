@@ -129,9 +129,6 @@ async (req,res)=>{
     const boss =
       id.includes("BOSS");
 
-    const rsc =
-      id.includes("RSC");
-
     const entradas =
       ticket.entradas || 0;
 
@@ -166,7 +163,7 @@ async (req,res)=>{
 
 
     // ======================================================
-    // EVT NORMAL
+    // EVT / RSC
     // ======================================================
 
     if(
@@ -263,7 +260,7 @@ async (req,res)=>{
 
 
 // ======================================================
-// ATIVAR
+// ATIVAR BILHETE
 // ======================================================
 
 app.get(
@@ -512,7 +509,7 @@ async (req,res)=>{
 
     let total = 0;
 
-    let ativos = 0;
+    let vendidos = 0;
 
     let usados = 0;
 
@@ -524,7 +521,7 @@ async (req,res)=>{
         doc.data();
 
       if(t.active){
-        ativos++;
+        vendidos++;
       }
 
       if(
@@ -544,8 +541,273 @@ async (req,res)=>{
     res.json({
 
       total,
-      ativos,
+      vendidos,
       usados
+    });
+
+  }
+
+  catch(err){
+
+    console.error(err);
+
+    res.status(500).json({
+      error:true
+    });
+  }
+});
+
+
+// ======================================================
+// RELATÓRIOS
+// ======================================================
+
+app.get(
+
+  "/api/relatorios",
+
+  checkAuth,
+
+async (req,res)=>{
+
+  try{
+
+    const snapshot =
+      await db.collection("tickets")
+      .get();
+
+    let vendidos = 0;
+
+    let entradas = 0;
+
+
+    const evt = {
+
+      dia1_almoco:0,
+      dia1_jantar:0,
+      dia2_almoco:0,
+      dia2_jantar:0,
+      dia3_almoco:0
+    };
+
+    const rally = {
+
+      dia1_almoco:0,
+      dia1_jantar:0,
+      dia2_almoco:0
+    };
+
+
+    const boss = [];
+
+    const prom = [];
+
+
+    snapshot.forEach(doc => {
+
+      const id =
+        doc.id;
+
+      const t =
+        doc.data();
+
+
+      // vendidos
+      if(t.active){
+
+        vendidos++;
+      }
+
+
+      // EVT
+      if(
+
+        id.includes("EVT") &&
+
+        t.refeicoes
+
+      ){
+
+        t.refeicoes.forEach(r=>{
+
+          if(evt[r] !== undefined){
+
+            evt[r]++;
+            entradas++;
+          }
+        });
+      }
+
+
+      // RSC
+      if(
+
+        id.includes("RSC") &&
+
+        t.refeicoes
+
+      ){
+
+        t.refeicoes.forEach(r=>{
+
+          if(rally[r] !== undefined){
+
+            rally[r]++;
+            entradas++;
+          }
+        });
+      }
+
+
+      // RSprom
+      if(
+
+        id.includes("RSprom")
+
+      ){
+
+        const hist =
+          t.historico_refeicoes || [];
+
+        hist.forEach(r=>{
+
+          if(rally[r] !== undefined){
+
+            rally[r]++;
+            entradas++;
+          }
+        });
+
+        prom.push({
+
+          id,
+
+          total:
+            hist.length
+        });
+      }
+
+
+      // BOSS
+      if(
+
+        id.includes("BOSS")
+
+      ){
+
+        const hist =
+          t.historico_refeicoes || [];
+
+        hist.forEach(r=>{
+
+          if(rally[r] !== undefined){
+
+            rally[r]++;
+            entradas++;
+          }
+        });
+
+        boss.push({
+
+          id,
+
+          total:
+            hist.length
+        });
+      }
+
+    });
+
+
+    const evtArray = [
+
+      {
+        nome:"Dia 1 Almoço",
+        total:evt.dia1_almoco
+      },
+
+      {
+        nome:"Dia 1 Jantar",
+        total:evt.dia1_jantar
+      },
+
+      {
+        nome:"Dia 2 Almoço",
+        total:evt.dia2_almoco
+      },
+
+      {
+        nome:"Dia 2 Jantar",
+        total:evt.dia2_jantar
+      },
+
+      {
+        nome:"Dia 3 Almoço",
+        total:evt.dia3_almoco
+      }
+    ];
+
+
+    const rallyArray = [
+
+      {
+        nome:"Dia 1 Almoço",
+        total:rally.dia1_almoco
+      },
+
+      {
+        nome:"Dia 1 Jantar",
+        total:rally.dia1_jantar
+      },
+
+      {
+        nome:"Dia 2 Almoço",
+        total:rally.dia2_almoco
+      }
+    ];
+
+
+    boss.sort((a,b)=>
+
+      b.total - a.total
+    );
+
+    prom.sort((a,b)=>
+
+      b.total - a.total
+    );
+
+
+    const percentagem =
+
+      vendidos > 0
+
+      ?
+
+      Math.round(
+        (entradas / vendidos) * 100
+      )
+
+      :
+
+      0;
+
+
+    res.json({
+
+      vendidos,
+
+      entradas,
+
+      percentagem,
+
+      evt:evtArray,
+
+      rally:rallyArray,
+
+      boss,
+
+      prom
     });
 
   }
@@ -585,6 +847,49 @@ async (req,res)=>{
 
   const tipo =
     req.params.tipo;
+
+
+  // ======================================================
+  // ATIVAR TODOS RSprom
+  // ======================================================
+
+  if(tipo === "ativar_rsprom"){
+
+    const snapshot =
+      await db.collection("tickets")
+      .get();
+
+    let total = 0;
+
+    for(const doc of snapshot.docs){
+
+      const id =
+        doc.id;
+
+      if(id.includes("RSprom")){
+
+        await db.collection("tickets")
+        .doc(id)
+        .update({
+
+          active:true,
+
+          activated_at:
+            new Date()
+        });
+
+        total++;
+      }
+    }
+
+    return res.json({
+
+      message:
+        "🔥 RSprom ativados: " +
+        total
+    });
+  }
+
 
   try{
 
@@ -785,6 +1090,25 @@ app.get(
       __dirname,
 
       "public/admin.html"
+    )
+  );
+});
+
+app.get(
+
+  "/relatorios.html",
+
+  checkAuth,
+
+(req,res)=>{
+
+  res.sendFile(
+
+    path.join(
+
+      __dirname,
+
+      "public/relatorios.html"
     )
   );
 });
