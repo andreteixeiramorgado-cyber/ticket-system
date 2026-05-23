@@ -359,6 +359,129 @@ async (req,res)=>{
 
 
 // ======================================================
+// DASHBOARD
+// ======================================================
+
+app.get(
+
+  "/api/dashboard",
+
+  checkAuth,
+
+async(req,res)=>{
+
+  try{
+
+    const snapshot =
+      await db.collection("tickets")
+      .get();
+
+
+    let evtVendidos = 0;
+    let evtEntradas = 0;
+
+    let rscAtivados = 0;
+    let rscEntradas = 0;
+
+    let promAtivados = 0;
+    let promEntradas = 0;
+
+    let bossAtivados = 0;
+    let bossEntradas = 0;
+
+
+    snapshot.forEach(doc=>{
+
+      const id =
+        doc.id;
+
+      const t =
+        doc.data();
+
+
+      // EVT
+      if(id.includes("EVT")){
+
+        if(t.active){
+
+          evtVendidos++;
+        }
+
+        evtEntradas +=
+          (t.refeicoes || []).length;
+      }
+
+
+      // RSC
+      if(id.includes("RSC")){
+
+        if(t.active){
+
+          rscAtivados++;
+        }
+
+        rscEntradas +=
+          (t.refeicoes || []).length;
+      }
+
+
+      // RSprom
+      if(id.includes("RSprom")){
+
+        if(t.active){
+
+          promAtivados++;
+        }
+
+        promEntradas +=
+          (t.historico_refeicoes || []).length;
+      }
+
+
+      // BOSS
+      if(id.includes("BOSS")){
+
+        if(t.active){
+
+          bossAtivados++;
+        }
+
+        bossEntradas +=
+          (t.historico_refeicoes || []).length;
+      }
+
+    });
+
+
+    res.json({
+
+      evtVendidos,
+      evtEntradas,
+
+      rscAtivados,
+      rscEntradas,
+
+      promAtivados,
+      promEntradas,
+
+      bossAtivados,
+      bossEntradas
+    });
+
+  }
+
+  catch(err){
+
+    console.error(err);
+
+    res.status(500).json({
+      error:true
+    });
+  }
+});
+
+
+// ======================================================
 // PÁGINAS
 // ======================================================
 
