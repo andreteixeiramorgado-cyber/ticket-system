@@ -482,6 +482,293 @@ async(req,res)=>{
 
 
 // ======================================================
+// ADMIN
+// ======================================================
+
+app.get(
+
+  "/api/admin/:tipo",
+
+async(req,res)=>{
+
+  const key =
+    req.query.key;
+
+  if(key !== "admin2468"){
+
+    return res.status(401)
+    .json({
+
+      message:"Sem acesso"
+    });
+  }
+
+  const tipo =
+    req.params.tipo;
+
+
+  try{
+
+    const snapshot =
+      await db.collection("tickets")
+      .get();
+
+    let total = 0;
+
+
+    // ======================================================
+    // RELATORIO EVT
+    // ======================================================
+
+    if(tipo === "relatorio_evt"){
+
+      snapshot.forEach(doc=>{
+
+        if(doc.id.includes("EVT")){
+
+          total++;
+        }
+      });
+
+      return res.json({
+
+        message:
+          "📊 Race Ready totais: " +
+          total
+      });
+    }
+
+
+    // ======================================================
+    // RELATORIO VIP
+    // ======================================================
+
+    if(tipo === "relatorio_vip"){
+
+      snapshot.forEach(doc=>{
+
+        if(
+
+          doc.id.includes("RSprom") ||
+
+          doc.id.includes("BOSS")
+
+        ){
+
+          total++;
+        }
+      });
+
+      return res.json({
+
+        message:
+          "📊 VIP totais: " +
+          total
+      });
+    }
+
+
+    // ======================================================
+    // RELATORIO RSC
+    // ======================================================
+
+    if(tipo === "relatorio_rsc"){
+
+      snapshot.forEach(doc=>{
+
+        if(doc.id.includes("RSC")){
+
+          total++;
+        }
+      });
+
+      return res.json({
+
+        message:
+          "📊 RSC totais: " +
+          total
+      });
+    }
+
+
+    // ======================================================
+    // RESET EVT
+    // ======================================================
+
+    if(tipo === "reset_evt"){
+
+      for(const doc of snapshot.docs){
+
+        if(doc.id.includes("EVT")){
+
+          await doc.ref.update({
+
+            active:false,
+            used:false,
+            refeicoes:[],
+            entradas:0,
+            historico_refeicoes:[]
+          });
+
+          total++;
+        }
+      }
+
+      return res.json({
+
+        message:
+          "♻️ EVT resetados: " +
+          total
+      });
+    }
+
+
+    // ======================================================
+    // RESET VIP
+    // ======================================================
+
+    if(tipo === "reset_vip"){
+
+      for(const doc of snapshot.docs){
+
+        if(
+
+          doc.id.includes("RSprom") ||
+
+          doc.id.includes("BOSS")
+
+        ){
+
+          await doc.ref.update({
+
+            active:false,
+            used:false,
+            refeicoes:[],
+            entradas:0,
+            historico_refeicoes:[]
+          });
+
+          total++;
+        }
+      }
+
+      return res.json({
+
+        message:
+          "♻️ VIP resetados: " +
+          total
+      });
+    }
+
+
+    // ======================================================
+    // RESET RSC
+    // ======================================================
+
+    if(tipo === "reset_rsc"){
+
+      for(const doc of snapshot.docs){
+
+        if(doc.id.includes("RSC")){
+
+          await doc.ref.update({
+
+            active:false,
+            used:false,
+            refeicoes:[],
+            entradas:0,
+            historico_refeicoes:[]
+          });
+
+          total++;
+        }
+      }
+
+      return res.json({
+
+        message:
+          "♻️ RSC resetados: " +
+          total
+      });
+    }
+
+
+    // ======================================================
+    // ATIVAR RSPROM
+    // ======================================================
+
+    if(tipo === "ativar_rsprom"){
+
+      for(const doc of snapshot.docs){
+
+        if(doc.id.includes("RSprom")){
+
+          await doc.ref.update({
+
+            active:true
+          });
+
+          total++;
+        }
+      }
+
+      return res.json({
+
+        message:
+          "🔥 RSprom ativados: " +
+          total
+      });
+    }
+
+
+    // ======================================================
+    // ATIVAR RSC
+    // ======================================================
+
+    if(tipo === "ativar_rsc"){
+
+      for(const doc of snapshot.docs){
+
+        if(doc.id.includes("RSC")){
+
+          await doc.ref.update({
+
+            active:true
+          });
+
+          total++;
+        }
+      }
+
+      return res.json({
+
+        message:
+          "🔥 RSC ativados: " +
+          total
+      });
+    }
+
+
+    return res.json({
+
+      message:"Ação inválida"
+    });
+
+  }
+
+  catch(err){
+
+    console.error(err);
+
+    res.status(500).json({
+
+      message:"Erro interno"
+    });
+  }
+});
+
+
+// ======================================================
 // PÁGINAS
 // ======================================================
 
