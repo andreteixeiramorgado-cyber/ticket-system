@@ -79,6 +79,11 @@
       color:white;
     }
 
+    .dashboard{
+      background:#388e3c;
+      color:white;
+    }
+
     .admin{
       background:#333;
       color:white;
@@ -129,6 +134,13 @@
   </button>
 
   <button
+    class="dashboard"
+    onclick="login('dashboard')">
+
+    📊 Dashboard
+  </button>
+
+  <button
     class="admin"
     onclick="admin()">
 
@@ -176,6 +188,10 @@ async function login(tipo){
       window.location = "/ativar.html";
     }
 
+    if(tipo === "dashboard"){
+      window.location = "/dashboard.html";
+    }
+
   }
 
   else{
@@ -202,11 +218,6 @@ function admin(){
     alert("Password errada");
   }
 }
-
-</script>
-
-</body>
-</html>}
 
 </script>
 
