@@ -318,445 +318,6 @@ async (req,res)=>{
 
 
 // ======================================================
-// STATUS
-// ======================================================
-
-app.get(
-
-  "/api/status/:id",
-
-async (req,res)=>{
-
-  const id =
-    req.params.id;
-
-  const doc =
-    await db.collection("tickets")
-    .doc(id)
-    .get();
-
-  if(!doc.exists){
-
-    return res.json({
-      status:"invalid"
-    });
-  }
-
-  const ticket =
-    doc.data();
-
-  if(ticket.used){
-
-    return res.json({
-      status:"used"
-    });
-  }
-
-  return res.json({
-    status:"valid"
-  });
-});
-
-
-// ======================================================
-// STATS POR REFEIÇÃO
-// ======================================================
-
-app.get(
-
-  "/api/stats/:grupo/:refeicao",
-
-  checkAuth,
-
-async (req,res)=>{
-
-  try{
-
-    const grupo =
-      req.params.grupo;
-
-    const refeicao =
-      req.params.refeicao;
-
-    const snapshot =
-      await db.collection("tickets")
-      .get();
-
-    let total = 0;
-
-    snapshot.forEach(doc => {
-
-      const id =
-        doc.id;
-
-      const t =
-        doc.data();
-
-
-      // ======================================================
-      // RACE READY
-      // ======================================================
-
-      if(grupo === "evt"){
-
-        if(
-
-          id.includes("EVT") &&
-
-          t.refeicoes &&
-
-          t.refeicoes.includes(refeicao)
-
-        ){
-
-          total++;
-        }
-      }
-
-
-      // ======================================================
-      // RALLY SERIES
-      // ======================================================
-
-      if(grupo === "rally"){
-
-
-        // RSprom
-        if(
-
-          id.includes("RSprom") &&
-
-          t.historico_refeicoes
-
-        ){
-
-          total +=
-            t.historico_refeicoes.filter(
-
-              r => r === refeicao
-
-            ).length;
-        }
-
-
-        // BOSS
-        if(
-
-          id.includes("BOSS") &&
-
-          t.historico_refeicoes
-
-        ){
-
-          total +=
-            t.historico_refeicoes.filter(
-
-              r => r === refeicao
-
-            ).length;
-        }
-
-
-        // RSC
-        if(
-
-          id.includes("RSC") &&
-
-          t.refeicoes &&
-
-          t.refeicoes.includes(refeicao)
-
-        ){
-
-          total++;
-        }
-      }
-
-    });
-
-    res.json({
-      total
-    });
-
-  }
-
-  catch(err){
-
-    console.error(err);
-
-    res.status(500).json({
-      error:true
-    });
-  }
-});
-
-
-// ======================================================
-// RELATÓRIOS
-// ======================================================
-
-app.get(
-
-  "/api/relatorios",
-
-  checkAuth,
-
-async (req,res)=>{
-
-  try{
-
-    const snapshot =
-      await db.collection("tickets")
-      .get();
-
-    let vendidos = 0;
-
-    let entradas = 0;
-
-
-    const evt = {
-
-      dia1_almoco:0,
-      dia1_jantar:0,
-      dia2_almoco:0,
-      dia2_jantar:0,
-      dia3_almoco:0
-    };
-
-    const rally = {
-
-      dia1_almoco:0,
-      dia1_jantar:0,
-      dia2_almoco:0
-    };
-
-
-    const boss = [];
-
-    const prom = [];
-
-
-    snapshot.forEach(doc => {
-
-      const id =
-        doc.id;
-
-      const t =
-        doc.data();
-
-
-      // vendidos
-      if(t.active){
-
-        vendidos++;
-      }
-
-
-      // EVT
-      if(
-
-        id.includes("EVT") &&
-
-        t.refeicoes
-
-      ){
-
-        t.refeicoes.forEach(r=>{
-
-          if(evt[r] !== undefined){
-
-            evt[r]++;
-            entradas++;
-          }
-        });
-      }
-
-
-      // RSC
-      if(
-
-        id.includes("RSC") &&
-
-        t.refeicoes
-
-      ){
-
-        t.refeicoes.forEach(r=>{
-
-          if(rally[r] !== undefined){
-
-            rally[r]++;
-            entradas++;
-          }
-        });
-      }
-
-
-      // RSprom
-      if(
-
-        id.includes("RSprom")
-
-      ){
-
-        const hist =
-          t.historico_refeicoes || [];
-
-        hist.forEach(r=>{
-
-          if(rally[r] !== undefined){
-
-            rally[r]++;
-            entradas++;
-          }
-        });
-
-        prom.push({
-
-          id,
-
-          total:
-            hist.length
-        });
-      }
-
-
-      // BOSS
-      if(
-
-        id.includes("BOSS")
-
-      ){
-
-        const hist =
-          t.historico_refeicoes || [];
-
-        hist.forEach(r=>{
-
-          if(rally[r] !== undefined){
-
-            rally[r]++;
-            entradas++;
-          }
-        });
-
-        boss.push({
-
-          id,
-
-          total:
-            hist.length
-        });
-      }
-
-    });
-
-
-    const evtArray = [
-
-      {
-        nome:"Dia 1 Almoço",
-        total:evt.dia1_almoco
-      },
-
-      {
-        nome:"Dia 1 Jantar",
-        total:evt.dia1_jantar
-      },
-
-      {
-        nome:"Dia 2 Almoço",
-        total:evt.dia2_almoco
-      },
-
-      {
-        nome:"Dia 2 Jantar",
-        total:evt.dia2_jantar
-      },
-
-      {
-        nome:"Dia 3 Almoço",
-        total:evt.dia3_almoco
-      }
-    ];
-
-
-    const rallyArray = [
-
-      {
-        nome:"Dia 1 Almoço",
-        total:rally.dia1_almoco
-      },
-
-      {
-        nome:"Dia 1 Jantar",
-        total:rally.dia1_jantar
-      },
-
-      {
-        nome:"Dia 2 Almoço",
-        total:rally.dia2_almoco
-      }
-    ];
-
-
-    boss.sort((a,b)=>
-
-      b.total - a.total
-    );
-
-    prom.sort((a,b)=>
-
-      b.total - a.total
-    );
-
-
-    const percentagem =
-
-      vendidos > 0
-
-      ?
-
-      Math.round(
-        (entradas / vendidos) * 100
-      )
-
-      :
-
-      0;
-
-
-    res.json({
-
-      vendidos,
-
-      entradas,
-
-      percentagem,
-
-      evt:evtArray,
-
-      rally:rallyArray,
-
-      boss,
-
-      prom
-    });
-
-  }
-
-  catch(err){
-
-    console.error(err);
-
-    res.status(500).json({
-      error:true
-    });
-  }
-});
-
-
-// ======================================================
 // DASHBOARD
 // ======================================================
 
@@ -774,42 +335,108 @@ async (req,res)=>{
       await db.collection("tickets")
       .get();
 
-    let total = 0;
 
-    let vendidos = 0;
+    let evtVendidos = 0;
+    let evtEntradas = 0;
 
-    let usados = 0;
+    let rscAtivados = 0;
+    let rscEntradas = 0;
+
+    let promAtivados = 0;
+    let promEntradas = 0;
+
+    let bossAtivados = 0;
+    let bossEntradas = 0;
+
 
     snapshot.forEach(doc => {
 
-      total++;
+      const id =
+        doc.id;
 
       const t =
         doc.data();
 
-      if(t.active){
-        vendidos++;
+
+      // EVT
+      if(id.includes("EVT")){
+
+        if(t.active){
+
+          evtVendidos++;
+        }
+
+        if(t.refeicoes){
+
+          evtEntradas +=
+            t.refeicoes.length;
+        }
       }
 
-      if(
 
-        t.used ||
+      // RSC
+      if(id.includes("RSC")){
 
-        (
-          t.entradas &&
-          t.entradas > 0
-        )
+        if(t.active){
 
-      ){
-        usados++;
+          rscAtivados++;
+        }
+
+        if(t.refeicoes){
+
+          rscEntradas +=
+            t.refeicoes.length;
+        }
       }
+
+
+      // RSprom
+      if(id.includes("RSprom")){
+
+        if(t.active){
+
+          promAtivados++;
+        }
+
+        if(t.historico_refeicoes){
+
+          promEntradas +=
+            t.historico_refeicoes.length;
+        }
+      }
+
+
+      // BOSS
+      if(id.includes("BOSS")){
+
+        if(t.active){
+
+          bossAtivados++;
+        }
+
+        if(t.historico_refeicoes){
+
+          bossEntradas +=
+            t.historico_refeicoes.length;
+        }
+      }
+
     });
+
 
     res.json({
 
-      total,
-      vendidos,
-      usados
+      evtVendidos,
+      evtEntradas,
+
+      rscAtivados,
+      rscEntradas,
+
+      promAtivados,
+      promEntradas,
+
+      bossAtivados,
+      bossEntradas
     });
 
   }
@@ -826,286 +453,15 @@ async (req,res)=>{
 
 
 // ======================================================
-// ADMIN
-// ======================================================
-
-app.get(
-
-  "/api/admin/:tipo",
-
-async (req,res)=>{
-
-  const key =
-    req.query.key;
-
-  if(key !== "admin2468"){
-
-    return res.status(401)
-    .json({
-
-      message:"Sem acesso"
-    });
-  }
-
-  const tipo =
-    req.params.tipo;
-
-
-  // ======================================================
-  // ATIVAR TODOS RSprom
-  // ======================================================
-
-  if(tipo === "ativar_rsprom"){
-
-    const snapshot =
-      await db.collection("tickets")
-      .get();
-
-    let total = 0;
-
-    for(const doc of snapshot.docs){
-
-      const id =
-        doc.id;
-
-      if(id.includes("RSprom")){
-
-        await db.collection("tickets")
-        .doc(id)
-        .update({
-
-          active:true,
-
-          activated_at:
-            new Date()
-        });
-
-        total++;
-      }
-    }
-
-    return res.json({
-
-      message:
-        "🔥 RSprom ativados: " +
-        total
-    });
-  }
-
-
-  // ======================================================
-  // ATIVAR TODOS RSC
-  // ======================================================
-
-  if(tipo === "ativar_rsc"){
-
-    const snapshot =
-      await db.collection("tickets")
-      .get();
-
-    let total = 0;
-
-    for(const doc of snapshot.docs){
-
-      const id =
-        doc.id;
-
-      if(id.includes("RSC")){
-
-        await db.collection("tickets")
-        .doc(id)
-        .update({
-
-          active:true,
-
-          activated_at:
-            new Date()
-        });
-
-        total++;
-      }
-    }
-
-    return res.json({
-
-      message:
-        "🔥 RSC ativados: " +
-        total
-    });
-  }
-
-
-  try{
-
-    const snapshot =
-      await db.collection("tickets")
-      .get();
-
-    let total = 0;
-
-    for(const doc of snapshot.docs){
-
-      const id =
-        doc.id;
-
-
-      // EVT
-      if(
-
-        tipo === "reset_evt" &&
-        id.includes("EVT")
-
-      ){
-
-        await db.collection("tickets")
-        .doc(id)
-        .update({
-
-          active:false,
-          used:false,
-          entradas:0,
-
-          activated_at:null,
-          checkin_time:null,
-          last_checkin:null,
-
-          refeicoes:[],
-          historico_refeicoes:[]
-        });
-
-        total++;
-      }
-
-
-      // VIP
-      if(
-
-        tipo === "reset_vip" &&
-
-        (
-          id.includes("RSprom") ||
-          id.includes("BOSS")
-        )
-
-      ){
-
-        await db.collection("tickets")
-        .doc(id)
-        .update({
-
-          active:false,
-          used:false,
-          entradas:0,
-
-          activated_at:null,
-          checkin_time:null,
-          last_checkin:null,
-
-          refeicoes:[],
-          historico_refeicoes:[]
-        });
-
-        total++;
-      }
-
-
-      // RSC
-      if(
-
-        tipo === "reset_rsc" &&
-        id.includes("RSC")
-
-      ){
-
-        await db.collection("tickets")
-        .doc(id)
-        .update({
-
-          active:false,
-          used:false,
-          entradas:0,
-
-          activated_at:null,
-          checkin_time:null,
-          last_checkin:null,
-
-          refeicoes:[],
-          historico_refeicoes:[]
-        });
-
-        total++;
-      }
-    }
-
-    res.json({
-
-      message:
-        "✅ Reset concluído: " +
-        total
-    });
-
-  }
-
-  catch(err){
-
-    console.error(err);
-
-    res.status(500).json({
-
-      message:"Erro interno"
-    });
-  }
-});
-
-
-// ======================================================
 // PÁGINAS
 // ======================================================
 
 app.get(
-
-  "/scanner.html",
-
-  checkAuth,
-
-(req,res)=>{
-
-  res.sendFile(
-
-    path.join(
-      __dirname,
-      "public/scanner.html"
-    )
-  );
-});
-
-app.get(
-
-  "/ativar.html",
-
-  checkAuth,
-
-(req,res)=>{
-
-  res.sendFile(
-
-    path.join(
-      __dirname,
-      "public/ativar.html"
-    )
-  );
-});
-
-app.get(
-
   "/dashboard.html",
-
   checkAuth,
-
 (req,res)=>{
 
   res.sendFile(
-
     path.join(
       __dirname,
       "public/dashboard.html"
@@ -1114,15 +470,37 @@ app.get(
 });
 
 app.get(
-
-  "/admin.html",
-
+  "/scanner.html",
   checkAuth,
-
 (req,res)=>{
 
   res.sendFile(
+    path.join(
+      __dirname,
+      "public/scanner.html"
+    )
+  );
+});
 
+app.get(
+  "/ativar.html",
+  checkAuth,
+(req,res)=>{
+
+  res.sendFile(
+    path.join(
+      __dirname,
+      "public/ativar.html"
+    )
+  );
+});
+
+app.get(
+  "/admin.html",
+  checkAuth,
+(req,res)=>{
+
+  res.sendFile(
     path.join(
       __dirname,
       "public/admin.html"
@@ -1130,32 +508,9 @@ app.get(
   );
 });
 
-app.get(
-
-  "/relatorios.html",
-
-  checkAuth,
-
-(req,res)=>{
-
-  res.sendFile(
-
-    path.join(
-      __dirname,
-      "public/relatorios.html"
-    )
-  );
-});
-
-
-// ======================================================
-// QR PAGE
-// ======================================================
-
 app.get("/t/:id", (req,res)=>{
 
   res.sendFile(
-
     path.join(
       __dirname,
       "public/ticket.html"
