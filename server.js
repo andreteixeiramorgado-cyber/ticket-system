@@ -437,9 +437,7 @@ app.get(
 
   "/api/export/:tipo",
 
-  checkAuth,
-
-async(req,res)=>{
+ async(req,res)=>{
 
   const tipo =
     req.params.tipo;
@@ -550,9 +548,7 @@ app.get(
 
   "/api/excel/:tipo",
 
-  checkAuth,
-
-async(req,res)=>{
+ async(req,res)=>{
 
   const tipo =
     req.params.tipo;
