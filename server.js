@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const session = require("express-session");
 const db = require("./firebase");
+const XLSX = require("xlsx");
 
 const app = express();
 
@@ -22,7 +23,6 @@ app.use(session({
   saveUninitialized:false
 }));
 
-
 app.use(express.json());
 
 app.use(express.static("public"));
@@ -32,17 +32,18 @@ app.use(express.static("public"));
 // LOGIN
 // ======================================================
 
-app.post("/login", (req,res)=>{
+app.post("/login",(req,res)=>{
 
   const {
     username,
     password
   } = req.body;
 
-
   if(
+
     username === "Odisseia" &&
     password === "3764"
+
   ){
 
     req.session.auth = true;
@@ -65,6 +66,7 @@ app.post("/login", (req,res)=>{
 function checkAuth(req,res,next){
 
   if(req.session.auth){
+
     return next();
   }
 
@@ -83,7 +85,7 @@ app.get(
 
   checkAuth,
 
-async (req,res)=>{
+async(req,res)=>{
 
   try{
 
@@ -100,7 +102,6 @@ async (req,res)=>{
     const doc =
       await docRef.get();
 
-
     if(!doc.exists){
 
       return res.json({
@@ -111,14 +112,12 @@ async (req,res)=>{
     const ticket =
       doc.data();
 
-
     if(!ticket.active){
 
       return res.json({
         status:"not_active"
       });
     }
-
 
     const rsProm =
       id.includes("RSprom");
@@ -266,7 +265,7 @@ app.get(
 
   checkAuth,
 
-async (req,res)=>{
+async(req,res)=>{
 
   try{
 
@@ -318,47 +317,6 @@ async (req,res)=>{
 
 
 // ======================================================
-// STATUS
-// ======================================================
-
-app.get(
-
-  "/api/status/:id",
-
-async (req,res)=>{
-
-  const id =
-    req.params.id;
-
-  const doc =
-    await db.collection("tickets")
-    .doc(id)
-    .get();
-
-  if(!doc.exists){
-
-    return res.json({
-      status:"invalid"
-    });
-  }
-
-  const ticket =
-    doc.data();
-
-  if(ticket.used){
-
-    return res.json({
-      status:"used"
-    });
-  }
-
-  return res.json({
-    status:"valid"
-  });
-});
-
-
-// ======================================================
 // DASHBOARD
 // ======================================================
 
@@ -375,7 +333,6 @@ async(req,res)=>{
     const snapshot =
       await db.collection("tickets")
       .get();
-
 
     let evtVendidos = 0;
     let evtEntradas = 0;
@@ -399,11 +356,9 @@ async(req,res)=>{
         doc.data();
 
 
-      // EVT
       if(id.includes("EVT")){
 
         if(t.active){
-
           evtVendidos++;
         }
 
@@ -412,11 +367,9 @@ async(req,res)=>{
       }
 
 
-      // RSC
       if(id.includes("RSC")){
 
         if(t.active){
-
           rscAtivados++;
         }
 
@@ -425,11 +378,9 @@ async(req,res)=>{
       }
 
 
-      // RSprom
       if(id.includes("RSprom")){
 
         if(t.active){
-
           promAtivados++;
         }
 
@@ -438,11 +389,9 @@ async(req,res)=>{
       }
 
 
-      // BOSS
       if(id.includes("BOSS")){
 
         if(t.active){
-
           bossAtivados++;
         }
 
@@ -451,7 +400,6 @@ async(req,res)=>{
       }
 
     });
-
 
     res.json({
 
@@ -482,6 +430,232 @@ async(req,res)=>{
 
 
 // ======================================================
+// EXPORT CSV
+// ======================================================
+
+app.get(
+
+  "/api/export/:tipo",
+
+  checkAuth,
+
+async(req,res)=>{
+
+  const tipo =
+    req.params.tipo;
+
+  const snapshot =
+    await db.collection("tickets")
+    .get();
+
+  let rows = [];
+
+
+  snapshot.forEach(doc=>{
+
+    const id =
+      doc.id;
+
+    const t =
+      doc.data();
+
+
+    if(
+      tipo === "csv_evt" &&
+      id.includes("EVT")
+    ){
+
+      rows.push({
+
+        ID:id,
+        Cliente:t.cliente || "",
+        Ativo:t.active || false,
+        Entradas:
+          (t.refeicoes || []).length
+      });
+    }
+
+
+    if(
+      tipo === "csv_vip" &&
+      (
+        id.includes("RSprom") ||
+        id.includes("BOSS")
+      )
+    ){
+
+      rows.push({
+
+        ID:id,
+        Cliente:t.cliente || "",
+        Entradas:
+          t.entradas || 0
+      });
+    }
+
+
+    if(
+      tipo === "csv_rsc" &&
+      id.includes("RSC")
+    ){
+
+      rows.push({
+
+        ID:id,
+        Cliente:t.cliente || "",
+        Entradas:
+          (t.refeicoes || []).length
+      });
+    }
+
+  });
+
+
+  const ws =
+    XLSX.utils.json_to_sheet(rows);
+
+  const wb =
+    XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(
+    wb,
+    ws,
+    "Relatorio"
+  );
+
+  const buffer =
+    XLSX.write(wb,{
+
+      type:"buffer",
+
+      bookType:"csv"
+    });
+
+  res.setHeader(
+
+    "Content-Disposition",
+
+    `attachment; filename=${tipo}.csv`
+  );
+
+  res.send(buffer);
+});
+
+
+// ======================================================
+// EXPORT EXCEL
+// ======================================================
+
+app.get(
+
+  "/api/excel/:tipo",
+
+  checkAuth,
+
+async(req,res)=>{
+
+  const tipo =
+    req.params.tipo;
+
+  const snapshot =
+    await db.collection("tickets")
+    .get();
+
+  let rows = [];
+
+
+  snapshot.forEach(doc=>{
+
+    const id =
+      doc.id;
+
+    const t =
+      doc.data();
+
+
+    if(
+      tipo === "excel_evt" &&
+      id.includes("EVT")
+    ){
+
+      rows.push({
+
+        ID:id,
+        Cliente:t.cliente || "",
+        Ativo:t.active || false,
+        Entradas:
+          (t.refeicoes || []).length
+      });
+    }
+
+
+    if(
+      tipo === "excel_vip" &&
+      (
+        id.includes("RSprom") ||
+        id.includes("BOSS")
+      )
+    ){
+
+      rows.push({
+
+        ID:id,
+        Cliente:t.cliente || "",
+        Entradas:
+          t.entradas || 0
+      });
+    }
+
+
+    if(
+      tipo === "excel_rsc" &&
+      id.includes("RSC")
+    ){
+
+      rows.push({
+
+        ID:id,
+        Cliente:t.cliente || "",
+        Entradas:
+          (t.refeicoes || []).length
+      });
+    }
+
+  });
+
+
+  const ws =
+    XLSX.utils.json_to_sheet(rows);
+
+  const wb =
+    XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(
+    wb,
+    ws,
+    "Relatorio"
+  );
+
+  const buffer =
+    XLSX.write(wb,{
+
+      type:"buffer",
+
+      bookType:"xlsx"
+    });
+
+  res.setHeader(
+
+    "Content-Disposition",
+
+    `attachment; filename=${tipo}.xlsx`
+  );
+
+  res.send(buffer);
+});
+
+
+// ======================================================
 // ADMIN
 // ======================================================
 
@@ -506,265 +680,154 @@ async(req,res)=>{
   const tipo =
     req.params.tipo;
 
+  const snapshot =
+    await db.collection("tickets")
+    .get();
 
-  try{
-
-    const snapshot =
-      await db.collection("tickets")
-      .get();
-
-    let total = 0;
+  let total = 0;
 
 
-    // ======================================================
-    // RELATORIO EVT
-    // ======================================================
+  // RESET EVT
+  if(tipo === "reset_evt"){
 
-    if(tipo === "relatorio_evt"){
+    for(const doc of snapshot.docs){
 
-      snapshot.forEach(doc=>{
+      if(doc.id.includes("EVT")){
 
-        if(doc.id.includes("EVT")){
+        await doc.ref.update({
 
-          total++;
-        }
-      });
+          active:false,
+          used:false,
+          refeicoes:[]
+        });
 
-      return res.json({
-
-        message:
-          "📊 Race Ready totais: " +
-          total
-      });
-    }
-
-
-    // ======================================================
-    // RELATORIO VIP
-    // ======================================================
-
-    if(tipo === "relatorio_vip"){
-
-      snapshot.forEach(doc=>{
-
-        if(
-
-          doc.id.includes("RSprom") ||
-
-          doc.id.includes("BOSS")
-
-        ){
-
-          total++;
-        }
-      });
-
-      return res.json({
-
-        message:
-          "📊 VIP totais: " +
-          total
-      });
-    }
-
-
-    // ======================================================
-    // RELATORIO RSC
-    // ======================================================
-
-    if(tipo === "relatorio_rsc"){
-
-      snapshot.forEach(doc=>{
-
-        if(doc.id.includes("RSC")){
-
-          total++;
-        }
-      });
-
-      return res.json({
-
-        message:
-          "📊 RSC totais: " +
-          total
-      });
-    }
-
-
-    // ======================================================
-    // RESET EVT
-    // ======================================================
-
-    if(tipo === "reset_evt"){
-
-      for(const doc of snapshot.docs){
-
-        if(doc.id.includes("EVT")){
-
-          await doc.ref.update({
-
-            active:false,
-            used:false,
-            refeicoes:[],
-            entradas:0,
-            historico_refeicoes:[]
-          });
-
-          total++;
-        }
+        total++;
       }
-
-      return res.json({
-
-        message:
-          "♻️ EVT resetados: " +
-          total
-      });
     }
-
-
-    // ======================================================
-    // RESET VIP
-    // ======================================================
-
-    if(tipo === "reset_vip"){
-
-      for(const doc of snapshot.docs){
-
-        if(
-
-          doc.id.includes("RSprom") ||
-
-          doc.id.includes("BOSS")
-
-        ){
-
-          await doc.ref.update({
-
-            active:false,
-            used:false,
-            refeicoes:[],
-            entradas:0,
-            historico_refeicoes:[]
-          });
-
-          total++;
-        }
-      }
-
-      return res.json({
-
-        message:
-          "♻️ VIP resetados: " +
-          total
-      });
-    }
-
-
-    // ======================================================
-    // RESET RSC
-    // ======================================================
-
-    if(tipo === "reset_rsc"){
-
-      for(const doc of snapshot.docs){
-
-        if(doc.id.includes("RSC")){
-
-          await doc.ref.update({
-
-            active:false,
-            used:false,
-            refeicoes:[],
-            entradas:0,
-            historico_refeicoes:[]
-          });
-
-          total++;
-        }
-      }
-
-      return res.json({
-
-        message:
-          "♻️ RSC resetados: " +
-          total
-      });
-    }
-
-
-    // ======================================================
-    // ATIVAR RSPROM
-    // ======================================================
-
-    if(tipo === "ativar_rsprom"){
-
-      for(const doc of snapshot.docs){
-
-        if(doc.id.includes("RSprom")){
-
-          await doc.ref.update({
-
-            active:true
-          });
-
-          total++;
-        }
-      }
-
-      return res.json({
-
-        message:
-          "🔥 RSprom ativados: " +
-          total
-      });
-    }
-
-
-    // ======================================================
-    // ATIVAR RSC
-    // ======================================================
-
-    if(tipo === "ativar_rsc"){
-
-      for(const doc of snapshot.docs){
-
-        if(doc.id.includes("RSC")){
-
-          await doc.ref.update({
-
-            active:true
-          });
-
-          total++;
-        }
-      }
-
-      return res.json({
-
-        message:
-          "🔥 RSC ativados: " +
-          total
-      });
-    }
-
 
     return res.json({
 
-      message:"Ação inválida"
-    });
-
-  }
-
-  catch(err){
-
-    console.error(err);
-
-    res.status(500).json({
-
-      message:"Erro interno"
+      message:
+        "♻️ EVT resetados: " +
+        total
     });
   }
+
+
+  // RESET VIP
+  if(tipo === "reset_vip"){
+
+    for(const doc of snapshot.docs){
+
+      if(
+
+        doc.id.includes("RSprom") ||
+
+        doc.id.includes("BOSS")
+
+      ){
+
+        await doc.ref.update({
+
+          active:false,
+          entradas:0,
+          historico_refeicoes:[]
+        });
+
+        total++;
+      }
+    }
+
+    return res.json({
+
+      message:
+        "♻️ VIP resetados: " +
+        total
+    });
+  }
+
+
+  // RESET RSC
+  if(tipo === "reset_rsc"){
+
+    for(const doc of snapshot.docs){
+
+      if(doc.id.includes("RSC")){
+
+        await doc.ref.update({
+
+          active:false,
+          used:false,
+          refeicoes:[]
+        });
+
+        total++;
+      }
+    }
+
+    return res.json({
+
+      message:
+        "♻️ RSC resetados: " +
+        total
+    });
+  }
+
+
+  // ATIVAR RSPROM
+  if(tipo === "ativar_rsprom"){
+
+    for(const doc of snapshot.docs){
+
+      if(doc.id.includes("RSprom")){
+
+        await doc.ref.update({
+
+          active:true
+        });
+
+        total++;
+      }
+    }
+
+    return res.json({
+
+      message:
+        "🔥 RSprom ativados: " +
+        total
+    });
+  }
+
+
+  // ATIVAR RSC
+  if(tipo === "ativar_rsc"){
+
+    for(const doc of snapshot.docs){
+
+      if(doc.id.includes("RSC")){
+
+        await doc.ref.update({
+
+          active:true
+        });
+
+        total++;
+      }
+    }
+
+    return res.json({
+
+      message:
+        "🔥 RSC ativados: " +
+        total
+    });
+  }
+
+
+  return res.json({
+
+    message:"OK"
+  });
 });
 
 
@@ -840,29 +903,12 @@ app.get(
   );
 });
 
-app.get(
-
-  "/relatorios.html",
-
-  checkAuth,
-
-(req,res)=>{
-
-  res.sendFile(
-
-    path.join(
-      __dirname,
-      "public/relatorios.html"
-    )
-  );
-});
-
 
 // ======================================================
 // QR PAGE
 // ======================================================
 
-app.get("/t/:id", (req,res)=>{
+app.get("/t/:id",(req,res)=>{
 
   res.sendFile(
 
@@ -878,7 +924,7 @@ app.get("/t/:id", (req,res)=>{
 // LOGOUT
 // ======================================================
 
-app.get("/logout", (req,res)=>{
+app.get("/logout",(req,res)=>{
 
   req.session.destroy();
 
@@ -890,7 +936,7 @@ app.get("/logout", (req,res)=>{
 // SERVER
 // ======================================================
 
-app.listen(PORT, ()=>{
+app.listen(PORT,()=>{
 
   console.log(
     "🚀 Server running on port",
