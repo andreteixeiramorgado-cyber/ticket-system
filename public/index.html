@@ -1,309 +1,212 @@
 <!DOCTYPE html>
 <html lang="pt">
-
 <head>
 
-<meta charset="UTF-8">
+  <meta charset="UTF-8">
 
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0"
->
+  <title>Ticket System</title>
 
-<title>Ticket System</title>
+  <style>
 
-<style>
+    body{
+      margin:0;
+      background:#f5f5f5;
+      font-family:sans-serif;
 
-body{
+      display:flex;
+      justify-content:center;
+      align-items:center;
 
-  margin:0;
+      height:100vh;
+    }
 
-  padding:30px;
+    .box{
 
-  background:#f5f5f5;
+      background:white;
 
-  font-family:sans-serif;
+      width:350px;
 
-  display:flex;
+      padding:40px;
 
-  justify-content:center;
+      border-radius:20px;
 
-  align-items:center;
+      box-shadow:0 2px 15px rgba(0,0,0,0.1);
 
-  min-height:100vh;
-}
+      text-align:center;
+    }
 
-.box{
+    input{
 
-  background:white;
+      width:100%;
 
-  width:90%;
-  max-width:450px;
+      padding:15px;
 
-  padding:40px;
+      margin-top:15px;
 
-  border-radius:20px;
+      border-radius:10px;
 
-  box-shadow:0 2px 15px rgba(0,0,0,0.1);
+      border:1px solid #ccc;
 
-  text-align:center;
-}
+      font-size:16px;
 
-h1{
+      box-sizing:border-box;
+    }
 
-  margin-bottom:35px;
+    button{
 
-  font-size:34px;
-}
+      width:100%;
 
-input{
+      padding:16px;
 
-  width:100%;
+      margin-top:15px;
 
-  padding:16px;
+      border:none;
 
-  margin-top:15px;
+      border-radius:10px;
 
-  border:1px solid #ccc;
+      font-size:18px;
 
-  border-radius:10px;
+      cursor:pointer;
+    }
 
-  font-size:18px;
+    .scanner{
+      background:#1976d2;
+      color:white;
+    }
 
-  box-sizing:border-box;
-}
+    .ativar{
+      background:#f57c00;
+      color:white;
+    }
 
-button{
+    .admin{
+      background:#333;
+      color:white;
+    }
 
-  width:100%;
+    h1{
+      margin-bottom:30px;
+    }
 
-  padding:18px;
+    #msg{
+      margin-top:20px;
+      color:red;
+      font-weight:bold;
+    }
 
-  border:none;
-
-  border-radius:12px;
-
-  margin-top:15px;
-
-  font-size:20px;
-
-  cursor:pointer;
-
-  color:white;
-
-  transition:0.2s;
-}
-
-button:hover{
-
-  opacity:0.9;
-}
-
-.scanner{
-
-  background:#1976d2;
-}
-
-.activate{
-
-  background:#f57c00;
-}
-
-.dashboard{
-
-  background:#388e3c;
-}
-
-.admin{
-
-  background:#d32f2f;
-}
-
-.logout{
-
-  background:#222;
-}
-
-.hidden{
-
-  display:none;
-}
-
-#error{
-
-  margin-top:20px;
-
-  color:red;
-
-  font-size:18px;
-}
-
-</style>
-
+  </style>
 </head>
 
 <body>
 
 <div class="box">
 
-<h1>
+  <h1>🎟️ Ticket System</h1>
 
-🎟️ Ticket System
+  <input
+    id="user"
+    placeholder="Utilizador"
+  >
 
-</h1>
+  <input
+    id="pass"
+    type="password"
+    placeholder="Password"
+  >
 
+  <button
+    class="scanner"
+    onclick="login('scanner')">
 
-<!-- LOGIN -->
+    📷 Scanner
+  </button>
 
-<div id="loginBox">
+  <button
+    class="ativar"
+    onclick="login('ativar')">
 
-<input
-  type="text"
-  id="username"
-  placeholder="Utilizador"
->
+    📦 Ativar
+  </button>
 
+  <button
+    class="admin"
+    onclick="admin()">
 
-<input
-  type="password"
-  id="password"
-  placeholder="Código"
->
+    ⚙️ Administração
+  </button>
 
-
-<button
-class="scanner"
-onclick="login()"
->
-
-Entrar
-
-</button>
-
-
-<div id="error"></div>
-
-</div>
-
-
-<!-- MENU -->
-
-<div
-id="menu"
-class="hidden"
->
-
-<button
-class="scanner"
-onclick="window.location='/scanner.html'"
->
-
-📷 Scanner
-
-</button>
-
-
-<button
-class="activate"
-onclick="window.location='/ativar.html'"
->
-
-📦 Ativar Bilhetes
-
-</button>
-
-
-<button
-class="dashboard"
-onclick="window.location='/dashboard.html'"
->
-
-📊 Dashboard
-
-</button>
-
-
-<button
-class="admin"
-onclick="window.location='/admin.html'"
->
-
-⚙️ Administração
-
-</button>
-
-
-<button
-class="logout"
-onclick="logout()"
->
-
-🚪 Logout
-
-</button>
-
-</div>
+  <div id="msg"></div>
 
 </div>
 
 
 <script>
 
-async function login(){
+async function login(tipo){
 
   const username =
-    document.getElementById("username").value;
+    document.getElementById("user").value;
 
   const password =
-    document.getElementById("password").value;
+    document.getElementById("pass").value;
 
+  const res = await fetch("/login",{
 
-  const res =
-    await fetch("/login",{
+    method:"POST",
 
-      method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
 
-      headers:{
-        "Content-Type":
-          "application/json"
-      },
+    body:JSON.stringify({
+      username,
+      password
+    })
+  });
 
-      body:JSON.stringify({
-
-        username,
-        password
-      })
-    });
-
-
-  const data =
-    await res.json();
-
+  const data = await res.json();
 
   if(data.success){
 
-    document.getElementById("loginBox")
-    .classList.add("hidden");
+    if(tipo === "scanner"){
+      window.location = "/scanner.html";
+    }
 
-    document.getElementById("menu")
-    .classList.remove("hidden");
+    if(tipo === "ativar"){
+      window.location = "/ativar.html";
+    }
+
   }
 
   else{
 
-    document.getElementById("error")
-    .innerHTML =
-
-      "❌ Credenciais inválidas";
+    document.getElementById("msg")
+    .innerHTML = "Login inválido";
   }
 }
 
 
-function logout(){
+function admin(){
 
-  window.location =
-    "/logout";
+  const pass =
+    prompt("Password Admin");
+
+  if(pass === "admin2468"){
+
+    window.location =
+      "/admin.html";
+  }
+
+  else{
+
+    alert("Password errada");
+  }
 }
+
+</script>
+
+</body>
+</html>}
 
 </script>
 
