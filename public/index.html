@@ -10,15 +10,13 @@
   content="width=device-width, initial-scale=1.0"
 >
 
-<title>Ticket System</title>
+<title>Login</title>
 
 <style>
 
 body{
 
   margin:0;
-
-  padding:30px;
 
   background:#f5f5f5;
 
@@ -38,7 +36,7 @@ body{
   background:white;
 
   width:90%;
-  max-width:450px;
+  max-width:420px;
 
   padding:40px;
 
@@ -56,25 +54,42 @@ h1{
   font-size:34px;
 }
 
+input{
+
+  width:100%;
+
+  padding:16px;
+
+  margin-top:15px;
+
+  border:1px solid #ccc;
+
+  border-radius:10px;
+
+  font-size:18px;
+
+  box-sizing:border-box;
+}
+
 button{
 
   width:100%;
 
-  padding:18px;
+  padding:16px;
+
+  margin-top:20px;
 
   border:none;
 
-  border-radius:12px;
+  border-radius:10px;
 
-  margin-top:15px;
+  background:#1976d2;
+
+  color:white;
 
   font-size:20px;
 
   cursor:pointer;
-
-  color:white;
-
-  transition:0.2s;
 }
 
 button:hover{
@@ -82,24 +97,13 @@ button:hover{
   opacity:0.9;
 }
 
-.scanner{
+#error{
 
-  background:#1976d2;
-}
+  margin-top:20px;
 
-.activate{
+  color:red;
 
-  background:#f57c00;
-}
-
-.admin{
-
-  background:#d32f2f;
-}
-
-.logout{
-
-  background:#222;
+  font-size:18px;
 }
 
 </style>
@@ -117,46 +121,81 @@ button:hover{
 </h1>
 
 
-<button
-class="scanner"
-onclick="window.location='/scanner.html'"
+<input
+  type="text"
+  id="username"
+  placeholder="Utilizador"
 >
 
-📷 Scanner
+
+<input
+  type="password"
+  id="password"
+  placeholder="Código"
+>
+
+
+<button onclick="login()">
+
+Entrar
 
 </button>
 
 
-<button
-class="activate"
-onclick="window.location='/ativar.html'"
->
-
-📦 Ativar Bilhetes
-
-</button>
-
-
-<button
-class="admin"
-onclick="window.location='/admin.html'"
->
-
-⚙️ Administração
-
-</button>
-
-
-<button
-class="logout"
-onclick="window.location='/logout'"
->
-
-🚪 Logout
-
-</button>
+<div id="error"></div>
 
 </div>
+
+
+<script>
+
+async function login(){
+
+  const username =
+    document.getElementById("username").value;
+
+  const password =
+    document.getElementById("password").value;
+
+
+  const res =
+    await fetch("/login",{
+
+      method:"POST",
+
+      headers:{
+        "Content-Type":
+          "application/json"
+      },
+
+      body:JSON.stringify({
+
+        username,
+        password
+      })
+    });
+
+
+  const data =
+    await res.json();
+
+
+  if(data.success){
+
+    window.location =
+      "/scanner.html";
+  }
+
+  else{
+
+    document.getElementById("error")
+    .innerHTML =
+
+      "❌ Dados inválidos";
+  }
+}
+
+</script>
 
 </body>
 </html>
