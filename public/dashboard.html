@@ -1,544 +1,259 @@
-const express = require("express");
-const path = require("path");
-const session = require("express-session");
-const db = require("./firebase");
+<!DOCTYPE html>
+<html lang="pt">
 
-const app = express();
+<head>
 
-const PORT =
-  process.env.PORT || 3000;
+<meta charset="UTF-8">
 
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
 
-// ======================================================
-// SESSION
-// ======================================================
+<title>Dashboard</title>
 
-app.use(session({
+<style>
 
-  secret:"segredo_super_forte_123",
+body{
 
-  resave:false,
+  margin:0;
 
-  saveUninitialized:false
-}));
+  padding:25px;
 
+  background:#f5f5f5;
 
-app.use(express.json());
-
-app.use(express.static("public"));
-
-
-// ======================================================
-// LOGIN
-// ======================================================
-
-app.post("/login", (req,res)=>{
-
-  const {
-    username,
-    password
-  } = req.body;
-
-
-  if(
-    username === "Odisseia" &&
-    password === "3764"
-  ){
-
-    req.session.auth = true;
-
-    return res.json({
-      success:true
-    });
-  }
-
-  res.status(401).json({
-    success:false
-  });
-});
-
-
-// ======================================================
-// AUTH
-// ======================================================
-
-function checkAuth(req,res,next){
-
-  if(req.session.auth){
-    return next();
-  }
-
-  res.status(401)
-  .send("Não autorizado");
+  font-family:sans-serif;
 }
 
+h1{
 
-// ======================================================
-// VALIDAR QR
-// ======================================================
+  text-align:center;
 
-app.get(
+  margin-bottom:30px;
+}
 
-  "/api/check/:id",
+#stats{
 
-  checkAuth,
+  display:grid;
 
-async (req,res)=>{
+  grid-template-columns:
+    repeat(auto-fit,minmax(250px,1fr));
 
-  try{
+  gap:20px;
+}
 
-    const id =
-      req.params.id;
+.card{
 
-    const refeicao =
-      req.query.refeicao || null;
+  background:white;
 
-    const docRef =
-      db.collection("tickets")
-      .doc(id);
+  border-radius:15px;
 
-    const doc =
-      await docRef.get();
+  padding:25px;
 
+  box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
 
-    if(!doc.exists){
+.card h2{
 
-      return res.json({
-        status:"invalid"
-      });
-    }
+  margin-top:0;
+}
 
-    const ticket =
-      doc.data();
+.card p{
 
+  font-size:22px;
 
-    if(!ticket.active){
+  margin:15px 0;
+}
 
-      return res.json({
-        status:"not_active"
-      });
-    }
+button{
 
+  width:100%;
 
-    const rsProm =
-      id.includes("RSprom");
+  padding:16px;
 
-    const boss =
-      id.includes("BOSS");
+  border:none;
 
-    const entradas =
-      ticket.entradas || 0;
+  border-radius:10px;
 
+  background:#222;
 
-    // EVT / RSC
-    if(
+  color:white;
 
-      !rsProm &&
-      !boss &&
-      ticket.used
+  font-size:18px;
 
-    ){
+  cursor:pointer;
 
-      return res.json({
-        status:"used"
-      });
-    }
+  margin-top:30px;
+}
 
+</style>
 
-    // RSprom limite 3
-    if(
+</head>
 
-      rsProm &&
-      entradas >= 3
+<body>
 
-    ){
+<h1>
 
-      return res.json({
-        status:"limit"
-      });
-    }
+📊 Dashboard Geral
 
+</h1>
 
-    // ======================================================
-    // EVT / RSC
-    // ======================================================
 
-    if(
-      !rsProm &&
-      !boss
-    ){
+<div id="stats">
 
-      const refeicoes =
-        ticket.refeicoes || [];
+<div class="card">
 
-      if(
-        !refeicoes.includes(refeicao)
-      ){
+<h2>
 
-        refeicoes.push(refeicao);
-      }
+🎟️ Race Ready
 
-      await docRef.update({
+</h2>
 
-        used:true,
+<p id="evtVendidos"></p>
 
-        checkin_time:
-          new Date(),
+<p id="evtEntradas"></p>
 
-        refeicoes
-      });
-    }
+</div>
 
 
-    // ======================================================
-    // RSprom
-    // ======================================================
+<div class="card">
 
-    else if(rsProm){
+<h2>
 
-      const historico =
-        ticket.historico_refeicoes || [];
+🏁 RSC
 
-      historico.push(refeicao);
+</h2>
 
-      await docRef.update({
+<p id="rscAtivados"></p>
 
-        entradas:
-          entradas + 1,
+<p id="rscEntradas"></p>
 
-        last_checkin:
-          new Date(),
+</div>
 
-        historico_refeicoes:
-          historico
-      });
-    }
 
+<div class="card">
 
-    // ======================================================
-    // BOSS
-    // ======================================================
+<h2>
 
-    else if(boss){
+🔥 RSprom
 
-      const historico =
-        ticket.historico_refeicoes || [];
+</h2>
 
-      historico.push(refeicao);
+<p id="promAtivados"></p>
 
-      await docRef.update({
+<p id="promEntradas"></p>
 
-        entradas:
-          entradas + 1,
+</div>
 
-        last_checkin:
-          new Date(),
 
-        historico_refeicoes:
-          historico
-      });
-    }
+<div class="card">
 
-    return res.json({
-      status:"valid"
-    });
+<h2>
 
-  }
+👑 BOSS
 
-  catch(err){
+</h2>
 
-    console.error(err);
+<p id="bossAtivados"></p>
 
-    res.status(500).json({
-      status:"error"
-    });
-  }
-});
+<p id="bossEntradas"></p>
 
+</div>
 
-// ======================================================
-// ATIVAR BILHETE
-// ======================================================
+</div>
 
-app.get(
 
-  "/api/activate/:id",
+<button
+onclick="window.location='/'"
+>
 
-  checkAuth,
+⬅️ Voltar ao Início
 
-async (req,res)=>{
+</button>
 
-  try{
 
-    const id =
-      req.params.id;
+<script>
 
-    const cliente =
-      req.query.cliente || "Sem Nome";
+async function loadDashboard(){
 
-    const docRef =
-      db.collection("tickets")
-      .doc(id);
+  const res =
+    await fetch("/api/dashboard");
 
-    const doc =
-      await docRef.get();
+  const data =
+    await res.json();
 
-    if(!doc.exists){
 
-      return res.json({
-        status:"invalid"
-      });
-    }
+  // EVT
+  document.getElementById(
+    "evtVendidos"
+  ).innerHTML =
 
-    await docRef.update({
+    "Vendidos: " +
+    data.evtVendidos;
 
-      active:true,
 
-      activated_at:
-        new Date(),
+  document.getElementById(
+    "evtEntradas"
+  ).innerHTML =
 
-      cliente
-    });
+    "Entradas: " +
+    data.evtEntradas;
 
-    return res.json({
-      status:"activated"
-    });
 
-  }
+  // RSC
+  document.getElementById(
+    "rscAtivados"
+  ).innerHTML =
 
-  catch(err){
+    "Ativados: " +
+    data.rscAtivados;
 
-    console.error(err);
 
-    res.status(500).json({
-      status:"error"
-    });
-  }
-});
+  document.getElementById(
+    "rscEntradas"
+  ).innerHTML =
 
+    "Entradas: " +
+    data.rscEntradas;
 
-// ======================================================
-// DASHBOARD
-// ======================================================
 
-app.get(
+  // PROM
+  document.getElementById(
+    "promAtivados"
+  ).innerHTML =
 
-  "/api/dashboard",
+    "Ativados: " +
+    data.promAtivados;
 
-  checkAuth,
 
-async (req,res)=>{
+  document.getElementById(
+    "promEntradas"
+  ).innerHTML =
 
-  try{
+    "Entradas: " +
+    data.promEntradas;
 
-    const snapshot =
-      await db.collection("tickets")
-      .get();
 
+  // BOSS
+  document.getElementById(
+    "bossAtivados"
+  ).innerHTML =
 
-    let evtVendidos = 0;
-    let evtEntradas = 0;
+    "Ativados: " +
+    data.bossAtivados;
 
-    let rscAtivados = 0;
-    let rscEntradas = 0;
 
-    let promAtivados = 0;
-    let promEntradas = 0;
+  document.getElementById(
+    "bossEntradas"
+  ).innerHTML =
 
-    let bossAtivados = 0;
-    let bossEntradas = 0;
+    "Entradas: " +
+    data.bossEntradas;
+}
 
+loadDashboard();
 
-    snapshot.forEach(doc => {
+</script>
 
-      const id =
-        doc.id;
-
-      const t =
-        doc.data();
-
-
-      // EVT
-      if(id.includes("EVT")){
-
-        if(t.active){
-
-          evtVendidos++;
-        }
-
-        if(t.refeicoes){
-
-          evtEntradas +=
-            t.refeicoes.length;
-        }
-      }
-
-
-      // RSC
-      if(id.includes("RSC")){
-
-        if(t.active){
-
-          rscAtivados++;
-        }
-
-        if(t.refeicoes){
-
-          rscEntradas +=
-            t.refeicoes.length;
-        }
-      }
-
-
-      // RSprom
-      if(id.includes("RSprom")){
-
-        if(t.active){
-
-          promAtivados++;
-        }
-
-        if(t.historico_refeicoes){
-
-          promEntradas +=
-            t.historico_refeicoes.length;
-        }
-      }
-
-
-      // BOSS
-      if(id.includes("BOSS")){
-
-        if(t.active){
-
-          bossAtivados++;
-        }
-
-        if(t.historico_refeicoes){
-
-          bossEntradas +=
-            t.historico_refeicoes.length;
-        }
-      }
-
-    });
-
-
-    res.json({
-
-      evtVendidos,
-      evtEntradas,
-
-      rscAtivados,
-      rscEntradas,
-
-      promAtivados,
-      promEntradas,
-
-      bossAtivados,
-      bossEntradas
-    });
-
-  }
-
-  catch(err){
-
-    console.error(err);
-
-    res.status(500).json({
-      error:true
-    });
-  }
-});
-
-
-// ======================================================
-// PÁGINAS
-// ======================================================
-
-app.get(
-  "/dashboard.html",
-  checkAuth,
-(req,res)=>{
-
-  res.sendFile(
-    path.join(
-      __dirname,
-      "public/dashboard.html"
-    )
-  );
-});
-
-app.get(
-  "/scanner.html",
-  checkAuth,
-(req,res)=>{
-
-  res.sendFile(
-    path.join(
-      __dirname,
-      "public/scanner.html"
-    )
-  );
-});
-
-app.get(
-  "/ativar.html",
-  checkAuth,
-(req,res)=>{
-
-  res.sendFile(
-    path.join(
-      __dirname,
-      "public/ativar.html"
-    )
-  );
-});
-
-app.get(
-  "/admin.html",
-  checkAuth,
-(req,res)=>{
-
-  res.sendFile(
-    path.join(
-      __dirname,
-      "public/admin.html"
-    )
-  );
-});
-
-app.get("/t/:id", (req,res)=>{
-
-  res.sendFile(
-    path.join(
-      __dirname,
-      "public/ticket.html"
-    )
-  );
-});
-
-
-// ======================================================
-// LOGOUT
-// ======================================================
-
-app.get("/logout", (req,res)=>{
-
-  req.session.destroy();
-
-  res.redirect("/");
-});
-
-
-// ======================================================
-// SERVER
-// ======================================================
-
-app.listen(PORT, ()=>{
-
-  console.log(
-    "🚀 Server running on port",
-    PORT
-  );
-});
+</body>
+</html>
