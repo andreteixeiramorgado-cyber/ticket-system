@@ -1,28 +1,259 @@
 <!DOCTYPE html>
-<html>
-<body style="text-align:center;font-family:sans-serif;background:#f5f5f5;">
+<html lang="pt">
 
-  <h1>📊 Dashboard Evento</h1>
+<head>
 
-  <h2>Total: <span id="total">0</span></h2>
-  <h2>🟡 Ativados: <span id="ativos">0</span></h2>
-  <h2>🔴 Entradas: <span id="usados">0</span></h2>
+<meta charset="UTF-8">
 
-  <script>
-    async function carregar() {
-      const res = await fetch("/api/dashboard");
-      const data = await res.json();
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
 
-      document.getElementById("total").innerText = data.total;
-      document.getElementById("ativos").innerText = data.ativos;
-      document.getElementById("usados").innerText = data.usados;
-    }
+<title>Dashboard</title>
 
-    // atualizar automaticamente
-    setInterval(carregar, 3000);
+<style>
 
-    carregar();
-  </script>
+body{
+
+  margin:0;
+
+  padding:25px;
+
+  background:#f5f5f5;
+
+  font-family:sans-serif;
+}
+
+h1{
+
+  text-align:center;
+
+  margin-bottom:30px;
+}
+
+#stats{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(auto-fit,minmax(250px,1fr));
+
+  gap:20px;
+}
+
+.card{
+
+  background:white;
+
+  border-radius:15px;
+
+  padding:25px;
+
+  box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+.card h2{
+
+  margin-top:0;
+}
+
+.card p{
+
+  font-size:22px;
+
+  margin:15px 0;
+}
+
+button{
+
+  width:100%;
+
+  padding:16px;
+
+  border:none;
+
+  border-radius:10px;
+
+  background:#222;
+
+  color:white;
+
+  font-size:18px;
+
+  cursor:pointer;
+
+  margin-top:30px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>
+
+📊 Dashboard Geral
+
+</h1>
+
+
+<div id="stats">
+
+<div class="card">
+
+<h2>
+
+🎟️ Race Ready
+
+</h2>
+
+<p id="evtVendidos"></p>
+
+<p id="evtEntradas"></p>
+
+</div>
+
+
+<div class="card">
+
+<h2>
+
+🏁 RSC
+
+</h2>
+
+<p id="rscAtivados"></p>
+
+<p id="rscEntradas"></p>
+
+</div>
+
+
+<div class="card">
+
+<h2>
+
+🔥 RSprom
+
+</h2>
+
+<p id="promAtivados"></p>
+
+<p id="promEntradas"></p>
+
+</div>
+
+
+<div class="card">
+
+<h2>
+
+👑 BOSS
+
+</h2>
+
+<p id="bossAtivados"></p>
+
+<p id="bossEntradas"></p>
+
+</div>
+
+</div>
+
+
+<button
+onclick="window.location='/'"
+>
+
+⬅️ Voltar ao Início
+
+</button>
+
+
+<script>
+
+async function loadDashboard(){
+
+  const res =
+    await fetch("/api/dashboard");
+
+  const data =
+    await res.json();
+
+
+  // EVT
+  document.getElementById(
+    "evtVendidos"
+  ).innerHTML =
+
+    "Vendidos: " +
+    data.evtVendidos;
+
+
+  document.getElementById(
+    "evtEntradas"
+  ).innerHTML =
+
+    "Entradas: " +
+    data.evtEntradas;
+
+
+  // RSC
+  document.getElementById(
+    "rscAtivados"
+  ).innerHTML =
+
+    "Ativados: " +
+    data.rscAtivados;
+
+
+  document.getElementById(
+    "rscEntradas"
+  ).innerHTML =
+
+    "Entradas: " +
+    data.rscEntradas;
+
+
+  // PROM
+  document.getElementById(
+    "promAtivados"
+  ).innerHTML =
+
+    "Ativados: " +
+    data.promAtivados;
+
+
+  document.getElementById(
+    "promEntradas"
+  ).innerHTML =
+
+    "Entradas: " +
+    data.promEntradas;
+
+
+  // BOSS
+  document.getElementById(
+    "bossAtivados"
+  ).innerHTML =
+
+    "Ativados: " +
+    data.bossAtivados;
+
+
+  document.getElementById(
+    "bossEntradas"
+  ).innerHTML =
+
+    "Entradas: " +
+    data.bossEntradas;
+}
+
+loadDashboard();
+
+</script>
 
 </body>
 </html>
