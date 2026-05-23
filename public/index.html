@@ -1,214 +1,192 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
 
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-  <title>Ticket System</title>
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
 
-  <style>
+<title>Ticket System</title>
 
-    body{
-      margin:0;
-      background:#f5f5f5;
-      font-family:sans-serif;
+<style>
 
-      display:flex;
-      justify-content:center;
-      align-items:center;
+body{
 
-      height:100vh;
-    }
+  margin:0;
 
-    .box{
+  padding:30px;
 
-      background:white;
+  background:#f5f5f5;
 
-      width:350px;
+  font-family:sans-serif;
 
-      padding:40px;
+  display:flex;
 
-      border-radius:20px;
+  justify-content:center;
 
-      box-shadow:0 2px 15px rgba(0,0,0,0.1);
+  align-items:center;
 
-      text-align:center;
-    }
+  min-height:100vh;
+}
 
-    input{
+.box{
 
-      width:100%;
+  background:white;
 
-      padding:15px;
+  width:90%;
+  max-width:450px;
 
-      margin-top:15px;
+  padding:40px;
 
-      border-radius:10px;
+  border-radius:20px;
 
-      border:1px solid #ccc;
+  box-shadow:0 2px 15px rgba(0,0,0,0.1);
 
-      font-size:16px;
+  text-align:center;
+}
 
-      box-sizing:border-box;
-    }
+h1{
 
-    button{
+  margin-bottom:35px;
 
-      width:100%;
+  font-size:34px;
+}
 
-      padding:16px;
+button{
 
-      margin-top:15px;
+  width:100%;
 
-      border:none;
+  padding:18px;
 
-      border-radius:10px;
+  border:none;
 
-      font-size:18px;
+  border-radius:12px;
 
-      cursor:pointer;
-    }
+  margin-top:15px;
 
-    .scanner{
-      background:#1976d2;
-      color:white;
-    }
+  font-size:20px;
 
-    .ativar{
-      background:#f57c00;
-      color:white;
-    }
+  cursor:pointer;
 
-    .admin{
-      background:#333;
-      color:white;
-    }
+  color:white;
 
-    h1{
-      margin-bottom:30px;
-    }
+  transition:0.2s;
+}
 
-    #msg{
-      margin-top:20px;
-      color:red;
-      font-weight:bold;
-    }
+button:hover{
 
-  </style>
+  opacity:0.9;
+}
+
+.scanner{
+
+  background:#1976d2;
+}
+
+.activate{
+
+  background:#f57c00;
+}
+
+.dashboard{
+
+  background:#388e3c;
+}
+
+.reports{
+
+  background:#7b1fa2;
+}
+
+.admin{
+
+  background:#d32f2f;
+}
+
+.logout{
+
+  background:#222;
+}
+
+</style>
+
 </head>
 
 <body>
 
 <div class="box">
 
-  <h1>🎟️ Ticket System</h1>
+<h1>
 
-  <input
-    id="user"
-    placeholder="Utilizador"
-  >
+🎟️ Ticket System
 
-  <input
-    id="pass"
-    type="password"
-    placeholder="Password"
-  >
+</h1>
 
-  <button
-    class="scanner"
-    onclick="login('scanner')">
 
-    📷 Scanner
-  </button>
+<button
+class="scanner"
+onclick="window.location='/scanner.html'"
+>
 
-  <button
-    class="ativar"
-    onclick="login('ativar')">
+📷 Scanner
 
-    📦 Ativar
-  </button>
+</button>
 
-  <button
-    class="admin"
-    onclick="admin()">
 
-    ⚙️ Administração
-  </button>
+<button
+class="activate"
+onclick="window.location='/ativar.html'"
+>
 
-  <div id="msg"></div>
+📦 Ativar Bilhetes
+
+</button>
+
+
+<button
+class="dashboard"
+onclick="window.location='/dashboard.html'"
+>
+
+📊 Dashboard
+
+</button>
+
+
+<button
+class="reports"
+onclick="window.location='/relatorios.html'"
+>
+
+📈 Relatórios
+
+</button>
+
+
+<button
+class="admin"
+onclick="window.location='/admin.html'"
+>
+
+⚙️ Administração
+
+</button>
+
+
+<button
+class="logout"
+onclick="window.location='/logout'"
+>
+
+🚪 Logout
+
+</button>
 
 </div>
-
-
-<script>
-
-async function login(tipo){
-
-  const username =
-    document.getElementById("user").value;
-
-  const password =
-    document.getElementById("pass").value;
-
-  const res = await fetch("/login",{
-
-    method:"POST",
-
-    headers:{
-      "Content-Type":"application/json"
-    },
-
-    body:JSON.stringify({
-      username,
-      password
-    })
-  });
-
-  const data = await res.json();
-
-  if(data.success){
-
-    if(tipo === "scanner"){
-      window.location = "/scanner.html";
-    }
-
-    if(tipo === "ativar"){
-      window.location = "/ativar.html";
-    }
-
-  }
-
-  else{
-
-    document.getElementById("msg")
-    .innerHTML = "Login inválido";
-  }
-}
-
-
-function admin(){
-
-  const pass =
-    prompt("Password Admin");
-
-  if(pass === "admin2468"){
-
-    window.location =
-      "/admin.html";
-  }
-
-  else{
-
-    alert("Password errada");
-  }
-}
-
-</script>
-
-</body>
-</html>}
-
-</script>
 
 </body>
 </html>
