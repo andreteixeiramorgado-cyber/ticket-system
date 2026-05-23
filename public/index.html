@@ -10,13 +10,15 @@
   content="width=device-width, initial-scale=1.0"
 >
 
-<title>Login</title>
+<title>Ticket System</title>
 
 <style>
 
 body{
 
   margin:0;
+
+  padding:30px;
 
   background:#f5f5f5;
 
@@ -36,7 +38,7 @@ body{
   background:white;
 
   width:90%;
-  max-width:420px;
+  max-width:450px;
 
   padding:40px;
 
@@ -75,26 +77,56 @@ button{
 
   width:100%;
 
-  padding:16px;
-
-  margin-top:20px;
+  padding:18px;
 
   border:none;
 
-  border-radius:10px;
+  border-radius:12px;
 
-  background:#1976d2;
-
-  color:white;
+  margin-top:15px;
 
   font-size:20px;
 
   cursor:pointer;
+
+  color:white;
+
+  transition:0.2s;
 }
 
 button:hover{
 
   opacity:0.9;
+}
+
+.scanner{
+
+  background:#1976d2;
+}
+
+.activate{
+
+  background:#f57c00;
+}
+
+.dashboard{
+
+  background:#388e3c;
+}
+
+.admin{
+
+  background:#d32f2f;
+}
+
+.logout{
+
+  background:#222;
+}
+
+.hidden{
+
+  display:none;
 }
 
 #error{
@@ -121,6 +153,10 @@ button:hover{
 </h1>
 
 
+<!-- LOGIN -->
+
+<div id="loginBox">
+
 <input
   type="text"
   id="username"
@@ -135,7 +171,10 @@ button:hover{
 >
 
 
-<button onclick="login()">
+<button
+class="scanner"
+onclick="login()"
+>
 
 Entrar
 
@@ -143,6 +182,67 @@ Entrar
 
 
 <div id="error"></div>
+
+</div>
+
+
+<!-- MENU -->
+
+<div
+id="menu"
+class="hidden"
+>
+
+<button
+class="scanner"
+onclick="window.location='/scanner.html'"
+>
+
+📷 Scanner
+
+</button>
+
+
+<button
+class="activate"
+onclick="window.location='/ativar.html'"
+>
+
+📦 Ativar Bilhetes
+
+</button>
+
+
+<button
+class="dashboard"
+onclick="window.location='/dashboard.html'"
+>
+
+📊 Dashboard
+
+</button>
+
+
+<button
+class="admin"
+onclick="window.location='/admin.html'"
+>
+
+⚙️ Administração
+
+</button>
+
+
+<button
+class="logout"
+onclick="logout()"
+>
+
+🚪 Logout
+
+</button>
+
+</div>
 
 </div>
 
@@ -182,8 +282,11 @@ async function login(){
 
   if(data.success){
 
-    window.location =
-      "/scanner.html";
+    document.getElementById("loginBox")
+    .classList.add("hidden");
+
+    document.getElementById("menu")
+    .classList.remove("hidden");
   }
 
   else{
@@ -191,8 +294,15 @@ async function login(){
     document.getElementById("error")
     .innerHTML =
 
-      "❌ Dados inválidos";
+      "❌ Credenciais inválidas";
   }
+}
+
+
+function logout(){
+
+  window.location =
+    "/logout";
 }
 
 </script>
