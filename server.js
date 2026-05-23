@@ -819,6 +819,44 @@ async(req,res)=>{
     });
   }
 
+  // ======================================================
+// DESATIVAR RSC NÃO USADOS
+// ======================================================
+
+if(tipo === "desativar_rsc_unused"){
+
+  for(const doc of snapshot.docs){
+
+    if(
+
+      doc.id.includes("RSC")
+
+    ){
+
+      const t =
+        doc.data();
+
+
+      // só os não usados
+      if(!t.used){
+
+        await doc.ref.update({
+
+          active:false
+        });
+
+        total++;
+      }
+    }
+  }
+
+  return res.json({
+
+    message:
+      "❌ RSC desativados (não usados): " +
+      total
+  });
+}
 
   return res.json({
 
