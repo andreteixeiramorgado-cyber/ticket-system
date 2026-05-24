@@ -1,321 +1,3 @@
-const express = require("express");
-const path = require("path");
-const session = require("express-session");
-const db = require("./firebase");
-const XLSX = require("xlsx");
-
-const app = express();
-
-const PORT =
-  process.env.PORT || 3000;
-
-
-// ======================================================
-// SESSION
-// ======================================================
-
-app.use(session({
-
-  secret:"segredo_super_forte_123",
-
-  resave:false,
-
-  saveUninitialized:false
-}));
-
-app.use(express.json());
-
-app.use(express.static("public"));
-
-
-// ======================================================
-// LOGIN
-// ======================================================
-
-app.post("/login",(req,res)=>{
-
-  const {
-    username,
-    password
-  } = req.body;
-
-  if(
-
-    username === "Odisseia" &&
-    password === "3764"
-
-  ){
-
-    req.session.auth = true;
-
-    return res.json({
-      success:true
-    });
-  }
-
-  res.status(401).json({
-    success:false
-  });
-});
-
-
-// ======================================================
-// AUTH
-// ======================================================
-
-function checkAuth(req,res,next){
-
-  if(req.session.auth){
-
-    return next();
-  }
-
-  res.status(401)
-  .send("Não autorizado");
-}
-
-
-// ======================================================
-// VALIDAR QR
-// ======================================================
-
-app.get(
-
-  "/api/check/:id",
-
-  checkAuth,
-
-async(req,res)=>{
-
-  try{
-
-    const id =
-      req.params.id;
-
-    const refeicao =
-      req.query.refeicao || null;
-
-    const docRef =
-      db.collection("tickets")
-      .doc(id);
-
-    const doc =
-      await docRef.get();
-
-    if(!doc.exists){
-
-      return res.json({
-        status:"invalid"
-      });
-    }
-
-    const ticket =
-      doc.data();
-
-    if(!ticket.active){
-
-      return res.json({
-        status:"not_active"
-      });
-    }
-
-    const rsProm =
-      id.includes("RSprom");
-
-    const boss =
-      id.includes("BOSS");
-
-    const entradas =
-      ticket.entradas || 0;
-
-
-    // EVT / RSC
-    if(
-
-      !rsProm &&
-      !boss &&
-      ticket.used
-
-    ){
-
-      return res.json({
-        status:"used"
-      });
-    }
-
-
-    // RSprom limite 3
-    if(
-
-      rsProm &&
-      entradas >= 3
-
-    ){
-
-      return res.json({
-        status:"limit"
-      });
-    }
-
-
-    // ======================================================
-    // EVT / RSC
-    // ======================================================
-
-    if(
-      !rsProm &&
-      !boss
-    ){
-
-      const refeicoes =
-        ticket.refeicoes || [];
-
-      if(
-        !refeicoes.includes(refeicao)
-      ){
-
-        refeicoes.push(refeicao);
-      }
-
-      await docRef.update({
-
-        used:true,
-
-        checkin_time:
-          new Date(),
-
-        refeicoes
-      });
-    }
-
-
-    // ======================================================
-    // RSprom
-    // ======================================================
-
-    else if(rsProm){
-
-      const historico =
-        ticket.historico_refeicoes || [];
-
-      historico.push(refeicao);
-
-      await docRef.update({
-
-        entradas:
-          entradas + 1,
-
-        last_checkin:
-          new Date(),
-
-        historico_refeicoes:
-          historico
-      });
-    }
-
-
-    // ======================================================
-    // BOSS
-    // ======================================================
-
-    else if(boss){
-
-      const historico =
-        ticket.historico_refeicoes || [];
-
-      historico.push(refeicao);
-
-      await docRef.update({
-
-        entradas:
-          entradas + 1,
-
-        last_checkin:
-          new Date(),
-
-        historico_refeicoes:
-          historico
-      });
-    }
-
-    return res.json({
-      status:"valid"
-    });
-
-  }
-
-  catch(err){
-
-    console.error(err);
-
-    res.status(500).json({
-      status:"error"
-    });
-  }
-});
-
-
-// ======================================================
-// ATIVAR BILHETE
-// ======================================================
-
-app.get(
-
-  "/api/activate/:id",
-
-  checkAuth,
-
-async(req,res)=>{
-
-  try{
-
-    const id =
-      req.params.id;
-
-    const cliente =
-      req.query.cliente || "Sem Nome";
-
-    const docRef =
-      db.collection("tickets")
-      .doc(id);
-
-    const doc =
-      await docRef.get();
-
-    if(!doc.exists){
-
-      return res.json({
-        status:"invalid"
-      });
-    }
-
-    await docRef.update({
-
-      active:true,
-
-      activated_at:
-        new Date(),
-
-      cliente
-    });
-
-    return res.json({
-      status:"activated"
-    });
-
-  }
-
-  catch(err){
-
-    console.error(err);
-
-    res.status(500).json({
-      status:"error"
-    });
-  }
-});
-
-
 // ======================================================
 // DASHBOARD API
 // ======================================================
@@ -346,8 +28,8 @@ async(req,res)=>{
     let bossAtivados = 0;
     let bossEntradas = 0;
 
-    let evtTabela = [];
-    let rscTabela = [];
+    let evtResumo = {};
+    let rscResumo = {};
 
 
     snapshot.forEach(doc=>{
@@ -374,21 +56,28 @@ async(req,res)=>{
           t.used ? 1 : 0;
 
 
-        evtTabela.push({
+        const cliente =
+          t.cliente || "Sem Nome";
 
-          cliente:
-            t.cliente || "-",
+        const refeicao =
+          (t.refeicoes || [])[0] || "-";
 
-          ativo:
-            t.active ? "SIM" : "NÃO",
+        const key =
+          cliente + "|" + refeicao;
 
-          refeicao:
-            (t.refeicoes || [])
-            .join(" | "),
 
-          entradas:
-            t.used ? 1 : 0
-        });
+        if(!evtResumo[key]){
+
+          evtResumo[key] = {
+
+            cliente,
+            refeicao,
+            quantidade:0
+          };
+        }
+
+        evtResumo[key].quantidade +=
+          t.used ? 1 : 0;
       }
 
 
@@ -407,21 +96,28 @@ async(req,res)=>{
           t.used ? 1 : 0;
 
 
-        rscTabela.push({
+        const cliente =
+          t.cliente || "Sem Nome";
 
-          cliente:
-            t.cliente || "-",
+        const refeicao =
+          (t.refeicoes || [])[0] || "-";
 
-          ativo:
-            t.active ? "SIM" : "NÃO",
+        const key =
+          cliente + "|" + refeicao;
 
-          refeicao:
-            (t.refeicoes || [])
-            .join(" | "),
 
-          entradas:
-            t.used ? 1 : 0
-        });
+        if(!rscResumo[key]){
+
+          rscResumo[key] = {
+
+            cliente,
+            refeicao,
+            quantidade:0
+          };
+        }
+
+        rscResumo[key].quantidade +=
+          t.used ? 1 : 0;
       }
 
 
@@ -458,6 +154,7 @@ async(req,res)=>{
 
     });
 
+
     res.json({
 
       evtVendidos,
@@ -472,8 +169,11 @@ async(req,res)=>{
       bossAtivados,
       bossEntradas,
 
-      evtTabela,
-      rscTabela
+      evtTabela:
+        Object.values(evtResumo),
+
+      rscTabela:
+        Object.values(rscResumo)
     });
 
   }
@@ -486,39 +186,4 @@ async(req,res)=>{
       error:true
     });
   }
-});
-
-
-// ======================================================
-// PÁGINAS
-// ======================================================
-
-app.get(
-
-  "/dashboard.html",
-
-  checkAuth,
-
-(req,res)=>{
-
-  res.sendFile(
-
-    path.join(
-      __dirname,
-      "public/dashboard.html"
-    )
-  );
-});
-
-
-// ======================================================
-// SERVER
-// ======================================================
-
-app.listen(PORT,()=>{
-
-  console.log(
-    "🚀 Server running on port",
-    PORT
-  );
 });
