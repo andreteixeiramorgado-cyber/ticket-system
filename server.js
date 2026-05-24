@@ -465,12 +465,20 @@ app.get(
 
       rows.push({
 
-        ID:id,
-        Cliente:t.cliente || "",
-        Ativo:t.active || false,
-        Entradas:
-          (t.refeicoes || []).length
-      });
+       ID:id,
+
+  Cliente:
+    t.cliente || "",
+
+  Ativo:
+    t.active || false,
+
+  Entradas:
+    t.used ? 1 : 0,
+
+  Refeicao:
+    (t.refeicoes || []).join(" | ")
+});
     }
 
 
@@ -485,10 +493,19 @@ app.get(
       rows.push({
 
         ID:id,
-        Cliente:t.cliente || "",
-        Entradas:
-          t.entradas || 0
-      });
+
+  Cliente:
+    t.cliente || "",
+
+  Ativo:
+    t.active || false,
+
+  Entradas:
+    t.used ? 1 : 0,
+
+  Refeicao:
+    (t.refeicoes || []).join(" | ")
+});
     }
 
 
@@ -499,11 +516,20 @@ app.get(
 
       rows.push({
 
-        ID:id,
-        Cliente:t.cliente || "",
-        Entradas:
-          (t.refeicoes || []).length
-      });
+  ID:id,
+
+  Cliente:
+    t.cliente || "",
+
+  Ativo:
+    t.active || false,
+
+  Entradas:
+    t.used ? 1 : 0,
+
+  Refeicao:
+    (t.refeicoes || []).join(" | ")
+});
     }
 
   });
