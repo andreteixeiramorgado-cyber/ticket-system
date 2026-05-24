@@ -476,8 +476,9 @@ app.get(
   Entradas:
     t.used ? 1 : 0,
 
-  Refeicao:
-    (t.refeicoes || []).join(" | ")
+   Refeicao:
+    (t.historico_refeicoes || [])
+      .join(" | ")
 });
     }
 
@@ -504,7 +505,8 @@ app.get(
     t.used ? 1 : 0,
 
   Refeicao:
-    (t.refeicoes || []).join(" | ")
+    (t.historico_refeicoes || [])
+      .join(" | ")
 });
     }
 
@@ -527,8 +529,9 @@ app.get(
   Entradas:
     t.used ? 1 : 0,
 
-  Refeicao:
-    (t.refeicoes || []).join(" | ")
+   Refeicao:
+    (t.historico_refeicoes || [])
+      .join(" | ")
 });
     }
 
@@ -614,7 +617,8 @@ app.get(
     t.used ? 1 : 0,
 
   Refeicao:
-    (t.refeicoes || []).join(" | ")
+    (t.historico_refeicoes || [])
+      .join(" | ")
 });
     }
 
@@ -641,7 +645,8 @@ app.get(
     t.used ? 1 : 0,
 
   Refeicao:
-    (t.refeicoes || []).join(" | ")
+    (t.historico_refeicoes || [])
+      .join(" | ")
 });
     }
 
@@ -665,7 +670,8 @@ app.get(
     t.used ? 1 : 0,
 
   Refeicao:
-    (t.refeicoes || []).join(" | ")
+    (t.historico_refeicoes || [])
+      .join(" | ")
 });
     }
 
