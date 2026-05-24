@@ -317,7 +317,7 @@ async(req,res)=>{
 
 
 // ======================================================
-// DASHBOARD
+// DASHBOARD API
 // ======================================================
 
 app.get(
@@ -346,6 +346,9 @@ async(req,res)=>{
     let bossAtivados = 0;
     let bossEntradas = 0;
 
+    let evtTabela = [];
+    let rscTabela = [];
+
 
     snapshot.forEach(doc=>{
 
@@ -356,31 +359,80 @@ async(req,res)=>{
         doc.data();
 
 
+      // ======================================================
+      // EVT
+      // ======================================================
+
       if(id.includes("EVT")){
 
         if(t.active){
+
           evtVendidos++;
         }
 
         evtEntradas +=
-          (t.refeicoes || []).length;
+          t.used ? 1 : 0;
+
+
+        evtTabela.push({
+
+          cliente:
+            t.cliente || "-",
+
+          ativo:
+            t.active ? "SIM" : "NÃO",
+
+          refeicao:
+            (t.refeicoes || [])
+            .join(" | "),
+
+          entradas:
+            t.used ? 1 : 0
+        });
       }
 
+
+      // ======================================================
+      // RSC
+      // ======================================================
 
       if(id.includes("RSC")){
 
         if(t.active){
+
           rscAtivados++;
         }
 
         rscEntradas +=
-          (t.refeicoes || []).length;
+          t.used ? 1 : 0;
+
+
+        rscTabela.push({
+
+          cliente:
+            t.cliente || "-",
+
+          ativo:
+            t.active ? "SIM" : "NÃO",
+
+          refeicao:
+            (t.refeicoes || [])
+            .join(" | "),
+
+          entradas:
+            t.used ? 1 : 0
+        });
       }
 
+
+      // ======================================================
+      // RSPROM
+      // ======================================================
 
       if(id.includes("RSprom")){
 
         if(t.active){
+
           promAtivados++;
         }
 
@@ -389,9 +441,14 @@ async(req,res)=>{
       }
 
 
+      // ======================================================
+      // BOSS
+      // ======================================================
+
       if(id.includes("BOSS")){
 
         if(t.active){
+
           bossAtivados++;
         }
 
@@ -413,7 +470,10 @@ async(req,res)=>{
       promEntradas,
 
       bossAtivados,
-      bossEntradas
+      bossEntradas,
+
+      evtTabela,
+      rscTabela
     });
 
   }
@@ -430,536 +490,8 @@ async(req,res)=>{
 
 
 // ======================================================
-// EXPORT CSV
-// ======================================================
-
-app.get(
-
-  "/api/export/:tipo",
-
- async(req,res)=>{
-
-  const tipo =
-    req.params.tipo;
-
-  const snapshot =
-    await db.collection("tickets")
-    .get();
-
-  let rows = [];
-
-
-  snapshot.forEach(doc=>{
-
-    const id =
-      doc.id;
-
-    const t =
-      doc.data();
-
-
-    if(
-      tipo === "csv_evt" &&
-      id.includes("EVT")
-    ){
-
-      rows.push({
-
-       ID:id,
-
-  Cliente:
-    t.cliente || "",
-
-  Ativo:
-    t.active || false,
-
-  Entradas:
-    t.used ? 1 : 0,
-
-   Refeicao:
-    (t.historico_refeicoes || [])
-      .join(" | ")
-});
-    }
-
-
-    if(
-      tipo === "csv_vip" &&
-      (
-        id.includes("RSprom") ||
-        id.includes("BOSS")
-      )
-    ){
-
-      rows.push({
-
-        ID:id,
-
-  Cliente:
-    t.cliente || "",
-
-  Ativo:
-    t.active || false,
-
-  Entradas:
-    t.used ? 1 : 0,
-
-  Refeicao:
-    (t.historico_refeicoes || [])
-      .join(" | ")
-});
-    }
-
-
-    if(
-      tipo === "csv_rsc" &&
-      id.includes("RSC")
-    ){
-
-      rows.push({
-
-  ID:id,
-
-  Cliente:
-    t.cliente || "",
-
-  Ativo:
-    t.active || false,
-
-  Entradas:
-    t.used ? 1 : 0,
-
-   Refeicao:
-    (t.historico_refeicoes || [])
-      .join(" | ")
-});
-    }
-
-  });
-
-
-  const ws =
-    XLSX.utils.json_to_sheet(rows);
-
-  const wb =
-    XLSX.utils.book_new();
-
-  XLSX.utils.book_append_sheet(
-    wb,
-    ws,
-    "Relatorio"
-  );
-
-  const buffer =
-    XLSX.write(wb,{
-
-      type:"buffer",
-
-      bookType:"csv"
-    });
-
-  res.setHeader(
-
-    "Content-Disposition",
-
-    `attachment; filename=${tipo}.csv`
-  );
-
-  res.send(buffer);
-});
-
-
-// ======================================================
-// EXPORT EXCEL
-// ======================================================
-
-app.get(
-
-  "/api/excel/:tipo",
-
- async(req,res)=>{
-
-  const tipo =
-    req.params.tipo;
-
-  const snapshot =
-    await db.collection("tickets")
-    .get();
-
-  let rows = [];
-
-
-  snapshot.forEach(doc=>{
-
-    const id =
-      doc.id;
-
-    const t =
-      doc.data();
-
-
-    if(
-      tipo === "excel_evt" &&
-      id.includes("EVT")
-    ){
-
-      rows.push({
-
-       ID:id,
-
-  Cliente:
-    t.cliente || "",
-
-  Ativo:
-    t.active || false,
-
-  Entradas:
-    t.used ? 1 : 0,
-
-  Refeicao:
-    (t.historico_refeicoes || [])
-      .join(" | ")
-});
-    }
-
-
-    if(
-      tipo === "excel_vip" &&
-      (
-        id.includes("RSprom") ||
-        id.includes("BOSS")
-      )
-    ){
-
-      rows.push({
-
-     ID:id,
-
-  Cliente:
-    t.cliente || "",
-
-  Ativo:
-    t.active || false,
-
-  Entradas:
-    t.used ? 1 : 0,
-
-  Refeicao:
-    (t.historico_refeicoes || [])
-      .join(" | ")
-});
-    }
-
-
-    if(
-      tipo === "excel_rsc" &&
-      id.includes("RSC")
-    ){
-
-      rows.push({
-
-       ID:id,
-
-  Cliente:
-    t.cliente || "",
-
-  Ativo:
-    t.active || false,
-
-  Entradas:
-    t.used ? 1 : 0,
-
-  Refeicao:
-    (t.historico_refeicoes || [])
-      .join(" | ")
-});
-    }
-
-  });
-
-
-  const ws =
-    XLSX.utils.json_to_sheet(rows);
-
-  const wb =
-    XLSX.utils.book_new();
-
-  XLSX.utils.book_append_sheet(
-    wb,
-    ws,
-    "Relatorio"
-  );
-
-  const buffer =
-    XLSX.write(wb,{
-
-      type:"buffer",
-
-      bookType:"xlsx"
-    });
-
-  res.setHeader(
-
-    "Content-Disposition",
-
-    `attachment; filename=${tipo}.xlsx`
-  );
-
-  res.send(buffer);
-});
-
-
-// ======================================================
-// ADMIN
-// ======================================================
-
-app.get(
-
-  "/api/admin/:tipo",
-
-async(req,res)=>{
-
-  const key =
-    req.query.key;
-
-  if(key !== "admin2468"){
-
-    return res.status(401)
-    .json({
-
-      message:"Sem acesso"
-    });
-  }
-
-  const tipo =
-    req.params.tipo;
-
-  const snapshot =
-    await db.collection("tickets")
-    .get();
-
-  let total = 0;
-
-
-  // RESET EVT
-  if(tipo === "reset_evt"){
-
-    for(const doc of snapshot.docs){
-
-      if(doc.id.includes("EVT")){
-
-        await doc.ref.update({
-
-          active:false,
-          used:false,
-          refeicoes:[]
-        });
-
-        total++;
-      }
-    }
-
-    return res.json({
-
-      message:
-        "♻️ EVT resetados: " +
-        total
-    });
-  }
-
-
-  // RESET VIP
-  if(tipo === "reset_vip"){
-
-    for(const doc of snapshot.docs){
-
-      if(
-
-        doc.id.includes("RSprom") ||
-
-        doc.id.includes("BOSS")
-
-      ){
-
-        await doc.ref.update({
-
-          active:false,
-          entradas:0,
-          historico_refeicoes:[]
-        });
-
-        total++;
-      }
-    }
-
-    return res.json({
-
-      message:
-        "♻️ VIP resetados: " +
-        total
-    });
-  }
-
-
-  // RESET RSC
-  if(tipo === "reset_rsc"){
-
-    for(const doc of snapshot.docs){
-
-      if(doc.id.includes("RSC")){
-
-        await doc.ref.update({
-
-          active:false,
-          used:false,
-          refeicoes:[]
-        });
-
-        total++;
-      }
-    }
-
-    return res.json({
-
-      message:
-        "♻️ RSC resetados: " +
-        total
-    });
-  }
-
-
-  // ATIVAR RSPROM
-  if(tipo === "ativar_rsprom"){
-
-    for(const doc of snapshot.docs){
-
-      if(doc.id.includes("RSprom")){
-
-        await doc.ref.update({
-
-          active:true
-        });
-
-        total++;
-      }
-    }
-
-    return res.json({
-
-      message:
-        "🔥 RSprom ativados: " +
-        total
-    });
-  }
-
-
-  // ATIVAR RSC
-  if(tipo === "ativar_rsc"){
-
-    for(const doc of snapshot.docs){
-
-      if(doc.id.includes("RSC")){
-
-        await doc.ref.update({
-
-          active:true
-        });
-
-        total++;
-      }
-    }
-
-    return res.json({
-
-      message:
-        "🔥 RSC ativados: " +
-        total
-    });
-  }
-
-  // ======================================================
-// DESATIVAR RSC NÃO USADOS
-// ======================================================
-
-if(tipo === "desativar_rsc_unused"){
-
-  for(const doc of snapshot.docs){
-
-    if(
-
-      doc.id.includes("RSC")
-
-    ){
-
-      const t =
-        doc.data();
-
-
-      // só os não usados
-      if(!t.used){
-
-        await doc.ref.update({
-
-          active:false
-        });
-
-        total++;
-      }
-    }
-  }
-
-  return res.json({
-
-    message:
-      "❌ RSC desativados (não usados): " +
-      total
-  });
-}
-
-  return res.json({
-
-    message:"OK"
-  });
-});
-
-
-// ======================================================
 // PÁGINAS
 // ======================================================
-
-app.get(
-
-  "/scanner.html",
-
-  checkAuth,
-
-(req,res)=>{
-
-  res.sendFile(
-
-    path.join(
-      __dirname,
-      "public/scanner.html"
-    )
-  );
-});
-
-app.get(
-
-  "/ativar.html",
-
-  checkAuth,
-
-(req,res)=>{
-
-  res.sendFile(
-
-    path.join(
-      __dirname,
-      "public/ativar.html"
-    )
-  );
-});
 
 app.get(
 
@@ -976,51 +508,6 @@ app.get(
       "public/dashboard.html"
     )
   );
-});
-
-app.get(
-
-  "/admin.html",
-
-  checkAuth,
-
-(req,res)=>{
-
-  res.sendFile(
-
-    path.join(
-      __dirname,
-      "public/admin.html"
-    )
-  );
-});
-
-
-// ======================================================
-// QR PAGE
-// ======================================================
-
-app.get("/t/:id",(req,res)=>{
-
-  res.sendFile(
-
-    path.join(
-      __dirname,
-      "public/ticket.html"
-    )
-  );
-});
-
-
-// ======================================================
-// LOGOUT
-// ======================================================
-
-app.get("/logout",(req,res)=>{
-
-  req.session.destroy();
-
-  res.redirect("/");
 });
 
 
