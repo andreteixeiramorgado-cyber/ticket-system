@@ -192,19 +192,22 @@ button{
 </div>
 
 
+<!-- EVT -->
+
 <h2>🎟️ Race Ready</h2>
 
 <table id="evtTable">
 
 <tr>
 <th>Cliente</th>
-<th>Ativado</th>
 <th>Refeição</th>
-<th>Entradas</th>
+<th>Quantidade</th>
 </tr>
 
 </table>
 
+
+<!-- RSC -->
 
 <h2>🏁 RSC</h2>
 
@@ -212,9 +215,8 @@ button{
 
 <tr>
 <th>Cliente</th>
-<th>Ativado</th>
 <th>Refeição</th>
-<th>Entradas</th>
+<th>Quantidade</th>
 </tr>
 
 </table>
@@ -241,6 +243,7 @@ async function loadDashboard(){
 
 
   // EVT
+
   document.getElementById(
     "evtVendidos"
   ).innerHTML =
@@ -258,6 +261,7 @@ async function loadDashboard(){
 
 
   // RSC
+
   document.getElementById(
     "rscAtivados"
   ).innerHTML =
@@ -275,6 +279,7 @@ async function loadDashboard(){
 
 
   // PROM
+
   document.getElementById(
     "promAtivados"
   ).innerHTML =
@@ -292,6 +297,7 @@ async function loadDashboard(){
 
 
   // BOSS
+
   document.getElementById(
     "bossAtivados"
   ).innerHTML =
@@ -315,9 +321,8 @@ async function loadDashboard(){
   `
   <tr>
   <th>Cliente</th>
-  <th>Ativado</th>
   <th>Refeição</th>
-  <th>Entradas</th>
+  <th>Quantidade</th>
   </tr>
   `;
 
@@ -328,9 +333,8 @@ async function loadDashboard(){
     `
     <tr>
       <td>${t.cliente}</td>
-      <td>${t.ativo}</td>
       <td>${t.refeicao}</td>
-      <td>${t.entradas}</td>
+      <td>${t.quantidade}</td>
     </tr>
     `;
   });
@@ -347,9 +351,8 @@ async function loadDashboard(){
   `
   <tr>
   <th>Cliente</th>
-  <th>Ativado</th>
   <th>Refeição</th>
-  <th>Entradas</th>
+  <th>Quantidade</th>
   </tr>
   `;
 
@@ -360,9 +363,8 @@ async function loadDashboard(){
     `
     <tr>
       <td>${t.cliente}</td>
-      <td>${t.ativo}</td>
       <td>${t.refeicao}</td>
-      <td>${t.entradas}</td>
+      <td>${t.quantidade}</td>
     </tr>
     `;
   });
