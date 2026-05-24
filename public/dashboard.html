@@ -6,8 +6,8 @@
 <meta charset="UTF-8">
 
 <meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0"
+name="viewport"
+content="width=device-width, initial-scale=1.0"
 >
 
 <title>Dashboard</title>
@@ -63,6 +63,35 @@ h1{
   font-size:22px;
 
   margin:15px 0;
+}
+
+table{
+
+  width:100%;
+
+  border-collapse:collapse;
+
+  background:white;
+
+  margin-top:20px;
+
+  margin-bottom:40px;
+}
+
+th,td{
+
+  border:1px solid #ccc;
+
+  padding:12px;
+
+  text-align:center;
+}
+
+th{
+
+  background:#222;
+
+  color:white;
 }
 
 button{
@@ -163,6 +192,34 @@ button{
 </div>
 
 
+<h2>🎟️ Race Ready</h2>
+
+<table id="evtTable">
+
+<tr>
+<th>Cliente</th>
+<th>Ativado</th>
+<th>Refeição</th>
+<th>Entradas</th>
+</tr>
+
+</table>
+
+
+<h2>🏁 RSC</h2>
+
+<table id="rscTable">
+
+<tr>
+<th>Cliente</th>
+<th>Ativado</th>
+<th>Refeição</th>
+<th>Entradas</th>
+</tr>
+
+</table>
+
+
 <button
 onclick="window.location='/'"
 >
@@ -249,6 +306,70 @@ async function loadDashboard(){
 
     "Entradas: " +
     data.bossEntradas;
+
+
+  // EVT TABLE
+
+  let evtHTML =
+
+  `
+  <tr>
+  <th>Cliente</th>
+  <th>Ativado</th>
+  <th>Refeição</th>
+  <th>Entradas</th>
+  </tr>
+  `;
+
+  data.evtTabela.forEach(t=>{
+
+    evtHTML +=
+
+    `
+    <tr>
+      <td>${t.cliente}</td>
+      <td>${t.ativo}</td>
+      <td>${t.refeicao}</td>
+      <td>${t.entradas}</td>
+    </tr>
+    `;
+  });
+
+  document.getElementById(
+    "evtTable"
+  ).innerHTML = evtHTML;
+
+
+  // RSC TABLE
+
+  let rscHTML =
+
+  `
+  <tr>
+  <th>Cliente</th>
+  <th>Ativado</th>
+  <th>Refeição</th>
+  <th>Entradas</th>
+  </tr>
+  `;
+
+  data.rscTabela.forEach(t=>{
+
+    rscHTML +=
+
+    `
+    <tr>
+      <td>${t.cliente}</td>
+      <td>${t.ativo}</td>
+      <td>${t.refeicao}</td>
+      <td>${t.entradas}</td>
+    </tr>
+    `;
+  });
+
+  document.getElementById(
+    "rscTable"
+  ).innerHTML = rscHTML;
 }
 
 loadDashboard();
