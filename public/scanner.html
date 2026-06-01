@@ -261,30 +261,42 @@ else{
 
 1 = Dia 1 Almoço
 2 = Dia 1 Jantar
-3 = Dia 2 Almoço`
+3 = Dia 2 Almoço
+4 = Dia 2 Jantar
+5 = Dia 3 Almoço`
 
-  );
+);
 
 
-  if(ref === "1"){
+ if(ref === "1"){
 
-    refeicao =
-      "dia1_almoco";
-  }
-
-  else if(ref === "2"){
-
-    refeicao =
-      "dia1_jantar";
-  }
-
-  else{
-
-    refeicao =
-      "dia2_almoco";
-  }
+  refeicao =
+    "dia1_almoco";
 }
 
+else if(ref === "2"){
+
+  refeicao =
+    "dia1_jantar";
+}
+
+else if(ref === "3"){
+
+  refeicao =
+    "dia2_almoco";
+}
+
+else if(ref === "4"){
+
+  refeicao =
+    "dia2_jantar";
+}
+
+else{
+
+  refeicao =
+    "dia3_almoco";
+}
 
 // ======================================================
 // VARS
@@ -445,69 +457,94 @@ async function validarQR(texto){
       await res.json();
 
 
-    // ======================================================
-    // VALID
-    // ======================================================
+   // VALID
+if(data.status === "valid"){
 
-    if(data.status === "valid"){
+  resultEl.innerHTML =
+    "✅ Entrada válida";
 
-      resultEl.innerHTML =
-        "✅ Entrada válida";
+  resultEl.style.color =
+    "green";
 
-      resultEl.style.color =
-        "green";
-
-      loadStats();
-    }
+  loadStats();
+}
 
 
-    // ======================================================
-    // USED
-    // ======================================================
+// USED
+else if(data.status === "used"){
 
-    else if(data.status === "used"){
+  resultEl.innerHTML =
+    "❌ Já utilizado";
 
-      resultEl.innerHTML =
-        "❌ Já utilizado";
-
-      resultEl.style.color =
-        "red";
-    }
+  resultEl.style.color =
+    "red";
+}
 
 
-    // ======================================================
-    // LIMIT
-    // ======================================================
+// LIMIT
+else if(data.status === "limit"){
 
-    else if(data.status === "limit"){
+  resultEl.innerHTML =
+    "⛔ Limite atingido";
 
-      resultEl.innerHTML =
-        "⛔ Limite atingido";
-
-      resultEl.style.color =
-        "red";
-    }
+  resultEl.style.color =
+    "red";
+}
 
 
-    // ======================================================
-    // NOT ACTIVE
-    // ======================================================
+// NOT ACTIVE
+else if(data.status === "not_active"){
 
-    else if(data.status === "not_active"){
+  resultEl.innerHTML =
+    "🟡 Não ativado";
 
-      resultEl.innerHTML =
-        "🟡 Não ativado";
-
-      resultEl.style.color =
-        "orange";
-    }
+  resultEl.style.color =
+    "orange";
+}
 
 
-    // ======================================================
-    // INVALID
-    // ======================================================
+// NOVO
+else if(data.status === "meal_not_allowed"){
 
-    else{
+  resultEl.innerHTML =
+    "❌ Sem direito a esta refeição";
+
+  resultEl.style.color =
+    "red";
+}
+
+
+// NOVO
+else if(data.status === "meal_used"){
+
+  resultEl.innerHTML =
+    "❌ Refeição já utilizada";
+
+  resultEl.style.color =
+    "red";
+}
+
+
+// NOVO
+else if(data.status === "wait_4_hours"){
+
+  resultEl.innerHTML =
+    "⏳ Aguarde 4 horas";
+
+  resultEl.style.color =
+    "orange";
+}
+
+
+// INVALID
+else{
+
+  resultEl.innerHTML =
+    "⚠️ Inválido";
+
+  resultEl.style.color =
+    "red";
+}
 
       resultEl.innerHTML =
         "⚠️ Inválido";
