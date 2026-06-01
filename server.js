@@ -74,7 +74,6 @@ function checkAuth(req,res,next){
   .send("Não autorizado");
 }
 
-
 // ======================================================
 // VALIDAR QR
 // ======================================================
@@ -129,22 +128,118 @@ async(req,res)=>{
       ticket.entradas || 0;
 
 
-    // EVT / RSC
+    // ======================================================
+    // EVT / RSC NOVO SISTEMA
+    // ======================================================
+
     if(
-
       !rsProm &&
-      !boss &&
-      ticket.used
-
+      !boss
     ){
 
+      const allowed =
+        ticket.allowed_meals || [];
+
+      const used =
+        ticket.used_meals || [];
+
+      const lastMeal =
+        ticket.last_meal_time || null;
+
+
+      // tem direito?
+
+      if(
+
+        !allowed.includes(
+          refeicao
+        )
+
+      ){
+
+        return res.json({
+
+          status:"meal_not_allowed"
+        });
+      }
+
+
+      // já usou?
+
+      if(
+
+        used.includes(
+          refeicao
+        )
+
+      ){
+
+        return res.json({
+
+          status:"meal_used"
+        });
+      }
+
+
+      // regra 4 horas
+
+      if(lastMeal){
+
+        const diffHours =
+
+          (
+
+            Date.now() -
+
+            new Date(lastMeal)
+            .getTime()
+
+          )
+
+          /
+
+          1000
+
+          /
+
+          60
+
+          /
+
+          60;
+
+
+        if(diffHours < 4){
+
+          return res.json({
+
+            status:"wait_4_hours"
+          });
+        }
+      }
+
+
+      used.push(refeicao);
+
+      await docRef.update({
+
+        used_meals:used,
+
+        last_meal_time:
+          new Date()
+      });
+
       return res.json({
-        status:"used"
+
+        status:"valid"
       });
     }
 
 
-    // RSprom limite 3
+    // ======================================================
+    // RSPROM
+    // ======================================================
+
     if(
 
       rsProm &&
@@ -153,10 +248,78 @@ async(req,res)=>{
     ){
 
       return res.json({
+
         status:"limit"
       });
     }
 
+
+    if(rsProm){
+
+      const historico =
+
+        ticket.historico_refeicoes || [];
+
+      historico.push(refeicao);
+
+      await docRef.update({
+
+        entradas:
+          entradas + 1,
+
+        last_checkin:
+          new Date(),
+
+        historico_refeicoes:
+          historico
+      });
+
+      return res.json({
+
+        status:"valid"
+      });
+    }
+
+
+    // ======================================================
+    // BOSS
+    // ======================================================
+
+    const historico =
+
+      ticket.historico_refeicoes || [];
+
+    historico.push(refeicao);
+
+    await docRef.update({
+
+      entradas:
+        entradas + 1,
+
+      last_checkin:
+        new Date(),
+
+      historico_refeicoes:
+        historico
+    });
+
+    return res.json({
+
+      status:"valid"
+    });
+
+  }
+
+  catch(err){
+
+    console.error(err);
+
+    res.status(500).json({
+
+      status:"error"
+    });
+  }
+});
 
     // ======================================================
     // EVT / RSC
@@ -275,6 +438,11 @@ async(req,res)=>{
     const cliente =
       req.query.cliente || "Sem Nome";
 
+    const nrRefeicoes =
+      parseInt(
+        req.query.refeicoes || "1"
+      );
+
     const docRef =
       db.collection("tickets")
       .doc(id);
@@ -289,6 +457,24 @@ async(req,res)=>{
       });
     }
 
+    let allowed_meals = [];
+
+    if(nrRefeicoes >= 1)
+      allowed_meals.push("dia1_almoco");
+
+    if(nrRefeicoes >= 2)
+      allowed_meals.push("dia1_jantar");
+
+    if(nrRefeicoes >= 3)
+      allowed_meals.push("dia2_almoco");
+
+    if(nrRefeicoes >= 4)
+      allowed_meals.push("dia2_jantar");
+
+    if(nrRefeicoes >= 5)
+      allowed_meals.push("dia3_almoco");
+
+
     await docRef.update({
 
       active:true,
@@ -296,7 +482,13 @@ async(req,res)=>{
       activated_at:
         new Date(),
 
-      cliente
+      cliente,
+
+      allowed_meals,
+
+      used_meals:[],
+
+      last_meal_time:null
     });
 
     return res.json({
@@ -314,8 +506,6 @@ async(req,res)=>{
     });
   }
 });
-
-
 // ======================================================
 // DASHBOARD API
 // ======================================================
