@@ -128,113 +128,111 @@ async(req,res)=>{
       ticket.entradas || 0;
 
 
-    // ======================================================
-    // EVT / RSC NOVO SISTEMA
-    // ======================================================
+// ======================================================
+// EVT / RSC
+// ======================================================
 
-    if(
-      !rsProm &&
-      !boss
-    ){
+if(
+  !rsProm &&
+  !boss
+){
 
-      const allowed =
-        ticket.allowed_meals || [];
+  const mealLimit =
+    ticket.meal_limit || 1;
 
-      const used =
-        ticket.used_meals || [];
+  const used =
+    ticket.used_meals || [];
 
-      const lastMeal =
-        ticket.last_meal_time || null;
-
-
-      // tem direito?
-
-      if(
-
-        !allowed.includes(
-          refeicao
-        )
-
-      ){
-
-        return res.json({
-
-          status:"meal_not_allowed"
-        });
-      }
+  const lastMeal =
+    ticket.last_meal_time || null;
 
 
-      // já usou?
+  // refeição repetida
 
-      if(
+  if(
 
-        used.includes(
-          refeicao
-        )
+    used.includes(
+      refeicao
+    )
 
-      ){
+  ){
 
-        return res.json({
+    return res.json({
 
-          status:"meal_used"
-        });
-      }
-
-
-      // regra 4 horas
-
-      if(lastMeal){
-
-        const diffHours =
-
-          (
-
-            Date.now() -
-
-            new Date(lastMeal)
-            .getTime()
-
-          )
-
-          /
-
-          1000
-
-          /
-
-          60
-
-          /
-
-          60;
+      status:"meal_used"
+    });
+  }
 
 
-        if(diffHours < 4){
+  // limite atingido
 
-          return res.json({
+  if(
 
-            status:"wait_4_hours"
-          });
-        }
-      }
+    used.length >=
+    mealLimit
+
+  ){
+
+    return res.json({
+
+      status:"limit"
+    });
+  }
 
 
-      used.push(refeicao);
+  // regra 4 horas
 
-      await docRef.update({
+  if(lastMeal){
 
-        used_meals:used,
+    const diffHours =
 
-        last_meal_time:
-          new Date()
-      });
+      (
+
+        Date.now() -
+
+        new Date(lastMeal)
+        .getTime()
+
+      )
+
+      /
+
+      1000
+
+      /
+
+      60
+
+      /
+
+      60;
+
+
+    if(diffHours < 4){
 
       return res.json({
 
-        status:"valid"
+        status:"wait_4_hours"
       });
     }
+  }
 
+
+  used.push(refeicao);
+
+  await docRef.update({
+
+    used_meals:used,
+
+    last_meal_time:
+      new Date()
+  });
+
+  return res.json({
+
+    status:"valid"
+  });
+}
 
     // ======================================================
     // RSPROM
@@ -361,24 +359,6 @@ async(req,res)=>{
       });
     }
 
-    let allowed_meals = [];
-
-    if(nrRefeicoes >= 1)
-      allowed_meals.push("dia1_almoco");
-
-    if(nrRefeicoes >= 2)
-      allowed_meals.push("dia1_jantar");
-
-    if(nrRefeicoes >= 3)
-      allowed_meals.push("dia2_almoco");
-
-    if(nrRefeicoes >= 4)
-      allowed_meals.push("dia2_jantar");
-
-    if(nrRefeicoes >= 5)
-      allowed_meals.push("dia3_almoco");
-
-
     await docRef.update({
 
       active:true,
@@ -388,7 +368,8 @@ async(req,res)=>{
 
       cliente,
 
-      allowed_meals,
+      meal_limit:
+        nrRefeicoes,
 
       used_meals:[],
 
