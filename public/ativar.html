@@ -164,7 +164,6 @@ const cliente = prompt(
   "Nome do Cliente"
 );
 
-
 if(!cliente){
 
   alert("Cliente obrigatório");
@@ -173,10 +172,44 @@ if(!cliente){
 }
 
 
+const refeicoes = prompt(
+
+  "Número de refeições (1 a 5)",
+
+  "1"
+);
+
+if(
+
+  !refeicoes ||
+
+  isNaN(refeicoes) ||
+
+  Number(refeicoes) < 1 ||
+
+  Number(refeicoes) > 5
+
+){
+
+  alert(
+
+    "Número de refeições inválido"
+  );
+
+  window.location = "/";
+}
+
+
 document.getElementById("clienteBox")
 .innerHTML =
 
-"👤 Cliente: " + cliente;
+"👤 Cliente: " +
+
+cliente +
+
+"<br>🍽️ Refeições: " +
+
+refeicoes;
 
 
 // ======================================================
@@ -220,7 +253,11 @@ async function ativarQR(texto){
 
         "?cliente=" +
 
-        encodeURIComponent(cliente)
+        encodeURIComponent(cliente) +
+
+        "&refeicoes=" +
+
+        refeicoes
       );
 
     const data =
