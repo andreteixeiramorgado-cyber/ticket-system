@@ -211,7 +211,7 @@ font-weight:bold;
 
 <tr>
 <th>Cliente</th>
-<th>Comprados</th>
+<th>Ativados</th>
 <th>A1</th>
 <th>J1</th>
 <th>A2</th>
@@ -336,7 +336,7 @@ async function loadDashboard(){
 `
 <tr>
 <th>Cliente</th>
-<th>Comprados</th>
+<th>Ativados</th>
 <th>A1</th>
 <th>J1</th>
 <th>A2</th>
@@ -350,7 +350,7 @@ async function loadDashboard(){
   evtHTML += `
 <tr>
 <td>${t.cliente}</td>
-<td>${t.comprados}</td>
+<td>${t.ativados}</td>
 <td>${t.a1}</td>
 <td>${t.j1}</td>
 <td>${t.a2}</td>
@@ -367,9 +367,8 @@ document.getElementById(
 `
 TOTAL REFEIÇÕES<br><br>
 
-Comprados:
-${data.evtTotais.comprados}
-<br>
+Ativados:
+${data.evtTotais.ativados}
 
 Almoço D1:
 ${data.evtTotais.a1}
