@@ -423,6 +423,18 @@ async(req,res)=>{
     let bossEntradas = 0;
 
     let evtResumo = {};
+
+    let evtTotais = {
+
+      comprados:0,
+
+      a1:0,
+      j1:0,
+      a2:0,
+      j2:0,
+      a3:0
+    };
+    
     let rscResumo = {};
 
     snapshot.forEach(doc=>{
@@ -433,44 +445,84 @@ async(req,res)=>{
       const t =
         doc.data();
 
+// ======================================================
+// EVT
+// ======================================================
 
-      // ======================================================
-      // EVT
-      // ======================================================
+if(id.includes("EVT")){
 
-      if(id.includes("EVT")){
+  if(t.active){
 
-        if(t.active){
+    evtVendidos++;
+  }
 
-          evtVendidos++;
-        }
+  evtEntradas +=
+    (t.used_meals || []).length;
 
-        evtEntradas +=
-          (t.used_meals || []).length;
+  const cliente =
+    t.cliente || "Sem Nome";
 
-        const cliente =
-          t.cliente || "Sem Nome";
+  if(!evtResumo[cliente]){
 
-        const evtRefeicao =
-          (t.used_meals || [])[0] || "-";
+    evtResumo[cliente] = {
 
-        const key =
-          cliente + "|" + evtRefeicao;
+      cliente,
 
-        if(!evtResumo[key]){
+      comprados:0,
 
-          evtResumo[key] = {
+      a1:0,
+      j1:0,
+      a2:0,
+      j2:0,
+      a3:0
+    };
+  }
 
-            cliente,
-            refeicao: evtRefeicao,
-            quantidade:0
-          };
-        }
+  const comprados =
+    (t.meal_limit || 0);
 
-        evtResumo[key].quantidade +=
-          (t.used_meals || []).length;
-      }
+  evtResumo[cliente].comprados +=
+    comprados;
 
+  evtTotais.comprados +=
+    comprados;
+
+  (t.used_meals || []).forEach(meal=>{
+
+    if(meal === "dia1_almoco"){
+
+      evtResumo[cliente].a1++;
+      evtTotais.a1++;
+    }
+
+    if(meal === "dia1_jantar"){
+
+      evtResumo[cliente].j1++;
+      evtTotais.j1++;
+    }
+
+    if(meal === "dia2_almoco"){
+
+      evtResumo[cliente].a2++;
+      evtTotais.a2++;
+    }
+
+    if(meal === "dia2_jantar"){
+
+      evtResumo[cliente].j2++;
+      evtTotais.j2++;
+    }
+
+    if(meal === "dia3_almoco"){
+
+      evtResumo[cliente].a3++;
+      evtTotais.a3++;
+    }
+
+  });
+
+}
+      
 
       // ======================================================
       // RSC
@@ -558,8 +610,26 @@ async(req,res)=>{
       bossAtivados,
       bossEntradas,
 
-      evtTabela:
-        Object.values(evtResumo),
+     evtTabela:
+
+  Object.values(evtResumo)
+
+  .filter(c =>
+
+    c.comprados > 0 ||
+
+    c.a1 > 0 ||
+
+    c.j1 > 0 ||
+
+    c.a2 > 0 ||
+
+    c.j2 > 0 ||
+
+    c.a3 > 0
+  ),
+
+evtTotais,
 
       rscTabela:
         Object.values(rscResumo)
