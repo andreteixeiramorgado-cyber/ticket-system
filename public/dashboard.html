@@ -360,6 +360,22 @@ async function loadDashboard(){
 `;
   });
 
+ evtHTML += `
+<tr
+style="
+font-weight:bold;
+background:#f0f0f0;
+">
+<td>TOTAL</td>
+<td>${data.evtTotais.ativados}</td>
+<td>${data.evtTotais.a1}</td>
+<td>${data.evtTotais.j1}</td>
+<td>${data.evtTotais.a2}</td>
+<td>${data.evtTotais.j2}</td>
+<td>${data.evtTotais.a3}</td>
+</tr>
+`; 
+
 document.getElementById(
   "evtTotais"
 ).innerHTML =
