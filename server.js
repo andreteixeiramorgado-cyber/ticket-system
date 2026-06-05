@@ -610,6 +610,8 @@ if(t.active){
 
      evtTabela:
 
+ evtTabela:
+
   Object.values(evtResumo)
 
   .filter(c =>
@@ -625,6 +627,11 @@ if(t.active){
     c.j2 > 0 ||
 
     c.a3 > 0
+  )
+
+  .sort(
+    (a,b)=>
+      b.comprados - a.comprados
   ),
 
 evtTotais,
