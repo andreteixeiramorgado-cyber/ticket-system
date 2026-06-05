@@ -446,14 +446,14 @@ async(req,res)=>{
         }
 
         evtEntradas +=
-          t.used ? 1 : 0;
+          (t.used_meals || []).length;
 
 
         const cliente =
           t.cliente || "Sem Nome";
 
         const refeicao =
-          (t.refeicoes || [])[0] || "-";
+          (t.used_meals || [])[0] || "-";
 
         const key =
           cliente + "|" + refeicao;
@@ -469,8 +469,8 @@ async(req,res)=>{
           };
         }
 
-        evtResumo[key].quantidade +=
-          t.used ? 1 : 0;
+        const refeicao =
+  (t.used_meals || [])[0] || "-";
       }
 
 
@@ -486,14 +486,14 @@ async(req,res)=>{
         }
 
         rscEntradas +=
-          t.used ? 1 : 0;
+         (t.used_meals || []).length;
 
 
         const cliente =
           t.cliente || "Sem Nome";
 
-        const refeicao =
-          (t.refeicoes || [])[0] || "-";
+       const refeicao =
+          (t.used_meals || [])[0] || "-";
 
         const key =
           cliente + "|" + refeicao;
@@ -509,8 +509,8 @@ async(req,res)=>{
           };
         }
 
-        rscResumo[key].quantidade +=
-          t.used ? 1 : 0;
+       const refeicao =
+          (t.used_meals || [])[0] || "-";
       }
 
 
