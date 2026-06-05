@@ -391,6 +391,7 @@ async(req,res)=>{
     });
   }
 });
+
 // ======================================================
 // DASHBOARD API
 // ======================================================
@@ -424,7 +425,6 @@ async(req,res)=>{
     let evtResumo = {};
     let rscResumo = {};
 
-
     snapshot.forEach(doc=>{
 
       const id =
@@ -448,29 +448,27 @@ async(req,res)=>{
         evtEntradas +=
           (t.used_meals || []).length;
 
-
         const cliente =
           t.cliente || "Sem Nome";
 
-        const refeicao =
+        const evtRefeicao =
           (t.used_meals || [])[0] || "-";
 
         const key =
-          cliente + "|" + refeicao;
-
+          cliente + "|" + evtRefeicao;
 
         if(!evtResumo[key]){
 
           evtResumo[key] = {
 
             cliente,
-            refeicao,
+            refeicao: evtRefeicao,
             quantidade:0
           };
         }
 
-        const refeicao =
-  (t.used_meals || [])[0] || "-";
+        evtResumo[key].quantidade +=
+          (t.used_meals || []).length;
       }
 
 
@@ -486,31 +484,29 @@ async(req,res)=>{
         }
 
         rscEntradas +=
-         (t.used_meals || []).length;
-
+          (t.used_meals || []).length;
 
         const cliente =
           t.cliente || "Sem Nome";
 
-       const refeicao =
+        const rscRefeicao =
           (t.used_meals || [])[0] || "-";
 
         const key =
-          cliente + "|" + refeicao;
-
+          cliente + "|" + rscRefeicao;
 
         if(!rscResumo[key]){
 
           rscResumo[key] = {
 
             cliente,
-            refeicao,
+            refeicao: rscRefeicao,
             quantidade:0
           };
         }
 
-       const refeicao =
-          (t.used_meals || [])[0] || "-";
+        rscResumo[key].quantidade +=
+          (t.used_meals || []).length;
       }
 
 
@@ -580,7 +576,6 @@ async(req,res)=>{
     });
   }
 });
-
 
 // ======================================================
 // EXPORT CSV
