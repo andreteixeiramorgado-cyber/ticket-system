@@ -426,14 +426,14 @@ async(req,res)=>{
 
     let evtTotais = {
 
-      comprados:0,
+  ativados:0,
 
-      a1:0,
-      j1:0,
-      a2:0,
-      j2:0,
-      a3:0
-    };
+  a1:0,
+  j1:0,
+  a2:0,
+  j2:0,
+  a3:0
+};
     
     let rscResumo = {};
 
@@ -464,28 +464,26 @@ if(id.includes("EVT")){
 
   if(!evtResumo[cliente]){
 
-    evtResumo[cliente] = {
+   evtResumo[cliente] = {
 
-      cliente,
+  cliente,
 
-      comprados:0,
+  ativados:0,
 
-      a1:0,
-      j1:0,
-      a2:0,
-      j2:0,
-      a3:0
-    };
+  a1:0,
+  j1:0,
+  a2:0,
+  j2:0,
+  a3:0
+};
   }
 
-  const comprados =
-    (t.meal_limit || 0);
+if(t.active){
 
-  evtResumo[cliente].comprados +=
-    comprados;
+  evtResumo[cliente].ativados++;
 
-  evtTotais.comprados +=
-    comprados;
+  evtTotais.ativados++;
+}
 
   (t.used_meals || []).forEach(meal=>{
 
