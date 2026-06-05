@@ -191,7 +191,18 @@ button{
 
 </div>
 
-
+<div
+id="evtTotais"
+style="
+background:white;
+padding:20px;
+border-radius:10px;
+margin-bottom:20px;
+font-size:20px;
+font-weight:bold;
+">
+</div>
+  
 <!-- EVT -->
 
 <h2>🎟️ Race Ready</h2>
@@ -200,8 +211,12 @@ button{
 
 <tr>
 <th>Cliente</th>
-<th>Refeição</th>
-<th>Quantidade</th>
+<th>Comprados</th>
+<th>A1</th>
+<th>J1</th>
+<th>A2</th>
+<th>J2</th>
+<th>A3</th>
 </tr>
 
 </table>
@@ -328,17 +343,50 @@ async function loadDashboard(){
 
   data.evtTabela.forEach(t=>{
 
-    evtHTML +=
-
-    `
-    <tr>
-      <td>${t.cliente}</td>
-      <td>${t.refeicao}</td>
-      <td>${t.quantidade}</td>
-    </tr>
-    `;
+  evtHTML += `
+<tr>
+<td>${t.cliente}</td>
+<td>${t.comprados}</td>
+<td>${t.a1}</td>
+<td>${t.j1}</td>
+<td>${t.a2}</td>
+<td>${t.j2}</td>
+<td>${t.a3}</td>
+</tr>
+`;
   });
 
+document.getElementById(
+  "evtTotais"
+).innerHTML =
+
+`
+TOTAL REFEIÇÕES<br><br>
+
+Comprados:
+${data.evtTotais.comprados}
+<br>
+
+Almoço D1:
+${data.evtTotais.a1}
+<br>
+
+Jantar D1:
+${data.evtTotais.j1}
+<br>
+
+Almoço D2:
+${data.evtTotais.a2}
+<br>
+
+Jantar D2:
+${data.evtTotais.j2}
+<br>
+
+Almoço D3:
+${data.evtTotais.a3}
+`;
+  
   document.getElementById(
     "evtTable"
   ).innerHTML = evtHTML;
