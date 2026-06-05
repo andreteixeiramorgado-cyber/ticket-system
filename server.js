@@ -338,7 +338,16 @@ async(req,res)=>{
       req.params.id;
 
     const cliente =
-      req.query.cliente || "Sem Nome";
+
+  (req.query.cliente || "Sem Nome")
+
+  .trim()
+
+  .toUpperCase()
+
+  .normalize("NFD")
+
+  .replace(/[\u0300-\u036f]/g,"");
 
     const nrRefeicoes =
       parseInt(
