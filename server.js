@@ -617,15 +617,13 @@ if(t.active){
       bossAtivados,
       bossEntradas,
 
-     evtTabela:
-
- evtTabela:
+  evtTabela:
 
   Object.values(evtResumo)
 
   .filter(c =>
 
-    c.comprados > 0 ||
+    c.ativados > 0 ||
 
     c.a1 > 0 ||
 
@@ -640,9 +638,8 @@ if(t.active){
 
   .sort(
     (a,b)=>
-      b.comprados - a.comprados
+      b.ativados - a.ativados
   ),
-
 evtTotais,
 
       rscTabela:
