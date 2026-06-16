@@ -339,15 +339,15 @@ async(req,res)=>{
 
     const cliente =
 
-  (req.query.cliente || "Sem Nome")
+      (req.query.cliente || "Sem Nome")
 
-  .trim()
+      .trim()
 
-  .toUpperCase()
+      .toUpperCase()
 
-  .normalize("NFD")
+      .normalize("NFD")
 
-  .replace(/[\u0300-\u036f]/g,"");
+      .replace(/[\u0300-\u036f]/g,"");
 
     const nrRefeicoes =
       parseInt(
@@ -365,6 +365,21 @@ async(req,res)=>{
 
       return res.json({
         status:"invalid"
+      });
+    }
+
+    const ticket =
+      doc.data();
+
+    // ======================================================
+    // JÁ ATIVADO?
+    // ======================================================
+
+    if(ticket.active){
+
+      return res.json({
+
+        status:"already_active"
       });
     }
 
