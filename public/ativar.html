@@ -274,6 +274,19 @@ async function ativarQR(texto){
         "green";
     }
 
+
+      else if(
+  data.status === "already_active"
+){
+
+  resultEl.innerHTML =
+
+    "⚠️ Bilhete já ativado";
+
+  resultEl.style.color =
+    "orange";
+}
+        
     else{
 
       resultEl.innerHTML =
@@ -296,7 +309,7 @@ async function ativarQR(texto){
       resultEl.style.color =
         "black";
 
-    },3000);
+    },2000);
 
 
     setTimeout(()=>{
