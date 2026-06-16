@@ -677,7 +677,6 @@ async(req,res)=>{
 
   let rows = [];
 
-
   snapshot.forEach(doc=>{
 
     const id =
@@ -688,6 +687,7 @@ async(req,res)=>{
 
 
     // EVT
+
     if(
       tipo === "csv_evt" &&
       id.includes("EVT")
@@ -703,17 +703,21 @@ async(req,res)=>{
         Ativo:
           t.active || false,
 
-        Entradas:
-          t.used ? 1 : 0,
+        Refeicoes_Compradas:
+          t.meal_limit || 0,
 
-        Refeicao:
-          (t.refeicoes || [])
+        Refeicoes_Consumidas:
+          (t.used_meals || []).length,
+
+        Historico:
+          (t.used_meals || [])
           .join(" | ")
       });
     }
 
 
     // VIP
+
     if(
       tipo === "csv_vip" &&
       (
@@ -732,7 +736,7 @@ async(req,res)=>{
         Entradas:
           t.entradas || 0,
 
-        Refeicao:
+        Historico:
           (t.historico_refeicoes || [])
           .join(" | ")
       });
@@ -740,6 +744,7 @@ async(req,res)=>{
 
 
     // RSC
+
     if(
       tipo === "csv_rsc" &&
       id.includes("RSC")
@@ -755,17 +760,19 @@ async(req,res)=>{
         Ativo:
           t.active || false,
 
-        Entradas:
-          t.used ? 1 : 0,
+        Refeicoes_Compradas:
+          t.meal_limit || 0,
 
-        Refeicao:
-          (t.refeicoes || [])
+        Refeicoes_Consumidas:
+          (t.used_meals || []).length,
+
+        Historico:
+          (t.used_meals || [])
           .join(" | ")
       });
     }
 
   });
-
 
   const ws =
     XLSX.utils.json_to_sheet(rows);
@@ -796,8 +803,6 @@ async(req,res)=>{
 
   res.send(buffer);
 });
-
-
 // ======================================================
 // EXPORT EXCEL
 // ======================================================
@@ -817,7 +822,6 @@ async(req,res)=>{
 
   let rows = [];
 
-
   snapshot.forEach(doc=>{
 
     const id =
@@ -828,6 +832,7 @@ async(req,res)=>{
 
 
     // EVT
+
     if(
       tipo === "excel_evt" &&
       id.includes("EVT")
@@ -843,17 +848,21 @@ async(req,res)=>{
         Ativo:
           t.active || false,
 
-        Entradas:
-          t.used ? 1 : 0,
+        Refeicoes_Compradas:
+          t.meal_limit || 0,
 
-        Refeicao:
-          (t.refeicoes || [])
+        Refeicoes_Consumidas:
+          (t.used_meals || []).length,
+
+        Historico:
+          (t.used_meals || [])
           .join(" | ")
       });
     }
 
 
     // VIP
+
     if(
       tipo === "excel_vip" &&
       (
@@ -872,7 +881,7 @@ async(req,res)=>{
         Entradas:
           t.entradas || 0,
 
-        Refeicao:
+        Historico:
           (t.historico_refeicoes || [])
           .join(" | ")
       });
@@ -880,6 +889,7 @@ async(req,res)=>{
 
 
     // RSC
+
     if(
       tipo === "excel_rsc" &&
       id.includes("RSC")
@@ -895,17 +905,19 @@ async(req,res)=>{
         Ativo:
           t.active || false,
 
-        Entradas:
-          t.used ? 1 : 0,
+        Refeicoes_Compradas:
+          t.meal_limit || 0,
 
-        Refeicao:
-          (t.refeicoes || [])
+        Refeicoes_Consumidas:
+          (t.used_meals || []).length,
+
+        Historico:
+          (t.used_meals || [])
           .join(" | ")
       });
     }
 
   });
-
 
   const ws =
     XLSX.utils.json_to_sheet(rows);
