@@ -16,16 +16,54 @@
       const data = await res.json();
 
       const el = document.getElementById("status");
+if(data.status === "active"){
 
-      if (data.status === "valid") {
-        el.innerText = "🟢 Válido";
-        el.style.color = "lime";
-      } else if (data.status === "used") {
-        el.innerText = "🔴 Já utilizado";
-        el.style.color = "red";
-      } else {
-        el.innerText = "⚠️ Inválido";
-      }
+  if(data.limite){
+
+    el.innerHTML =
+
+      "🟢 Bilhete Ativo<br><br>" +
+
+      data.usados +
+
+      " / " +
+
+      data.limite +
+
+      " refeições utilizadas";
+  }
+
+  else{
+
+    el.innerHTML =
+
+      "🟢 Bilhete Ativo";
+  }
+
+  el.style.color = "lime";
+}
+
+else if(
+  data.status === "not_active"
+){
+
+  el.innerText =
+
+    "⚪ Bilhete não ativado";
+
+  el.style.color =
+    "orange";
+}
+
+else{
+
+  el.innerText =
+
+    "⚠️ Bilhete inválido";
+
+  el.style.color =
+    "red";
+}
     }
 
     check();
