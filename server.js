@@ -1215,6 +1215,101 @@ if(tipo === "desativar_rsc_unused"){
   });
 });
 
+// ======================================================
+// STATUS TICKET
+// ======================================================
+
+app.get(
+
+  "/api/status/:id",
+
+async(req,res)=>{
+
+  try{
+
+    const id =
+      req.params.id;
+
+    const doc =
+      await db.collection("tickets")
+      .doc(id)
+      .get();
+
+    if(!doc.exists){
+
+      return res.json({
+
+        status:"invalid"
+      });
+    }
+
+    const t =
+      doc.data();
+
+    // não ativado
+
+    if(!t.active){
+
+      return res.json({
+
+        status:"not_active"
+      });
+    }
+
+    // EVT / RSC
+
+    if(
+
+      !id.includes("RSprom") &&
+
+      !id.includes("BOSS")
+
+    ){
+
+      const usados =
+        (t.used_meals || []).length;
+
+      const limite =
+        t.meal_limit || 0;
+
+      return res.json({
+
+        status:"active",
+
+        cliente:
+          t.cliente || "",
+
+        usados,
+
+        limite
+      });
+    }
+
+    // VIP
+
+    return res.json({
+
+      status:"active",
+
+      cliente:
+        t.cliente || "",
+
+      entradas:
+        t.entradas || 0
+    });
+
+  }
+
+  catch(err){
+
+    console.error(err);
+
+    res.json({
+
+      status:"error"
+    });
+  }
+});
 
 // ======================================================
 // PÁGINAS
