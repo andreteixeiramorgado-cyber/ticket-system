@@ -982,123 +982,167 @@ async(req,res)=>{
   let total = 0;
 
 
-  // RESET EVT
-  if(tipo === "reset_evt"){
+// RESET EVT
+if(tipo === "reset_evt"){
 
-    for(const doc of snapshot.docs){
+  for(const doc of snapshot.docs){
 
-      if(doc.id.includes("EVT")){
+    if(doc.id.includes("EVT")){
 
-        await doc.ref.update({
+      await doc.ref.update({
 
-          active:false,
-          used:false,
-          refeicoes:[]
-        });
+        active:false,
 
-        total++;
-      }
+        activated_at:
+          admin.firestore.FieldValue.delete(),
+
+        cliente:
+          admin.firestore.FieldValue.delete(),
+
+        meal_limit:
+          admin.firestore.FieldValue.delete(),
+
+        used_meals:
+          admin.firestore.FieldValue.delete(),
+
+        last_meal_time:
+          admin.firestore.FieldValue.delete()
+      });
+
+      total++;
     }
-
-    return res.json({
-
-      message:
-        "♻️ EVT resetados: " +
-        total
-    });
   }
 
+  return res.json({
 
-  // RESET VIP
-  if(tipo === "reset_vip"){
+    message:
+      "♻️ EVT resetados: " +
+      total
+  });
+}
 
-    for(const doc of snapshot.docs){
+
+// RESET VIP
+if(tipo === "reset_vip"){
+
+  for(const doc of snapshot.docs){
+
+    if(
+
+      doc.id.includes("RSprom") ||
+
+      doc.id.includes("BOSS")
+
+    ){
+
+      await doc.ref.update({
+
+        active:false,
+
+        activated_at:
+          admin.firestore.FieldValue.delete(),
+
+        cliente:
+          admin.firestore.FieldValue.delete(),
+
+        entradas:
+          admin.firestore.FieldValue.delete(),
+
+        historico_refeicoes:
+          admin.firestore.FieldValue.delete(),
+
+        last_checkin:
+          admin.firestore.FieldValue.delete()
+      });
+
+      total++;
+    }
+  }
+
+  return res.json({
+
+    message:
+      "♻️ VIP resetados: " +
+      total
+  });
+}
+
+
+// RESET RSC
+if(tipo === "reset_rsc"){
+
+  for(const doc of snapshot.docs){
+
+    if(doc.id.includes("RSC")){
+
+      await doc.ref.update({
+
+        active:false,
+
+        activated_at:
+          admin.firestore.FieldValue.delete(),
+
+        cliente:
+          admin.firestore.FieldValue.delete(),
+
+        meal_limit:
+          admin.firestore.FieldValue.delete(),
+
+        used_meals:
+          admin.firestore.FieldValue.delete(),
+
+        last_meal_time:
+          admin.firestore.FieldValue.delete()
+      });
+
+      total++;
+    }
+  }
+
+  return res.json({
+
+    message:
+      "♻️ RSC resetados: " +
+      total
+  });
+}
+
+
+// DESATIVAR RSC NÃO USADOS
+if(tipo === "desativar_rsc_unused"){
+
+  for(const doc of snapshot.docs){
+
+    if(doc.id.includes("RSC")){
+
+      const t =
+        doc.data();
 
       if(
 
-        doc.id.includes("RSprom") ||
+        !t.used_meals ||
 
-        doc.id.includes("BOSS")
+        t.used_meals.length === 0
 
       ){
 
         await doc.ref.update({
 
-          active:false,
-          entradas:0,
-          historico_refeicoes:[]
+          active:false
         });
 
         total++;
       }
     }
-
-    return res.json({
-
-      message:
-        "♻️ VIP resetados: " +
-        total
-    });
   }
 
+  return res.json({
 
-  // RESET RSC
-  if(tipo === "reset_rsc"){
-
-    for(const doc of snapshot.docs){
-
-      if(doc.id.includes("RSC")){
-
-        await doc.ref.update({
-
-          active:false,
-          used:false,
-          refeicoes:[]
-        });
-
-        total++;
-      }
-    }
-
-    return res.json({
-
-      message:
-        "♻️ RSC resetados: " +
-        total
-    });
-  }
-
-
-  // DESATIVAR RSC NÃO USADOS
-  if(tipo === "desativar_rsc_unused"){
-
-    for(const doc of snapshot.docs){
-
-      if(doc.id.includes("RSC")){
-
-        const t =
-          doc.data();
-
-        if(!t.used){
-
-          await doc.ref.update({
-
-            active:false
-          });
-
-          total++;
-        }
-      }
-    }
-
-    return res.json({
-
-      message:
-        "❌ RSC desativados: " +
-        total
-    });
-  }
-
+    message:
+      "❌ RSC desativados: " +
+      total
+  });
+}
 
   // ATIVAR RSPROM
   if(tipo === "ativar_rsprom"){
