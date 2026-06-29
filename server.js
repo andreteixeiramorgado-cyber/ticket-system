@@ -995,46 +995,29 @@ async(req,res)=>{
 // GERAR RSPROM
 if(tipo==="gerar_rsprom"){
 
-  // apagar antigos
-  for(const doc of snapshot.docs){
+  exec("node generate-rsprom.js",(err)=>{
 
-    if(doc.id.includes("RSprom")){
+    if(err){
 
-      await doc.ref.delete();
-    }
-  }
+      console.error(err);
 
-  // criar 30 novos
-  for(let i=1;i<=30;i++){
+      return res.json({
 
-    const id =
-      "RSprom-" +
-      String(i).padStart(4,"0");
-
-    await db
-      .collection("tickets")
-      .doc(id)
-      .set({
-
-        created_at:new Date(),
-
-        active:true,
-
-        activated_at:new Date(),
-
-        meal_limit:3,
-
-        used_meals:[],
-
-        last_meal_time:null
+        message:"❌ Erro a gerar RSprom"
 
       });
-  }
 
-  return res.json({
+    }
 
-    message:"✅ 30 RSprom criados"
+    return res.json({
+
+      message:"✅ 30 RSprom gerados com sucesso"
+
+    });
+
   });
+
+  return;
 }
   
 // RESET EVT
