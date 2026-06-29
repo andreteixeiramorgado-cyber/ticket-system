@@ -991,7 +991,51 @@ async(req,res)=>{
 
   let total = 0;
 
+// GERAR RSPROM
+if(tipo==="gerar_rsprom"){
 
+  // apagar antigos
+  for(const doc of snapshot.docs){
+
+    if(doc.id.includes("RSprom")){
+
+      await doc.ref.delete();
+    }
+  }
+
+  // criar 30 novos
+  for(let i=1;i<=30;i++){
+
+    const id =
+      "RSprom-" +
+      String(i).padStart(4,"0");
+
+    await db
+      .collection("tickets")
+      .doc(id)
+      .set({
+
+        created_at:new Date(),
+
+        active:true,
+
+        activated_at:new Date(),
+
+        meal_limit:3,
+
+        used_meals:[],
+
+        last_meal_time:null
+
+      });
+  }
+
+  return res.json({
+
+    message:"✅ 30 RSprom criados"
+  });
+}
+  
 // RESET EVT
 if(tipo === "reset_evt"){
 
