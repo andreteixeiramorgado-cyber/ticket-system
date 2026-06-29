@@ -1163,10 +1163,19 @@ if(tipo === "desativar_rsc_unused"){
 
       if(doc.id.includes("RSprom")){
 
-        await doc.ref.update({
+       await doc.ref.update({
 
-          active:true
-        });
+  active:true,
+
+  activated_at:
+    new Date(),
+
+  meal_limit:3,
+
+  used_meals:[],
+
+  last_meal_time:null
+});
 
         total++;
       }
