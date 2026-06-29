@@ -234,50 +234,47 @@ if(
   });
 }
 
-    // ======================================================
-    // RSPROM
-    // ======================================================
+   // ======================================================
+// RSPROM
+// ======================================================
 
-    if(
+if(rsProm){
 
-      rsProm &&
-      entradas >= 3
+  const mealLimit =
+    ticket.meal_limit || 3;
 
-    ){
+  const used =
+    ticket.used_meals || [];
 
-      return res.json({
+  if(
 
-        status:"limit"
-      });
-    }
+    used.length >=
+    mealLimit
 
+  ){
 
-    if(rsProm){
+    return res.json({
 
-      const historico =
+      status:"limit"
+    });
+  }
 
-        ticket.historico_refeicoes || [];
+  used.push(refeicao);
 
-      historico.push(refeicao);
+  await docRef.update({
 
-      await docRef.update({
+    used_meals:
+      used,
 
-        entradas:
-          entradas + 1,
+    last_meal_time:
+      new Date()
+  });
 
-        last_checkin:
-          new Date(),
+  return res.json({
 
-        historico_refeicoes:
-          historico
-      });
-
-      return res.json({
-
-        status:"valid"
-      });
-    }
-
+    status:"valid"
+  });
+}
 
     // ======================================================
     // BOSS
