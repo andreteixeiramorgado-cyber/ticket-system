@@ -315,6 +315,22 @@ return res.json({
 
   status:"valid"
 });
+
+      }
+
+  catch(err){
+
+    console.error(err);
+
+    res.status(500).json({
+
+      status:"error"
+
+    });
+
+  }
+
+});
  
 // ======================================================
 // ATIVAR BILHETE
