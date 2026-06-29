@@ -276,46 +276,44 @@ if(rsProm){
   });
 }
 
-    // ======================================================
-    // BOSS
-    // ======================================================
+// ======================================================
+// BOSS
+// ======================================================
 
-    const historico =
+const mealLimit =
+  ticket.meal_limit || 999;
 
-      ticket.historico_refeicoes || [];
+const used =
+  ticket.used_meals || [];
 
-    historico.push(refeicao);
+if(
 
-    await docRef.update({
+  used.length >=
+  mealLimit
 
-      entradas:
-        entradas + 1,
+){
 
-      last_checkin:
-        new Date(),
+  return res.json({
 
-      historico_refeicoes:
-        historico
-    });
+    status:"limit"
+  });
+}
 
-    return res.json({
+used.push(refeicao);
 
-      status:"valid"
-    });
+await docRef.update({
 
-  }
+  used_meals:
+    used,
 
-  catch(err){
-
-    console.error(err);
-
-    res.status(500).json({
-
-      status:"error"
-    });
-  }
+  last_meal_time:
+    new Date()
 });
 
+return res.json({
+
+  status:"valid"
+});
  
 // ======================================================
 // ATIVAR BILHETE
@@ -1057,6 +1055,15 @@ if(tipo === "reset_vip"){
         cliente:
           admin.firestore.FieldValue.delete(),
 
+        meal_limit:
+          admin.firestore.FieldValue.delete(),
+
+        used_meals:
+          admin.firestore.FieldValue.delete(),
+
+        last_meal_time:
+          admin.firestore.FieldValue.delete(),
+
         entradas:
           admin.firestore.FieldValue.delete(),
 
@@ -1078,7 +1085,6 @@ if(tipo === "reset_vip"){
       total
   });
 }
-
 
 // RESET RSC
 if(tipo === "reset_rsc"){
