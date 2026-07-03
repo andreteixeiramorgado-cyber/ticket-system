@@ -1207,6 +1207,38 @@ if(tipo === "desativar_rsc_unused"){
   });
 }
 
+// REATIVAR BOSS
+if(tipo === "reativar_boss"){
+
+  for(const doc of snapshot.docs){
+
+    if(doc.id.startsWith("BOSS")){
+
+      await doc.ref.update({
+
+        active: true,
+
+        activated_at: new Date(),
+
+        meal_limit: 999,
+
+        used_meals: [],
+
+        last_meal_time: null
+
+      });
+
+      total++;
+    }
+  }
+
+  return res.json({
+
+    message: "👑 BOSS reativados: " + total
+
+  });
+}
+  
   // ATIVAR RSPROM
   if(tipo === "ativar_rsprom"){
 
