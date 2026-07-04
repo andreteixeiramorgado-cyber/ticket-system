@@ -91,18 +91,18 @@ async function gerarPDF(id){
 
   page.drawImage(qr,{
 
-    x:400,
-    y:110,
+    x:860,
+    y:270,
 
-    width:360,
-    height:360
+    width:305,
+    height:305
 
   });
 
   page.drawText(id,{
 
-    x:500,
-    y:70,
+    x:945,
+    y:265,
 
     size:20
 
