@@ -359,57 +359,7 @@ async function loadDashboard(){
     "Entradas: " +
     data.bossEntradas;
 
- // CAL TABLE
 
-let calHTML =
-
-`
-<tr>
-<th>Cliente</th>
-<th>Ativados</th>
-<th>A1</th>
-<th>J1</th>
-<th>A2</th>
-<th>J2</th>
-<th>A3</th>
-</tr>
-`;
-
-data.calTabela.forEach(t=>{
-
-  calHTML +=
-
-  `
-  <tr>
-    <td>${t.cliente}</td>
-    <td>${t.ativados}</td>
-    <td>${t.a1}</td>
-    <td>${t.j1}</td>
-    <td>${t.a2}</td>
-    <td>${t.j2}</td>
-    <td>${t.a3}</td>
-  </tr>
-  `;
-
-});
-
-calHTML +=
-
-`
-<tr style="font-weight:bold;background:#f0f0f0;">
-<td>TOTAL</td>
-<td>${data.calTotais.ativados}</td>
-<td>${data.calTotais.a1}</td>
-<td>${data.calTotais.j1}</td>
-<td>${data.calTotais.a2}</td>
-<td>${data.calTotais.j2}</td>
-<td>${data.calTotais.a3}</td>
-</tr>
-`;
-
-document.getElementById(
-  "calTable"
-).innerHTML = calHTML; 
 
   // EVT TABLE
 
@@ -592,7 +542,59 @@ ${data.calTotais.j2}
 Almoço D3:
 ${data.calTotais.a3}
 `;
-          
+
+ // CAL TABLE
+
+let calHTML =
+
+`
+<tr>
+<th>Cliente</th>
+<th>Ativados</th>
+<th>A1</th>
+<th>J1</th>
+<th>A2</th>
+<th>J2</th>
+<th>A3</th>
+</tr>
+`;
+
+data.calTabela.forEach(t=>{
+
+  calHTML +=
+
+  `
+  <tr>
+    <td>${t.cliente}</td>
+    <td>${t.ativados}</td>
+    <td>${t.a1}</td>
+    <td>${t.j1}</td>
+    <td>${t.a2}</td>
+    <td>${t.j2}</td>
+    <td>${t.a3}</td>
+  </tr>
+  `;
+
+});
+
+calHTML +=
+
+`
+<tr style="font-weight:bold;background:#f0f0f0;">
+<td>TOTAL</td>
+<td>${data.calTotais.ativados}</td>
+<td>${data.calTotais.a1}</td>
+<td>${data.calTotais.j1}</td>
+<td>${data.calTotais.a2}</td>
+<td>${data.calTotais.j2}</td>
+<td>${data.calTotais.a3}</td>
+</tr>
+`;
+
+document.getElementById(
+  "calTable"
+).innerHTML = calHTML; 
+  
 document.getElementById(
   "rscTotais"
 ).innerHTML =
