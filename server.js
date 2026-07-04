@@ -474,6 +474,18 @@ async(req,res)=>{
     
     let rscResumo = {};
 
+    let rscTotais = {
+
+  ativados:0,
+
+  a1:0,
+  j1:0,
+  a2:0,
+  j2:0,
+  a3:0
+
+};
+
     snapshot.forEach(doc=>{
 
       const id =
@@ -559,44 +571,96 @@ if(t.active){
 }
       
 
-      // ======================================================
-      // RSC
-      // ======================================================
+// ======================================================
+// RSC
+// ======================================================
 
-      if(id.includes("RSC")){
+if(id.includes("RSC")){
 
-        if(t.active){
+  if(t.active){
 
-          rscAtivados++;
-        }
+    rscAtivados++;
 
-        rscEntradas +=
-          (t.used_meals || []).length;
+  }
 
-        const cliente =
-          t.cliente || "Sem Nome";
+  rscEntradas +=
+    (t.used_meals || []).length;
 
-        const rscRefeicao =
-          (t.used_meals || [])[0] || "-";
+  const cliente =
+    t.cliente || "Sem Nome";
 
-        const key =
-          cliente + "|" + rscRefeicao;
+  if(!rscResumo[cliente]){
 
-        if(!rscResumo[key]){
+    rscResumo[cliente]={
 
-          rscResumo[key] = {
+      cliente,
 
-            cliente,
-            refeicao: rscRefeicao,
-            quantidade:0
-          };
-        }
+      ativados:0,
 
-        rscResumo[key].quantidade +=
-          (t.used_meals || []).length;
-      }
+      a1:0,
+      j1:0,
+      a2:0,
+      j2:0,
+      a3:0
 
+    };
 
+  }
+
+  if(t.active){
+
+    rscResumo[cliente].ativados++;
+
+    rscTotais.ativados++;
+
+  }
+
+  (t.used_meals || []).forEach(meal=>{
+
+    if(meal==="dia1_almoco"){
+
+      rscResumo[cliente].a1++;
+
+      rscTotais.a1++;
+
+    }
+
+    if(meal==="dia1_jantar"){
+
+      rscResumo[cliente].j1++;
+
+      rscTotais.j1++;
+
+    }
+
+    if(meal==="dia2_almoco"){
+
+      rscResumo[cliente].a2++;
+
+      rscTotais.a2++;
+
+    }
+
+    if(meal==="dia2_jantar"){
+
+      rscResumo[cliente].j2++;
+
+      rscTotais.j2++;
+
+    }
+
+    if(meal==="dia3_almoco"){
+
+      rscResumo[cliente].a3++;
+
+      rscTotais.a3++;
+
+    }
+
+  });
+
+}
+      
       // ======================================================
       // RSPROM
       // ======================================================
