@@ -686,8 +686,8 @@ if(id.includes("RSC")){
           promAtivados++;
         }
 
-        promEntradas +=
-          (t.historico_refeicoes || []).length;
+      promEntradas +=
+(t.used_meals || []).length;
       }
 
 
@@ -789,8 +789,9 @@ if(
           bossAtivados++;
         }
 
-        bossEntradas +=
-          (t.historico_refeicoes || []).length;
+bossEntradas +=
+(t.used_meals || []).length;
+        
       }
 
     });
