@@ -887,7 +887,16 @@ if(t.active)
 
 vipTotais.ativados++;
 
-vipTabela.push(row);
+if(
+    t.active ||
+    row.a1 ||
+    row.j1 ||
+    row.a2 ||
+    row.j2 ||
+    row.a3
+){
+    vipTabela.push(row);
+}
 
 if(id.startsWith("RSprom"))
 
@@ -1094,12 +1103,12 @@ async(req,res)=>{
         Cliente:
           t.cliente || "",
 
-        Entradas:
-          t.entradas || 0,
+      Entradas:
+  (t.used_meals || []).length,
 
-        Historico:
-          (t.historico_refeicoes || [])
-          .join(" | ")
+Historico:
+  (t.used_meals || [])
+  .join(" | ")
       });
     }
 
@@ -1239,12 +1248,12 @@ async(req,res)=>{
         Cliente:
           t.cliente || "",
 
-        Entradas:
-          t.entradas || 0,
+      Entradas:
+  (t.used_meals || []).length,
 
-        Historico:
-          (t.historico_refeicoes || [])
-          .join(" | ")
+Historico:
+  (t.used_meals || [])
+  .join(" | ")
       });
     }
 
@@ -1743,8 +1752,8 @@ async(req,res)=>{
       cliente:
         t.cliente || "",
 
-      entradas:
-        t.entradas || 0
+     entradas:
+  (t.used_meals || []).length
     });
 
   }
