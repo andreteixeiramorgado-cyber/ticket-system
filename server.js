@@ -459,6 +459,20 @@ async(req,res)=>{
     let bossAtivados = 0;
     let bossEntradas = 0;
 
+    let calResumo = {};
+
+let calTotais = {
+
+  ativados:0,
+
+  a1:0,
+  j1:0,
+  a2:0,
+  j2:0,
+  a3:0
+
+};
+
     let evtResumo = {};
 
     let evtTotais = {
@@ -677,6 +691,93 @@ if(id.includes("RSC")){
       }
 
 
+// ======================================================
+// CAL
+// ======================================================
+
+if(
+
+  id.startsWith("CAL.DIR-") ||
+
+  id.startsWith("CAL.VIP-")
+
+){
+
+  const cliente =
+    t.cliente || "Sem Nome";
+
+  if(!calResumo[cliente]){
+
+    calResumo[cliente]={
+
+      cliente,
+
+      ativados:0,
+
+      a1:0,
+      j1:0,
+      a2:0,
+      j2:0,
+      a3:0
+
+    };
+
+  }
+
+  if(t.active){
+
+    calResumo[cliente].ativados++;
+
+    calTotais.ativados++;
+
+  }
+
+  (t.used_meals || []).forEach(meal=>{
+
+    if(meal==="dia1_almoco"){
+
+      calResumo[cliente].a1++;
+
+      calTotais.a1++;
+
+    }
+
+    if(meal==="dia1_jantar"){
+
+      calResumo[cliente].j1++;
+
+      calTotais.j1++;
+
+    }
+
+    if(meal==="dia2_almoco"){
+
+      calResumo[cliente].a2++;
+
+      calTotais.a2++;
+
+    }
+
+    if(meal==="dia2_jantar"){
+
+      calResumo[cliente].j2++;
+
+      calTotais.j2++;
+
+    }
+
+    if(meal==="dia3_almoco"){
+
+      calResumo[cliente].a3++;
+
+      calTotais.a3++;
+
+    }
+
+  });
+
+}
+      
       // ======================================================
       // BOSS
       // ======================================================
@@ -763,6 +864,37 @@ Object.values(rscResumo)
 ),
 
 rscTotais,
+
+calTabela:
+
+Object.values(calResumo)
+
+.filter(c =>
+
+  c.ativados > 0 ||
+
+  c.a1 > 0 ||
+
+  c.j1 > 0 ||
+
+  c.a2 > 0 ||
+
+  c.j2 > 0 ||
+
+  c.a3 > 0
+
+)
+
+.sort(
+
+  (a,b)=>
+
+    b.ativados - a.ativados
+
+),
+
+calTotais,
+      
     });
 
   }
