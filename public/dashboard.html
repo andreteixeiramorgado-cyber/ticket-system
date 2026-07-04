@@ -7,112 +7,249 @@
 
 <meta
 name="viewport"
-content="width=device-width, initial-scale=1.0"
->
+content="width=device-width,initial-scale=1.0">
 
 <title>Dashboard</title>
 
 <style>
 
+*{
+box-sizing:border-box;
+}
+
 body{
 
-  margin:0;
+margin:0;
 
-  padding:25px;
+padding:30px;
 
-  background:#f5f5f5;
+background:#f4f6f9;
 
-  font-family:sans-serif;
+font-family:Arial,Helvetica,sans-serif;
+
+color:#222;
+
 }
 
 h1{
 
-  text-align:center;
+margin:0 0 30px;
 
-  margin-bottom:30px;
+text-align:center;
+
+font-size:34px;
+
 }
 
-#stats{
+.section{
 
-  display:grid;
+margin-top:45px;
 
-  grid-template-columns:
-    repeat(auto-fit,minmax(250px,1fr));
+}
 
-  gap:20px;
+.section h2{
+
+margin-bottom:20px;
+
+padding-bottom:10px;
+
+border-bottom:3px solid #ddd;
+
+font-size:28px;
+
+}
+
+.cards{
+
+display:grid;
+
+grid-template-columns:
+repeat(auto-fit,minmax(220px,1fr));
+
+gap:20px;
+
+margin-bottom:35px;
+
 }
 
 .card{
 
-  background:white;
+background:#fff;
 
-  border-radius:15px;
+border-radius:14px;
 
-  padding:25px;
+padding:20px;
 
-  box-shadow:0 2px 10px rgba(0,0,0,0.1);
+box-shadow:
+
+0 3px 12px rgba(0,0,0,.12);
+
 }
 
-.card h2{
+.card h3{
 
-  margin-top:0;
+margin:0;
+
+font-size:18px;
+
 }
 
-.card p{
+.value{
 
-  font-size:22px;
+margin-top:20px;
 
-  margin:15px 0;
+font-size:38px;
+
+font-weight:bold;
+
+}
+
+.subtitle{
+
+margin-top:8px;
+
+font-size:17px;
+
+color:#666;
+
+}
+
+.evt{
+
+border-left:8px solid #1976d2;
+
+}
+
+.rsc{
+
+border-left:8px solid #2e7d32;
+
+}
+
+.vip{
+
+border-left:8px solid #ef6c00;
+
+}
+
+.boss{
+
+border-left:8px solid #8e24aa;
+
+}
+
+.cal{
+
+border-left:8px solid #d32f2f;
+
+}
+
+.resume{
+
+background:#fff;
+
+padding:20px;
+
+border-radius:12px;
+
+box-shadow:
+
+0 2px 8px rgba(0,0,0,.1);
+
+margin-bottom:20px;
+
+font-size:18px;
+
+line-height:32px;
+
 }
 
 table{
 
-  width:100%;
+width:100%;
 
-  border-collapse:collapse;
+border-collapse:collapse;
 
-  background:white;
+background:#fff;
 
-  margin-top:20px;
+box-shadow:
 
-  margin-bottom:40px;
-}
+0 2px 8px rgba(0,0,0,.08);
 
-th,td{
+margin-bottom:45px;
 
-  border:1px solid #ccc;
-
-  padding:12px;
-
-  text-align:center;
 }
 
 th{
 
-  background:#222;
+background:#222;
 
-  color:white;
+color:white;
+
+padding:12px;
+
+}
+
+td{
+
+padding:10px;
+
+border:1px solid #ddd;
+
+text-align:center;
+
+}
+
+tr:nth-child(even){
+
+background:#fafafa;
+
+}
+
+tfoot{
+
+font-weight:bold;
+
+background:#ececec;
+
 }
 
 button{
 
-  width:100%;
+width:100%;
 
-  padding:16px;
+margin-top:30px;
 
-  border:none;
+padding:16px;
 
-  border-radius:10px;
+font-size:20px;
 
-  background:#222;
+border:none;
 
-  color:white;
+border-radius:10px;
 
-  font-size:18px;
+background:#222;
 
-  cursor:pointer;
+color:white;
 
-  margin-top:30px;
+cursor:pointer;
+
+}
+
+button:hover{
+
+background:#000;
+
+}
+
+@media(max-width:900px){
+
+.cards{
+
+grid-template-columns:1fr;
+
+}
+
 }
 
 </style>
@@ -128,9 +265,135 @@ button{
 </h1>
 
 
-<div id="stats">
+<!-- CARTÕES -->
 
-<div class="card">
+<div class="cards">
+
+<div class="card evt">
+
+<h3>🎟️ Race Ready</h3>
+
+<div
+class="value"
+id="evtVendidos">
+
+0
+
+</div>
+
+<div
+class="subtitle"
+id="evtEntradas">
+
+0
+
+</div>
+
+</div>
+
+
+
+<div class="card rsc">
+
+<h3>🏁 RSC</h3>
+
+<div
+class="value"
+id="rscAtivados">
+
+0
+
+</div>
+
+<div
+class="subtitle"
+id="rscEntradas">
+
+0
+
+</div>
+
+</div>
+
+
+
+<div class="card vip">
+
+<h3>🔥 RSprom</h3>
+
+<div
+class="value"
+id="promAtivados">
+
+0
+
+</div>
+
+<div
+class="subtitle"
+id="promEntradas">
+
+0
+
+</div>
+
+</div>
+
+
+
+<div class="card boss">
+
+<h3>👑 BOSS</h3>
+
+<div
+class="value"
+id="bossAtivados">
+
+0
+
+</div>
+
+<div
+class="subtitle"
+id="bossEntradas">
+
+0
+
+</div>
+
+</div>
+
+
+
+<div class="card cal">
+
+<h3>🏁 CAL</h3>
+
+<div
+class="value"
+id="calAtivados">
+
+0
+
+</div>
+
+<div
+class="subtitle"
+id="calEntradas">
+
+0
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- EVT -->
+
+<div class="section">
 
 <h2>
 
@@ -138,14 +401,23 @@ button{
 
 </h2>
 
-<p id="evtVendidos"></p>
+<div
+class="resume"
+id="evtTotais">
 
-<p id="evtEntradas"></p>
+</div>
+
+<table id="evtTable">
+
+</table>
 
 </div>
 
 
-<div class="card">
+
+<!-- RSC -->
+
+<div class="section">
 
 <h2>
 
@@ -153,484 +425,779 @@ button{
 
 </h2>
 
-<p id="rscAtivados"></p>
-
-<p id="rscEntradas"></p>
-
-</div>
-
-
-<div class="card">
-
-<h2>
-
-🔥 RSprom
-
-</h2>
-
-<p id="promAtivados"></p>
-
-<p id="promEntradas"></p>
-
-</div>
-
-
-<div class="card">
-
-<h2>
-
-👑 BOSS
-
-</h2>
-
-<p id="bossAtivados"></p>
-
-<p id="bossEntradas"></p>
-
-</div>
-
-  <h2>🏁 CAL</h2>
-
-<div class="card">
-  <h3>Ativados</h3>
-  <div id="calAtivados">0</div>
-</div>
-
-<div class="card">
-  <h3>Entradas</h3>
-  <div id="calEntradas">0</div>
-</div>
-
-<div id="calTotais"></div>
-
-<table id="calTable"></table>
-
-</div>
-
 <div
-id="evtTotais"
-style="
-background:white;
-padding:20px;
-border-radius:10px;
-margin-bottom:20px;
-font-size:20px;
-font-weight:bold;
-">
+class="resume"
+id="rscTotais">
+
 </div>
-  
-<!-- EVT -->
-
-<h2>🎟️ Race Ready</h2>
-
-<table id="evtTable">
-
-<tr>
-<th>Cliente</th>
-<th>Ativados</th>
-<th>A1</th>
-<th>J1</th>
-<th>A2</th>
-<th>J2</th>
-<th>A3</th>
-</tr>
-
-</table>
-
-
-<!-- RSC -->
-
-<h2>🏁 RSC</h2>
 
 <table id="rscTable">
 
-<tr>
-<th>Cliente</th>
-<th>Ativados</th>
-<th>A1</th>
-<th>J1</th>
-<th>A2</th>
-<th>J2</th>
-<th>A3</th>
-</tr>
+</table>
+
+</div>
+
+
+
+<!-- VIP -->
+
+<div class="section">
+
+<h2>
+
+🔥 VIP
+
+</h2>
+
+<div
+class="resume"
+id="vipTotais">
+
+</div>
+
+<table id="vipTable">
 
 </table>
 
-  <div
-id="rscTotais"
-style="
-background:white;
-padding:20px;
-border-radius:10px;
-margin-bottom:20px;
-font-size:20px;
-font-weight:bold;
-">
 </div>
 
+
+
+<!-- CAL -->
+
+<div class="section">
+
+<h2>
+
+🏁 CAL
+
+</h2>
+
+<div
+class="resume"
+id="calTotais">
+
+</div>
+
+<table id="calTable">
+
+</table>
+
+</div>
+
+
+
 <button
-onclick="window.location='/'"
->
+onclick="window.location='/'">
 
 ⬅️ Voltar ao Início
 
 </button>
 
-
 <script>
 
-async function loadDashboard(){
+  async function loadDashboard(){
 
-  const res =
-    await fetch("/api/dashboard");
+  try{
 
-  const data =
-    await res.json();
+    const res =
+      await fetch("/api/dashboard");
+
+    const data =
+      await res.json();
+
+    renderCards(data);
+
+    renderEVT(data);
+
+    renderRSC(data);
+
+    renderVIP(data);
+
+    renderCAL(data);
+
+  }
+
+  catch(err){
+
+    console.error(err);
+
+  }
+
+}
 
 
-  // EVT
+// ===========================================
+// CARTÕES
+// ===========================================
+
+function renderCards(data){
 
   document.getElementById(
     "evtVendidos"
   ).innerHTML =
-
-    "Vendidos: " +
     data.evtVendidos;
-
 
   document.getElementById(
     "evtEntradas"
   ).innerHTML =
-
     "Entradas: " +
     data.evtEntradas;
 
 
-  // RSC
 
   document.getElementById(
     "rscAtivados"
   ).innerHTML =
-
-    "Ativados: " +
     data.rscAtivados;
-
 
   document.getElementById(
     "rscEntradas"
   ).innerHTML =
-
     "Entradas: " +
     data.rscEntradas;
 
 
-  // PROM
 
   document.getElementById(
     "promAtivados"
   ).innerHTML =
-
-    "Ativados: " +
     data.promAtivados;
-
 
   document.getElementById(
     "promEntradas"
   ).innerHTML =
-
     "Entradas: " +
     data.promEntradas;
 
 
-  // BOSS
 
   document.getElementById(
     "bossAtivados"
   ).innerHTML =
-
-    "Ativados: " +
     data.bossAtivados;
-
 
   document.getElementById(
     "bossEntradas"
   ).innerHTML =
-
     "Entradas: " +
     data.bossEntradas;
 
 
 
-  // EVT TABLE
+  document.getElementById(
+    "calAtivados"
+  ).innerHTML =
+    data.calTotais.ativados;
 
-  let evtHTML =
+  document.getElementById(
+    "calEntradas"
+  ).innerHTML =
+    "Entradas: " +
 
-`
-<tr>
-<th>Cliente</th>
-<th>Ativados</th>
-<th>A1</th>
-<th>J1</th>
-<th>A2</th>
-<th>J2</th>
-<th>A3</th>
-</tr>
-`;
+    (
 
-  data.evtTabela.forEach(t=>{
+      data.calTotais.a1 +
 
-  evtHTML += `
-<tr>
-<td>${t.cliente}</td>
-<td>${t.ativados}</td>
-<td>${t.a1}</td>
-<td>${t.j1}</td>
-<td>${t.a2}</td>
-<td>${t.j2}</td>
-<td>${t.a3}</td>
-</tr>
-`;
-  });
+      data.calTotais.j1 +
 
- evtHTML += `
-<tr
-style="
-font-weight:bold;
-background:#f0f0f0;
-">
-<td>TOTAL</td>
-<td>${data.evtTotais.ativados}</td>
-<td>${data.evtTotais.a1}</td>
-<td>${data.evtTotais.j1}</td>
-<td>${data.evtTotais.a2}</td>
-<td>${data.evtTotais.j2}</td>
-<td>${data.evtTotais.a3}</td>
-</tr>
-`; 
+      data.calTotais.a2 +
+
+      data.calTotais.j2 +
+
+      data.calTotais.a3
+
+    );
+
+}
+
+
+
+// ===========================================
+// EVT
+// ===========================================
+
+function renderEVT(data){
 
 document.getElementById(
-  "evtTotais"
-).innerHTML =
+
+"evtTotais"
+
+).innerHTML=
 
 `
-TOTAL REFEIÇÕES<br><br>
+
+<b>TOTAL REFEIÇÕES</b>
+
+<br><br>
 
 Ativados:
 ${data.evtTotais.ativados}
+
 <br>
 
 Almoço D1:
 ${data.evtTotais.a1}
+
 <br>
 
 Jantar D1:
 ${data.evtTotais.j1}
+
 <br>
 
 Almoço D2:
 ${data.evtTotais.a2}
+
 <br>
 
 Jantar D2:
 ${data.evtTotais.j2}
+
 <br>
 
 Almoço D3:
 ${data.evtTotais.a3}
+
 `;
-  
-  document.getElementById(
-    "evtTable"
-  ).innerHTML = evtHTML;
 
 
- // RSC TABLE
 
-let rscHTML =
+let html=
 
 `
+
 <tr>
+
 <th>Cliente</th>
+
 <th>Ativados</th>
+
 <th>A1</th>
+
 <th>J1</th>
+
 <th>A2</th>
+
 <th>J2</th>
+
 <th>A3</th>
+
 </tr>
+
 `;
 
-data.rscTabela.forEach(t=>{
 
-  rscHTML +=
+data.evtTabela.forEach(t=>{
 
-  `
-  <tr>
-    <td>${t.cliente}</td>
-    <td>${t.ativados}</td>
-    <td>${t.a1}</td>
-    <td>${t.j1}</td>
-    <td>${t.a2}</td>
-    <td>${t.j2}</td>
-    <td>${t.a3}</td>
-  </tr>
-  `;
+html+=`
+
+<tr>
+
+<td>${t.cliente}</td>
+
+<td>${t.ativados}</td>
+
+<td>${t.a1}</td>
+
+<td>${t.j1}</td>
+
+<td>${t.a2}</td>
+
+<td>${t.j2}</td>
+
+<td>${t.a3}</td>
+
+</tr>
+
+`;
 
 });
 
-rscHTML +=
 
-`
-<tr style="font-weight:bold;background:#f0f0f0;">
-<td>TOTAL</td>
-<td>${data.rscTotais.ativados}</td>
-<td>${data.rscTotais.a1}</td>
-<td>${data.rscTotais.j1}</td>
-<td>${data.rscTotais.a2}</td>
-<td>${data.rscTotais.j2}</td>
-<td>${data.rscTotais.a3}</td>
-</tr>
-`;
+html+=`
 
-document.getElementById(
-  "rscTable"
-).innerHTML = rscHTML;
+<tfoot>
 
-  document.getElementById(
-  "calAtivados"
-).innerHTML =
-
-data.calTotais.ativados;
-
-document.getElementById(
-  "calEntradas"
-).innerHTML =
-
-data.calTotais.a1 +
-data.calTotais.j1 +
-data.calTotais.a2 +
-data.calTotais.j2 +
-data.calTotais.a3;
-
-document.getElementById(
-  "calTotais"
-).innerHTML =
-
-`
-TOTAL REFEIÇÕES<br><br>
-
-Ativados:
-${data.calTotais.ativados}
-<br>
-
-Almoço D1:
-${data.calTotais.a1}
-<br>
-
-Jantar D1:
-${data.calTotais.j1}
-<br>
-
-Almoço D2:
-${data.calTotais.a2}
-<br>
-
-Jantar D2:
-${data.calTotais.j2}
-<br>
-
-Almoço D3:
-${data.calTotais.a3}
-`;
-
- // CAL TABLE
-
-let calHTML =
-
-`
 <tr>
-<th>Cliente</th>
-<th>Ativados</th>
-<th>A1</th>
-<th>J1</th>
-<th>A2</th>
-<th>J2</th>
-<th>A3</th>
-</tr>
-`;
 
-data.calTabela.forEach(t=>{
-
-  calHTML +=
-
-  `
-  <tr>
-    <td>${t.cliente}</td>
-    <td>${t.ativados}</td>
-    <td>${t.a1}</td>
-    <td>${t.j1}</td>
-    <td>${t.a2}</td>
-    <td>${t.j2}</td>
-    <td>${t.a3}</td>
-  </tr>
-  `;
-
-});
-
-calHTML +=
-
-`
-<tr style="font-weight:bold;background:#f0f0f0;">
 <td>TOTAL</td>
-<td>${data.calTotais.ativados}</td>
-<td>${data.calTotais.a1}</td>
-<td>${data.calTotais.j1}</td>
-<td>${data.calTotais.a2}</td>
-<td>${data.calTotais.j2}</td>
-<td>${data.calTotais.a3}</td>
+
+<td>${data.evtTotais.ativados}</td>
+
+<td>${data.evtTotais.a1}</td>
+
+<td>${data.evtTotais.j1}</td>
+
+<td>${data.evtTotais.a2}</td>
+
+<td>${data.evtTotais.j2}</td>
+
+<td>${data.evtTotais.a3}</td>
+
 </tr>
+
+</tfoot>
+
 `;
 
 document.getElementById(
-  "calTable"
-).innerHTML = calHTML; 
-  
+
+"evtTable"
+
+).innerHTML=
+
+html;
+
+}
+
+
+
+// ===========================================
+// RSC
+// ===========================================
+
+function renderRSC(data){
+
 document.getElementById(
-  "rscTotais"
-).innerHTML =
+
+"rscTotais"
+
+).innerHTML=
 
 `
-TOTAL REFEIÇÕES<br><br>
+
+<b>TOTAL REFEIÇÕES</b>
+
+<br><br>
 
 Ativados:
 ${data.rscTotais.ativados}
+
 <br>
 
 Almoço D1:
 ${data.rscTotais.a1}
+
 <br>
 
 Jantar D1:
 ${data.rscTotais.j1}
+
 <br>
 
 Almoço D2:
 ${data.rscTotais.a2}
+
 <br>
 
 Jantar D2:
 ${data.rscTotais.j2}
+
 <br>
 
 Almoço D3:
 ${data.rscTotais.a3}
+
 `;
-  
+
+
+let html=
+
+`
+
+<tr>
+
+<th>Cliente</th>
+
+<th>Ativados</th>
+
+<th>A1</th>
+
+<th>J1</th>
+
+<th>A2</th>
+
+<th>J2</th>
+
+<th>A3</th>
+
+</tr>
+
+`;
+
+
+data.rscTabela.forEach(t=>{
+
+html+=`
+
+<tr>
+
+<td>${t.cliente}</td>
+
+<td>${t.ativados}</td>
+
+<td>${t.a1}</td>
+
+<td>${t.j1}</td>
+
+<td>${t.a2}</td>
+
+<td>${t.j2}</td>
+
+<td>${t.a3}</td>
+
+</tr>
+
+`;
+
+});
+
+
+html+=`
+
+<tfoot>
+
+<tr>
+
+<td>TOTAL</td>
+
+<td>${data.rscTotais.ativados}</td>
+
+<td>${data.rscTotais.a1}</td>
+
+<td>${data.rscTotais.j1}</td>
+
+<td>${data.rscTotais.a2}</td>
+
+<td>${data.rscTotais.j2}</td>
+
+<td>${data.rscTotais.a3}</td>
+
+</tr>
+
+</tfoot>
+
+`;
+
+document.getElementById(
+
+"rscTable"
+
+).innerHTML=
+
+html;
+
 }
-  
+
+// ===========================================
+// VIP
+// ===========================================
+
+function renderVIP(data){
+
+  if(!data.vipTabela){
+
+    document.getElementById("vipTotais").innerHTML=
+
+      "<b>Sem dados disponíveis</b>";
+
+    document.getElementById("vipTable").innerHTML="";
+
+    return;
+
+  }
+
+  document.getElementById("vipTotais").innerHTML=
+
+  `
+  <b>TOTAL VIP</b>
+
+  <br><br>
+
+  Ativados:
+  ${data.vipTotais.ativados}
+
+  <br>
+
+  Almoço D1:
+  ${data.vipTotais.a1}
+
+  <br>
+
+  Jantar D1:
+  ${data.vipTotais.j1}
+
+  <br>
+
+  Almoço D2:
+  ${data.vipTotais.a2}
+
+  <br>
+
+  Jantar D2:
+  ${data.vipTotais.j2}
+
+  <br>
+
+  Almoço D3:
+  ${data.vipTotais.a3}
+  `;
+
+
+  let html=
+
+  `
+  <tr>
+
+  <th>Ticket</th>
+
+  <th>Tipo</th>
+
+  <th>Cliente</th>
+
+  <th>A1</th>
+
+  <th>J1</th>
+
+  <th>A2</th>
+
+  <th>J2</th>
+
+  <th>A3</th>
+
+  </tr>
+  `;
+
+
+  data.vipTabela.forEach(t=>{
+
+    html+=`
+
+    <tr>
+
+    <td>${t.ticket}</td>
+
+    <td>${t.tipo}</td>
+
+    <td>${t.cliente}</td>
+
+    <td>${t.a1}</td>
+
+    <td>${t.j1}</td>
+
+    <td>${t.a2}</td>
+
+    <td>${t.j2}</td>
+
+    <td>${t.a3}</td>
+
+    </tr>
+
+    `;
+
+  });
+
+
+  html+=`
+
+  <tfoot>
+
+  <tr>
+
+  <td colspan="3">
+
+  TOTAL
+
+  </td>
+
+  <td>${data.vipTotais.a1}</td>
+
+  <td>${data.vipTotais.j1}</td>
+
+  <td>${data.vipTotais.a2}</td>
+
+  <td>${data.vipTotais.j2}</td>
+
+  <td>${data.vipTotais.a3}</td>
+
+  </tr>
+
+  </tfoot>
+
+  `;
+
+  document.getElementById(
+
+    "vipTable"
+
+  ).innerHTML=html;
+
+}
+
+
+
+// ===========================================
+// CAL
+// ===========================================
+
+function renderCAL(data){
+
+document.getElementById(
+
+"calTotais"
+
+).innerHTML=
+
+`
+
+<b>TOTAL CAL</b>
+
+<br><br>
+
+Ativados:
+
+${data.calTotais.ativados}
+
+<br>
+
+Almoço D1:
+
+${data.calTotais.a1}
+
+<br>
+
+Jantar D1:
+
+${data.calTotais.j1}
+
+<br>
+
+Almoço D2:
+
+${data.calTotais.a2}
+
+<br>
+
+Jantar D2:
+
+${data.calTotais.j2}
+
+<br>
+
+Almoço D3:
+
+${data.calTotais.a3}
+
+`;
+
+
+let html=
+
+`
+
+<tr>
+
+<th>Cliente</th>
+
+<th>Ativados</th>
+
+<th>A1</th>
+
+<th>J1</th>
+
+<th>A2</th>
+
+<th>J2</th>
+
+<th>A3</th>
+
+</tr>
+
+`;
+
+
+data.calTabela.forEach(t=>{
+
+html+=`
+
+<tr>
+
+<td>${t.cliente}</td>
+
+<td>${t.ativados}</td>
+
+<td>${t.a1}</td>
+
+<td>${t.j1}</td>
+
+<td>${t.a2}</td>
+
+<td>${t.j2}</td>
+
+<td>${t.a3}</td>
+
+</tr>
+
+`;
+
+});
+
+
+html+=`
+
+<tfoot>
+
+<tr>
+
+<td>TOTAL</td>
+
+<td>${data.calTotais.ativados}</td>
+
+<td>${data.calTotais.a1}</td>
+
+<td>${data.calTotais.j1}</td>
+
+<td>${data.calTotais.a2}</td>
+
+<td>${data.calTotais.j2}</td>
+
+<td>${data.calTotais.a3}</td>
+
+</tr>
+
+</tfoot>
+
+`;
+
+document.getElementById(
+
+"calTable"
+
+).innerHTML=html;
+
+}
+
+
+
+// ===========================================
+// AUTO REFRESH
+// ===========================================
+
 loadDashboard();
+
+setInterval(
+
+loadDashboard,
+
+30000
+
+);
 
 </script>
 
 </body>
+
 </html>
+  
+  
