@@ -734,8 +734,35 @@ if(id.includes("RSC")){
   ),
 evtTotais,
 
-      rscTabela:
-        Object.values(rscResumo)
+    rscTabela:
+
+Object.values(rscResumo)
+
+.filter(c =>
+
+  c.ativados > 0 ||
+
+  c.a1 > 0 ||
+
+  c.j1 > 0 ||
+
+  c.a2 > 0 ||
+
+  c.j2 > 0 ||
+
+  c.a3 > 0
+
+)
+
+.sort(
+
+  (a,b)=>
+
+    b.ativados - a.ativados
+
+),
+
+rscTotais,
     });
 
   }
