@@ -485,7 +485,21 @@ id="calTotais">
 
 </div>
 
+<!-- RESUMO GERAL -->
 
+<div class="section">
+
+<h2>
+
+📈 Resumo Geral
+
+</h2>
+
+<table id="resumoTable">
+
+</table>
+
+</div>
 
 <button
 onclick="window.location='/'">
@@ -515,6 +529,8 @@ onclick="window.location='/'">
     renderVIP(data);
 
     renderCAL(data);
+
+    renderResumo(data);
 
   }
 
@@ -1178,7 +1194,186 @@ document.getElementById(
 
 }
 
+// ===========================================
+// RESUMO GERAL
+// ===========================================
 
+function renderResumo(data){
+
+let html=
+
+`
+<tr>
+
+<th>Tipo</th>
+
+<th>Ativados</th>
+
+<th>A1</th>
+
+<th>J1</th>
+
+<th>A2</th>
+
+<th>J2</th>
+
+<th>A3</th>
+
+<th>Total</th>
+
+</tr>
+
+`;
+
+const rscTotal=
+
+data.rscTotais.a1+
+
+data.rscTotais.j1+
+
+data.rscTotais.a2+
+
+data.rscTotais.j2+
+
+data.rscTotais.a3;
+
+const vipTotal=
+
+data.vipTotais.a1+
+
+data.vipTotais.j1+
+
+data.vipTotais.a2+
+
+data.vipTotais.j2+
+
+data.vipTotais.a3;
+
+const calTotal=
+
+data.calTotais.a1+
+
+data.calTotais.j1+
+
+data.calTotais.a2+
+
+data.calTotais.j2+
+
+data.calTotais.a3;
+
+
+html+=`
+
+<tr>
+
+<td>🏁 RSC</td>
+
+<td>${data.rscTotais.ativados}</td>
+
+<td>${data.rscTotais.a1}</td>
+
+<td>${data.rscTotais.j1}</td>
+
+<td>${data.rscTotais.a2}</td>
+
+<td>${data.rscTotais.j2}</td>
+
+<td>${data.rscTotais.a3}</td>
+
+<td>${rscTotal}</td>
+
+</tr>
+
+`;
+
+
+html+=`
+
+<tr>
+
+<td>🔥 VIP</td>
+
+<td>${data.vipTotais.ativados}</td>
+
+<td>${data.vipTotais.a1}</td>
+
+<td>${data.vipTotais.j1}</td>
+
+<td>${data.vipTotais.a2}</td>
+
+<td>${data.vipTotais.j2}</td>
+
+<td>${data.vipTotais.a3}</td>
+
+<td>${vipTotal}</td>
+
+</tr>
+
+`;
+
+
+html+=`
+
+<tr>
+
+<td>🏁 CAL</td>
+
+<td>${data.calTotais.ativados}</td>
+
+<td>${data.calTotais.a1}</td>
+
+<td>${data.calTotais.j1}</td>
+
+<td>${data.calTotais.a2}</td>
+
+<td>${data.calTotais.j2}</td>
+
+<td>${data.calTotais.a3}</td>
+
+<td>${calTotal}</td>
+
+</tr>
+
+`;
+
+
+html+=`
+
+<tfoot>
+
+<tr>
+
+<td>TOTAL GERAL</td>
+
+<td>${data.resumoGeral.ativados}</td>
+
+<td>${data.resumoGeral.a1}</td>
+
+<td>${data.resumoGeral.j1}</td>
+
+<td>${data.resumoGeral.a2}</td>
+
+<td>${data.resumoGeral.j2}</td>
+
+<td>${data.resumoGeral.a3}</td>
+
+<td>${data.resumoGeral.total}</td>
+
+</tr>
+
+</tfoot>
+
+`;
+
+document.getElementById(
+
+"resumoTable"
+
+).innerHTML=
+
+html;
+
+}
 
 // ===========================================
 // AUTO REFRESH
