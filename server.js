@@ -1272,6 +1272,33 @@ if(tipo === "reativar_boss"){
     });
   }
 
+  // GERAR CAL
+if(tipo==="gerar_cal"){
+
+  exec("node generate-cal.js",(err)=>{
+
+    if(err){
+
+      console.error(err);
+
+      return res.json({
+
+        message:"❌ Erro a gerar CAL"
+
+      });
+
+    }
+
+    return res.json({
+
+      message:"✅ CAL gerado com sucesso"
+
+    });
+
+  });
+
+  return;
+}
 
   // ATIVAR RSC
   if(tipo === "ativar_rsc"){
