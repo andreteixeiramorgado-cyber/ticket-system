@@ -459,6 +459,20 @@ async(req,res)=>{
     let bossAtivados = 0;
     let bossEntradas = 0;
 
+    let vipTabela=[];
+
+let vipTotais={
+
+  ativados:0,
+
+  a1:0,
+  j1:0,
+  a2:0,
+  j2:0,
+  a3:0
+
+};
+
     let calResumo = {};
 
 let calTotais = {
@@ -675,22 +689,7 @@ if(id.includes("RSC")){
 
 }
       
-      // ======================================================
-      // RSPROM
-      // ======================================================
-
-      if(id.includes("RSprom")){
-
-        if(t.active){
-
-          promAtivados++;
-        }
-
-      promEntradas +=
-(t.used_meals || []).length;
-      }
-
-
+   
 // ======================================================
 // CAL
 // ======================================================
@@ -777,22 +776,128 @@ if(
   });
 
 }
-      
-      // ======================================================
-      // BOSS
-      // ======================================================
 
-      if(id.includes("BOSS")){
+  // ======================================================
+// VIP
+// ======================================================
 
-        if(t.active){
+if(
 
-          bossAtivados++;
-        }
+id.startsWith("RSprom") ||
 
-bossEntradas +=
-(t.used_meals || []).length;
-        
-      }
+id.startsWith("BOSS")
+
+){
+
+if(t.active){
+
+if(id.startsWith("RSprom"))
+
+promAtivados++;
+
+else
+
+bossAtivados++;
+
+}
+
+const cliente=
+
+t.cliente ||
+
+"Sem Nome";
+
+const tipo=
+
+id.startsWith("BOSS")
+
+?
+
+"BOSS"
+
+:
+
+"PROM";
+
+const row={
+
+ticket:id,
+
+tipo,
+
+cliente,
+
+a1:0,
+
+j1:0,
+
+a2:0,
+
+j2:0,
+
+a3:0
+
+};
+
+(t.used_meals || []).forEach(meal=>{
+
+if(meal==="dia1_almoco"){
+
+row.a1++;
+
+vipTotais.a1++;
+
+}
+
+if(meal==="dia1_jantar"){
+
+row.j1++;
+
+vipTotais.j1++;
+
+}
+
+if(meal==="dia2_almoco"){
+
+row.a2++;
+
+vipTotais.a2++;
+
+}
+
+if(meal==="dia2_jantar"){
+
+row.j2++;
+
+vipTotais.j2++;
+
+}
+
+if(meal==="dia3_almoco"){
+
+row.a3++;
+
+vipTotais.a3++;
+
+}
+
+});
+
+if(t.active)
+
+vipTotais.ativados++;
+
+vipTabela.push(row);
+
+if(id.startsWith("RSprom"))
+
+promEntradas+=(t.used_meals||[]).length;
+
+else
+
+bossEntradas+=(t.used_meals||[]).length;
+
+}
 
     });
 
@@ -895,6 +1000,10 @@ Object.values(calResumo)
 ),
 
 calTotais,
+
+      vipTabela,
+
+vipTotais,
       
     });
 
