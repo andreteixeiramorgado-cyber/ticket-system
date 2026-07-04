@@ -412,48 +412,91 @@ ${data.evtTotais.a3}
   ).innerHTML = evtHTML;
 
 
-  // RSC TABLE
+ // RSC TABLE
 
-  let rscHTML =
+let rscHTML =
+
+`
+<tr>
+<th>Cliente</th>
+<th>Ativados</th>
+<th>A1</th>
+<th>J1</th>
+<th>A2</th>
+<th>J2</th>
+<th>A3</th>
+</tr>
+`;
+
+data.rscTabela.forEach(t=>{
+
+  rscHTML +=
 
   `
   <tr>
-  <th>Cliente</th>
-  <th>Refeição</th>
-  <th>Quantidade</th>
+    <td>${t.cliente}</td>
+    <td>${t.ativados}</td>
+    <td>${t.a1}</td>
+    <td>${t.j1}</td>
+    <td>${t.a2}</td>
+    <td>${t.j2}</td>
+    <td>${t.a3}</td>
   </tr>
   `;
 
-  data.rscTabela.forEach(t=>{
+});
 
-    rscHTML +=
+rscHTML +=
 
-    `
-    <tr>
-      <td>${t.cliente}</td>
-      <td>${t.refeicao}</td>
-      <td>${t.quantidade}</td>
-    </tr>
-    `;
-  });
-
-evtHTML += `
+`
 <tr style="font-weight:bold;background:#f0f0f0;">
 <td>TOTAL</td>
-<td>${data.evtTotais.ativados}</td>
-<td>${data.evtTotais.a1}</td>
-<td>${data.evtTotais.j1}</td>
-<td>${data.evtTotais.a2}</td>
-<td>${data.evtTotais.j2}</td>
-<td>${data.evtTotais.a3}</td>
+<td>${data.rscTotais.ativados}</td>
+<td>${data.rscTotais.a1}</td>
+<td>${data.rscTotais.j1}</td>
+<td>${data.rscTotais.a2}</td>
+<td>${data.rscTotais.j2}</td>
+<td>${data.rscTotais.a3}</td>
 </tr>
 `;
-  
-  document.getElementById(
-    "rscTable"
-  ).innerHTML = rscHTML;
-}
 
+document.getElementById(
+  "rscTable"
+).innerHTML = rscHTML;
+
+document.getElementById(
+  "rscTotais"
+).innerHTML =
+
+`
+TOTAL REFEIÇÕES<br><br>
+
+Ativados:
+${data.rscTotais.ativados}
+<br>
+
+Almoço D1:
+${data.rscTotais.a1}
+<br>
+
+Jantar D1:
+${data.rscTotais.j1}
+<br>
+
+Almoço D2:
+${data.rscTotais.a2}
+<br>
+
+Jantar D2:
+${data.rscTotais.j2}
+<br>
+
+Almoço D3:
+${data.rscTotais.a3}
+`;
+  
+}
+  
 loadDashboard();
 
 </script>
