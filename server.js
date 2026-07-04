@@ -910,7 +910,70 @@ bossEntradas+=(t.used_meals||[]).length;
 
     });
 
+const resumoGeral = {
 
+  ativados:
+
+    rscTotais.ativados +
+
+    vipTotais.ativados +
+
+    calTotais.ativados,
+
+  a1:
+
+    rscTotais.a1 +
+
+    vipTotais.a1 +
+
+    calTotais.a1,
+
+  j1:
+
+    rscTotais.j1 +
+
+    vipTotais.j1 +
+
+    calTotais.j1,
+
+  a2:
+
+    rscTotais.a2 +
+
+    vipTotais.a2 +
+
+    calTotais.a2,
+
+  j2:
+
+    rscTotais.j2 +
+
+    vipTotais.j2 +
+
+    calTotais.j2,
+
+  a3:
+
+    rscTotais.a3 +
+
+    vipTotais.a3 +
+
+    calTotais.a3
+
+};
+
+resumoGeral.total =
+
+  resumoGeral.a1 +
+
+  resumoGeral.j1 +
+
+  resumoGeral.a2 +
+
+  resumoGeral.j2 +
+
+  resumoGeral.a3;
+    
     res.json({
 
       evtVendidos,
@@ -924,6 +987,8 @@ bossEntradas+=(t.used_meals||[]).length;
 
       bossAtivados,
       bossEntradas,
+
+      resumoGeral,
 
   evtTabela:
 
