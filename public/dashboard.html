@@ -295,6 +295,28 @@ id="evtEntradas">
 
 <div class="card rsc">
 
+<div class="card ods">
+
+<h3>📦 ODS</h3>
+
+<div
+class="value"
+id="odsAtivados">
+
+0
+
+</div>
+
+<div
+class="subtitle"
+id="odsEntradas">
+
+0
+
+</div>
+
+</div>
+  
 <h3>🏁 RSC - Rally Series Cliente</h3>
 
 <div
@@ -413,7 +435,29 @@ id="evtTotais">
 
 </div>
 
+<!-- ODS -->
 
+<div class="section">
+
+<h2>
+
+📦 ODS
+
+</h2>
+
+<div
+class="resume"
+id="odsTotais">
+
+</div>
+
+<table
+id="odsTable">
+
+</table>
+
+</div>
+  
 
 <!-- RSC -->
 
@@ -529,6 +573,8 @@ onclick="window.location='/'">
     renderVIP(data);
 
     renderCAL(data);
+
+    renderODS(data);
 
     renderResumo(data);
 
@@ -1194,6 +1240,159 @@ document.getElementById(
 
 }
 
+  
+// ===========================================
+// ods
+// ===========================================
+
+ document.getElementById(
+  "odsAtivados"
+).innerHTML =
+
+data.odsAtivados;
+
+document.getElementById(
+  "odsEntradas"
+).innerHTML =
+
+"Entradas: " +
+
+data.odsEntradas; 
+
+// ===========================================
+// ODS
+// ===========================================
+
+function renderODS(data){
+
+document.getElementById(
+
+"odsTotais"
+
+).innerHTML=
+
+`
+
+<b>TOTAL REFEIÇÕES</b>
+
+<br><br>
+
+Ativados:
+${data.odsTotais.ativados}
+
+<br>
+
+Almoço D1:
+${data.odsTotais.a1}
+
+<br>
+
+Jantar D1:
+${data.odsTotais.j1}
+
+<br>
+
+Almoço D2:
+${data.odsTotais.a2}
+
+<br>
+
+Jantar D2:
+${data.odsTotais.j2}
+
+<br>
+
+Almoço D3:
+${data.odsTotais.a3}
+
+`;
+
+let html=
+
+`
+
+<tr>
+
+<th>Cliente</th>
+
+<th>Ativados</th>
+
+<th>A1</th>
+
+<th>J1</th>
+
+<th>A2</th>
+
+<th>J2</th>
+
+<th>A3</th>
+
+</tr>
+
+`;
+
+data.odsTabela.forEach(t=>{
+
+html+=`
+
+<tr>
+
+<td>${t.cliente}</td>
+
+<td>${t.ativados}</td>
+
+<td>${t.a1}</td>
+
+<td>${t.j1}</td>
+
+<td>${t.a2}</td>
+
+<td>${t.j2}</td>
+
+<td>${t.a3}</td>
+
+</tr>
+
+`;
+
+});
+
+html+=`
+
+<tfoot>
+
+<tr>
+
+<td>TOTAL</td>
+
+<td>${data.odsTotais.ativados}</td>
+
+<td>${data.odsTotais.a1}</td>
+
+<td>${data.odsTotais.j1}</td>
+
+<td>${data.odsTotais.a2}</td>
+
+<td>${data.odsTotais.j2}</td>
+
+<td>${data.odsTotais.a3}</td>
+
+</tr>
+
+</tfoot>
+
+`;
+
+document.getElementById(
+
+"odsTable"
+
+).innerHTML=
+
+html;
+
+}
+  
 // ===========================================
 // RESUMO GERAL
 // ===========================================
@@ -1260,6 +1459,146 @@ data.calTotais.a2+
 data.calTotais.j2+
 
 data.calTotais.a3;
+
+  // ===========================================
+// ODS
+// ===========================================
+
+function renderODS(data){
+
+document.getElementById(
+
+"odsTotais"
+
+).innerHTML=
+
+`
+
+<b>TOTAL REFEIÇÕES</b>
+
+<br><br>
+
+Ativados:
+${data.odsTotais.ativados}
+
+<br>
+
+Almoço D1:
+${data.odsTotais.a1}
+
+<br>
+
+Jantar D1:
+${data.odsTotais.j1}
+
+<br>
+
+Almoço D2:
+${data.odsTotais.a2}
+
+<br>
+
+Jantar D2:
+${data.odsTotais.j2}
+
+<br>
+
+Almoço D3:
+${data.odsTotais.a3}
+
+`;
+
+let html=
+
+`
+
+<tr>
+
+<th>Cliente</th>
+
+<th>Ativados</th>
+
+<th>A1</th>
+
+<th>J1</th>
+
+<th>A2</th>
+
+<th>J2</th>
+
+<th>A3</th>
+
+</tr>
+
+`;
+
+data.odsTabela.forEach(t=>{
+
+html+=`
+
+<tr>
+
+<td>${t.cliente}</td>
+
+<td>${t.ativados}</td>
+
+<td>${t.a1}</td>
+
+<td>${t.j1}</td>
+
+<td>${t.a2}</td>
+
+<td>${t.j2}</td>
+
+<td>${t.a3}</td>
+
+</tr>
+
+`;
+
+});
+
+html+=`
+
+<tfoot>
+
+<tr>
+
+<td>TOTAL</td>
+
+<td>${data.odsTotais.ativados}</td>
+
+<td>${data.odsTotais.a1}</td>
+
+<td>${data.odsTotais.j1}</td>
+
+<td>${data.odsTotais.a2}</td>
+
+<td>${data.odsTotais.j2}</td>
+
+<td>${data.odsTotais.a3}</td>
+
+<td>${data.odsTotais.j3}</td>
+
+<td>${data.odsTotais.a4}</td>
+
+<td>${data.odsTotais.j4}</td>
+
+</tr>
+
+</tfoot>
+
+`;
+
+document.getElementById(
+
+"odsTable"
+
+).innerHTML=
+
+html;
+
+}
 
 
 html+=`
