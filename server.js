@@ -912,25 +912,25 @@ if(id.startsWith("ODS-")){
 
      if(meal==="dia3_jantar"){
 
-      odsResumo[cliente].a3++;
+      odsResumo[cliente].j3++;
 
-      odsTotais.a3++;
+      odsTotais.j3++;
 
     }
 
      if(meal==="dia4_almoco"){
 
-      odsResumo[cliente].a3++;
+      odsResumo[cliente].a4++;
 
-      odsTotais.a3++;
+      odsTotais.a4++;
 
     }
 
      if(meal==="dia4_jantar"){
 
-      odsResumo[cliente].a3++;
+      odsResumo[cliente].j4++;
 
-      odsTotais.a3++;
+      odsTotais.j4++;
 
     }
 
