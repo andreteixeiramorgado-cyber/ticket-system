@@ -465,6 +465,9 @@ async(req,res)=>{
     let bossAtivados = 0;
     let bossEntradas = 0;
 
+    let odsAtivados = 0;
+    let odsEntradas = 0;
+    
     let vipTabela=[];
 
 let vipTotais={
@@ -517,6 +520,36 @@ let calTotais = {
   a2:0,
   j2:0,
   a3:0
+
+};
+
+    // ======================================================
+// ODS
+// ======================================================
+
+let odsResumo = {};
+
+let odsTabela = [];
+
+let odsTotais = {
+
+  ativados:0,
+
+  a1:0,
+
+  j1:0,
+
+  a2:0,
+
+  j2:0,
+
+  a3:0
+
+  j3:0
+
+    a4:0
+
+    j4:0
 
 };
 
@@ -776,6 +809,126 @@ if(
       calResumo[cliente].a3++;
 
       calTotais.a3++;
+
+    }
+
+  });
+
+}
+
+      // ======================================================
+// ODS
+// ======================================================
+
+if(id.startsWith("ODS-")){
+
+  if(t.active)
+    odsAtivados++;
+
+  odsEntradas += (t.used_meals || []).length;
+
+  const cliente =
+    t.cliente || "Sem Nome";
+
+  if(!odsResumo[cliente]){
+
+    odsResumo[cliente]={
+
+      cliente,
+
+      ativados:0,
+
+      a1:0,
+
+      j1:0,
+
+      a2:0,
+
+      j2:0,
+
+      a3:0
+
+      j3:0
+
+    a4:0
+
+    j4:0
+
+    };
+
+  }
+
+  if(t.active){
+
+    odsResumo[cliente].ativados++;
+
+    odsTotais.ativados++;
+
+  }
+
+  (t.used_meals || []).forEach(meal=>{
+
+    if(meal==="dia1_almoco"){
+
+      odsResumo[cliente].a1++;
+
+      odsTotais.a1++;
+
+    }
+
+    if(meal==="dia1_jantar"){
+
+      odsResumo[cliente].j1++;
+
+      odsTotais.j1++;
+
+    }
+
+    if(meal==="dia2_almoco"){
+
+      odsResumo[cliente].a2++;
+
+      odsTotais.a2++;
+
+    }
+
+    if(meal==="dia2_jantar"){
+
+      odsResumo[cliente].j2++;
+
+      odsTotais.j2++;
+
+    }
+
+    if(meal==="dia3_almoco"){
+
+      odsResumo[cliente].a3++;
+
+      odsTotais.a3++;
+
+    }
+
+     if(meal==="dia3_jantar"){
+
+      odsResumo[cliente].a3++;
+
+      odsTotais.a3++;
+
+    }
+
+     if(meal==="dia4_almoco"){
+
+      odsResumo[cliente].a3++;
+
+      odsTotais.a3++;
+
+    }
+
+     if(meal==="dia4_jantar"){
+
+      odsResumo[cliente].a3++;
+
+      odsTotais.a3++;
 
     }
 
