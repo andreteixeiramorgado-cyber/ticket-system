@@ -29,37 +29,6 @@ if(!fs.existsSync(PASTA)){
 
 }
 
-const fs = require("fs");
-const path = require("path");
-
-const PDFDocument = require("pdfkit");
-const QRCode = require("qrcode");
-
-const db = require("./firebase");
-
-const TOTAL = 500;
-
-const PREFIXO = "ODS";
-
-const PASTA = path.join(
-  __dirname,
-  "tickets",
-  "ODS"
-);
-
-const IMAGEM = path.join(
-  __dirname,
-  "ticket odisseia.png"
-);
-
-if(!fs.existsSync(PASTA)){
-
-  fs.mkdirSync(PASTA,{
-    recursive:true
-  });
-
-}
-
 // ======================================================
 // GERAR CÓDIGO
 // ======================================================
