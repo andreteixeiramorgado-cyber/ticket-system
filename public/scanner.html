@@ -179,7 +179,8 @@ const escolha = prompt(
 `Selecionar Grupo:
 
 1 = Race Ready
-2 = Rally Series`
+2 = Rally Series
+3 = Odissiea`
 
 );
 
@@ -237,7 +238,7 @@ if(escolha === "1"){
   else{
 
     refeicao =
-      "dia3_almoco";
+      "dia3_almoço";
   }
 }
 
@@ -298,6 +299,84 @@ else{
     "dia3_almoco";
 }
 }
+
+  
+// ======================================================
+// ODS
+// ======================================================
+
+if(escolha === "1"){
+
+  grupo = "ods";
+
+  document.getElementById("titulo")
+  .innerHTML =
+    "🎟️ Scanner Odisseia";
+
+
+  const ref = prompt(
+
+`Selecionar Refeição:
+
+1 = Dia 1 Almoço
+2 = Dia 1 Jantar
+3 = Dia 2 Almoço
+4 = Dia 2 Jantar
+5 = Dia 3 Almoço
+6 = Dia 3 Jantar
+7 = Dia 4 Almoço
+8 = Dia 4 Jantar`
+
+  );
+
+
+  if(ref === "1"){
+
+    refeicao =
+      "dia1_almoco";
+  }
+
+  else if(ref === "2"){
+
+    refeicao =
+      "dia1_jantar";
+  }
+
+  else if(ref === "3"){
+
+    refeicao =
+      "dia2_almoco";
+  }
+
+  else if(ref === "4"){
+
+    refeicao =
+      "dia2_jantar";
+  }
+
+  else if(ref === "5"){
+
+    refeicao =
+      "dia3_almoço";
+  }
+    else if(ref === "6"){
+
+    refeicao =
+      "dia3_jantar";
+  }
+      
+  else if(ref === "7"){
+
+    refeicao =
+      "dia4_almoço";
+  }
+  else{
+
+    refeicao =
+      "dia4_jantar";
+  }
+}
+
   
 // ======================================================
 // VARS
@@ -379,6 +458,26 @@ async function loadStats(){
   }
 }
 
+   // ======================================================
+    // EVT
+    // ======================================================
+
+    if(grupo === "evt"){
+
+      document.getElementById("statsText")
+      .innerHTML =
+
+        "🎟️ Odissiea<br><br>" +
+
+        refeicao
+        .replaceAll("_"," ") +
+
+        "<br><br>" +
+
+        "Entradas: " +
+        data.total;
+    }
+
 
 // ======================================================
 // VALIDAR QR
@@ -437,6 +536,25 @@ async function validarQR(texto){
 
       resultEl.innerHTML =
         "❌ Não pertence Rally";
+
+      resultEl.style.color =
+        "red";
+
+      return;
+    }
+
+
+    // ======================================================
+    // FILTRO ODS
+    // ======================================================
+
+    if(
+      grupo === "ods" &&
+      !id.includes("ODS")
+    ){
+
+      resultEl.innerHTML =
+        "❌ Não pertence Odisseia";
 
       resultEl.style.color =
         "red";
