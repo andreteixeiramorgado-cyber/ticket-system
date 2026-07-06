@@ -96,6 +96,8 @@ async(req,res)=>{
     const refeicao =
       req.query.refeicao || null;
 
+    const isODS = id.startsWith("ODS-");
+
     const docRef =
       db.collection("tickets")
       .doc(id);
