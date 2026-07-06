@@ -1232,25 +1232,7 @@ document.getElementById(
 
 }
 
-  
-// ===========================================
-// ods
-// ===========================================
-
- document.getElementById(
-  "odsAtivados"
-).innerHTML =
-
-data.odsAtivados;
-
-document.getElementById(
-  "odsEntradas"
-).innerHTML =
-
-"Entradas: " +
-
-data.odsEntradas; 
-
+ 
 // ===========================================
 // ODS
 // ===========================================
@@ -1297,6 +1279,24 @@ ${data.odsTotais.j2}
 Almoço D3:
 ${data.odsTotais.a3}
 
+
+<br>
+
+Almoço D3:
+${data.odsTotais.j3}
+
+
+<br>
+
+Almoço D3:
+${data.odsTotais.a4}
+
+
+<br>
+
+Almoço D3:
+${data.odsTotais.j4}
+
 `;
 
 let html=
@@ -1318,6 +1318,12 @@ let html=
 <th>J2</th>
 
 <th>A3</th>
+
+<th>J3</th>
+
+<th>A4</th>
+
+<th>J4</th>
 
 </tr>
 
@@ -1342,6 +1348,12 @@ html+=`
 <td>${t.j2}</td>
 
 <td>${t.a3}</td>
+
+<td>${t.j3}</td>
+
+<td>${t.a4}</td>
+
+<td>${t.j4}</td>
 
 </tr>
 
@@ -1368,6 +1380,12 @@ html+=`
 <td>${data.odsTotais.j2}</td>
 
 <td>${data.odsTotais.a3}</td>
+
+<td>${data.odsTotais.j3}</td>
+
+<td>${data.odsTotais.a4}</td>
+
+<td>${data.odsTotais.j4}</td>
 
 </tr>
 
@@ -1452,185 +1470,24 @@ data.calTotais.j2+
 
 data.calTotais.a3;
 
-  const odsTotal=
+const odsTotal =
 
-data.calTotais.a1+
+data.odsTotais.a1 +
 
-data.calTotais.j1+
+data.odsTotais.j1 +
 
-data.calTotais.a2+
+data.odsTotais.a2 +
 
-data.calTotais.j2+
+data.odsTotais.j2 +
 
-data.calTotais.a3;
+data.odsTotais.a3 +
 
-data.calTotais.j3+
+data.odsTotais.j3 +
 
-data.calTotais.a4+
+data.odsTotais.a4 +
 
-data.calTotais.j4;
+data.odsTotais.j4;
 
-
-  // ===========================================
-// ODS
-// ===========================================
-
-function renderODS(data){
-
-document.getElementById(
-
-"odsTotais"
-
-).innerHTML=
-
-`
-
-<b>TOTAL REFEIÇÕES</b>
-
-<br><br>
-
-Ativados:
-${data.odsTotais.ativados}
-
-<br>
-
-Almoço D1:
-${data.odsTotais.a1}
-
-<br>
-
-Jantar D1:
-${data.odsTotais.j1}
-
-<br>
-
-Almoço D2:
-${data.odsTotais.a2}
-
-<br>
-
-Jantar D2:
-${data.odsTotais.j2}
-
-<br>
-
-Almoço D3:
-${data.odsTotais.a3}
-
-<br>
-
-Almoço D2:
-${data.odsTotais.j3}
-
-<br>
-
-Jantar D2:
-${data.odsTotais.a4}
-
-<br>
-
-Almoço D3:
-${data.odsTotais.j4}
-
-`;
-
-let html=
-
-`
-
-<tr>
-
-<th>Cliente</th>
-
-<th>Ativados</th>
-
-<th>A1</th>
-
-<th>J1</th>
-
-<th>A2</th>
-
-<th>J2</th>
-
-<th>A3</th>
-
-</tr>
-
-`;
-
-data.odsTabela.forEach(t=>{
-
-html+=`
-
-<tr>
-
-<td>${t.cliente}</td>
-
-<td>${t.ativados}</td>
-
-<td>${t.a1}</td>
-
-<td>${t.j1}</td>
-
-<td>${t.a2}</td>
-
-<td>${t.j2}</td>
-
-<td>${t.a3}</td>
-
-<td>${t.j3}</td>
-
-<td>${t.a4}</td>
-
-<td>${t.j4}</td>
-
-</tr>
-
-`;
-
-});
-
-html+=`
-
-<tfoot>
-
-<tr>
-
-<td>TOTAL</td>
-
-<td>${data.odsTotais.ativados}</td>
-
-<td>${data.odsTotais.a1}</td>
-
-<td>${data.odsTotais.j1}</td>
-
-<td>${data.odsTotais.a2}</td>
-
-<td>${data.odsTotais.j2}</td>
-
-<td>${data.odsTotais.a3}</td>
-
-<td>${data.odsTotais.j3}</td>
-
-<td>${data.odsTotais.a4}</td>
-
-<td>${data.odsTotais.j4}</td>
-
-</tr>
-
-</tfoot>
-
-`;
-
-document.getElementById(
-
-"odsTable"
-
-).innerHTML=
-
-html;
-
-}
 
 
 html+=`
