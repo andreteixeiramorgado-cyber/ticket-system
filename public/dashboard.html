@@ -649,6 +649,19 @@ function renderCards(data){
   ).innerHTML =
     "Entradas: " +
 
+    
+
+  document.getElementById(
+    "odsAtivados"
+  ).innerHTML =
+    data.odsTotais.ativados;
+
+  document.getElementById(
+    "odsEntradas"
+  ).innerHTML =
+    "Entradas: " +
+
+
     (
 
       data.calTotais.a1 +
