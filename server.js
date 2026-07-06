@@ -1147,6 +1147,9 @@ resumoGeral.total =
       bossAtivados,
       bossEntradas,
 
+            odsTabela,
+      odsTotais,
+
       resumoGeral,
 
   evtTabela:
@@ -1203,6 +1206,38 @@ Object.values(rscResumo)
 ),
 
 rscTotais,
+
+       odsTabela:
+
+  Object.values(odsResumo)
+
+  .filter(c =>
+
+    c.ativados > 0 ||
+
+    c.a1 > 0 ||
+
+    c.j1 > 0 ||
+
+    c.a2 > 0 ||
+
+    c.j2 > 0 ||
+
+    c.a3 > 0 ||
+
+    c.j3 > 0 ||
+
+    c.a4 > 0 ||
+
+    c.j4 > 0
+  )
+
+  .sort(
+    (a,b)=>
+      b.ativados - a.ativados
+  ),
+odsTotais,
+
 
 calTabela:
 
