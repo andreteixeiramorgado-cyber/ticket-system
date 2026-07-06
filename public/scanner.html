@@ -238,7 +238,7 @@ if(escolha === "1"){
   else{
 
     refeicao =
-      "dia3_almoço";
+      "dia3_almoco";
   }
 }
 
@@ -305,7 +305,7 @@ else{
 // ODS
 // ======================================================
 
-if(escolha === "1"){
+if(escolha === "3"){
 
   grupo = "ods";
 
@@ -357,7 +357,7 @@ if(escolha === "1"){
   else if(ref === "5"){
 
     refeicao =
-      "dia3_almoço";
+      "dia3_almoco";
   }
     else if(ref === "6"){
 
@@ -368,7 +368,7 @@ if(escolha === "1"){
   else if(ref === "7"){
 
     refeicao =
-      "dia4_almoço";
+      "dia4_almoco";
   }
   else{
 
@@ -449,20 +449,11 @@ async function loadStats(){
         "Entradas: " +
         data.total;
     }
-
-  }
-
-  catch(err){
-
-    console.error(err);
-  }
-}
-
-   // ======================================================
-    // EVT
+    // ======================================================
+    // ods
     // ======================================================
 
-    if(grupo === "evt"){
+    if(grupo === "ods"){
 
       document.getElementById("statsText")
       .innerHTML =
@@ -477,8 +468,16 @@ async function loadStats(){
         "Entradas: " +
         data.total;
     }
+    
+  }
 
+  catch(err){
 
+    console.error(err);
+  }
+}
+
+   
 // ======================================================
 // VALIDAR QR
 // ======================================================
@@ -530,7 +529,8 @@ async function validarQR(texto){
       !(
         id.includes("RSprom") ||
         id.includes("BOSS") ||
-        id.includes("RSC")
+        id.includes("RSC") ||
+        id.includes("CAL")
       )
     ){
 
@@ -550,7 +550,8 @@ async function validarQR(texto){
 
     if(
       grupo === "ods" &&
-      !id.includes("ODS")
+      !id.includes("ODS") ||
+        id.includes("CAL")
     ){
 
       resultEl.innerHTML =
