@@ -1460,6 +1460,25 @@ data.calTotais.j2+
 
 data.calTotais.a3;
 
+  const odsTotal=
+
+data.calTotais.a1+
+
+data.calTotais.j1+
+
+data.calTotais.a2+
+
+data.calTotais.j2+
+
+data.calTotais.a3;
+
+data.calTotais.j3+
+
+data.calTotais.a4+
+
+data.calTotais.j4;
+
+
   // ===========================================
 // ODS
 // ===========================================
@@ -1506,6 +1525,21 @@ ${data.odsTotais.j2}
 Almoço D3:
 ${data.odsTotais.a3}
 
+<br>
+
+Almoço D2:
+${data.odsTotais.j3}
+
+<br>
+
+Jantar D2:
+${data.odsTotais.a4}
+
+<br>
+
+Almoço D3:
+${data.odsTotais.j4}
+
 `;
 
 let html=
@@ -1551,6 +1585,12 @@ html+=`
 <td>${t.j2}</td>
 
 <td>${t.a3}</td>
+
+<td>${t.j3}</td>
+
+<td>${t.a4}</td>
+
+<td>${t.j4}</td>
 
 </tr>
 
