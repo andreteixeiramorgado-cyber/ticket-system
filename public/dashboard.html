@@ -638,46 +638,42 @@ function renderCards(data){
     data.bossEntradas;
 
 
+document.getElementById(
+  "calAtivados"
+).innerHTML =
+  data.calTotais.ativados;
 
-  document.getElementById(
-    "calAtivados"
-  ).innerHTML =
-    data.calTotais.ativados;
+document.getElementById(
+  "calEntradas"
+).innerHTML =
+  "Entradas: " +
+  (
+    data.calTotais.a1 +
+    data.calTotais.j1 +
+    data.calTotais.a2 +
+    data.calTotais.j2 +
+    data.calTotais.a3
+  );
 
-  document.getElementById(
-    "calEntradas"
-  ).innerHTML =
-    "Entradas: " +
+document.getElementById(
+  "odsAtivados"
+).innerHTML =
+  data.odsTotais.ativados;
 
-    
-
-  document.getElementById(
-    "odsAtivados"
-  ).innerHTML =
-    data.odsTotais.ativados;
-
-  document.getElementById(
-    "odsEntradas"
-  ).innerHTML =
-    "Entradas: " +
-
-
-    (
-
-      data.calTotais.a1 +
-
-      data.calTotais.j1 +
-
-      data.calTotais.a2 +
-
-      data.calTotais.j2 +
-
-      data.calTotais.a3
-
-    );
-
-}
-
+document.getElementById(
+  "odsEntradas"
+).innerHTML =
+  "Entradas: " +
+  (
+    data.odsTotais.a1 +
+    data.odsTotais.j1 +
+    data.odsTotais.a2 +
+    data.odsTotais.j2 +
+    data.odsTotais.a3 +
+    data.odsTotais.j3 +
+    data.odsTotais.a4 +
+    data.odsTotais.j4
+  );
 
 
 // ===========================================
