@@ -1306,6 +1306,9 @@ async(req,res)=>{
     await db.collection("tickets")
     .get();
 
+  console.log("=== TESTE FIREBASE ===");
+console.log("Tickets:", snapshot.size);
+
   let rows = [];
 
   snapshot.forEach(doc=>{
