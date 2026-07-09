@@ -230,8 +230,17 @@ async function ativarQR(texto){
 
   try{
 
-    const id =
-      texto.split("/t/")[1];
+   let id;
+
+if (texto.includes("/t/")) {
+
+    id = texto.split("/t/")[1];
+
+} else {
+
+    id = texto.trim();
+
+}
 
     if(!id){
 
