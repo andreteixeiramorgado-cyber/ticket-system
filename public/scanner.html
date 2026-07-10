@@ -524,7 +524,7 @@ async function loadStats(){
       document.getElementById("statsText")
       .innerHTML =
 
-        "🎟️ Odissiea<br><br>" +
+        "🎟️ Odissiea Hospitality<br><br>" +
 
         refeicao
         .replaceAll("_"," ") +
@@ -653,16 +653,44 @@ if (texto.includes("/t/")) {
 
 
    // VALID
-if(data.status === "valid"){
+
+   if(data.status === "valid"){
 
   resultEl.innerHTML =
-    "✅ Entrada válida";
 
-  resultEl.style.color =
-    "green";
+    `
+    <div style="color:green;font-size:32px;font-weight:bold;line-height:1.3;">
+
+      BEM VINDO!!!<br>
+
+      YOU ARE WELCOME!!!<br>
+
+      BIENVENIDO!!!
+
+    </div>
+
+    <br>
+
+    <div style="font-size:26px;font-weight:bold;color:#000;">
+
+      👤 ${data.cliente}
+
+    </div>
+
+    <br>
+
+    <div style="font-size:24px;color:#000;">
+
+      🍽️ ${data.usadas} / ${data.total} refeições/meals/comidas
+
+    </div>
+    `;
+
+  resultEl.style.color = "green";
 
   loadStats();
-}
+
+} 
 
 
 // USED
