@@ -797,6 +797,12 @@ if(modo === "usb"){
 
   usbReader.focus();
 
+  setInterval(()=>{
+
+    usbReader.focus();
+
+},1000);
+
   document.addEventListener("click",()=>{
 
     usbReader.focus();
