@@ -124,6 +124,31 @@
 
   </div>
 
+  <!-- LEITOR USB -->
+
+<input
+
+id="usbReader"
+
+type="text"
+
+autocomplete="off"
+
+autocapitalize="off"
+
+spellcheck="false"
+
+style="
+
+position:absolute;
+
+left:-9999px;
+
+opacity:0;
+
+"
+
+>
 
   <!-- STATS -->
   <div id="stats">
@@ -169,6 +194,7 @@ let grupo = null;
 
 let refeicao = null;
 
+let modo = null;
 
 // ======================================================
 // ESCOLHER GRUPO
@@ -184,7 +210,29 @@ const escolha = prompt(
 
 );
 
+// ======================================================
+// MODO DE LEITURA
+// ======================================================
 
+const modoEscolha = prompt(
+
+`Modo de leitura:
+
+1 = Câmara
+2 = Leitor QR USB`
+
+);
+
+if(modoEscolha === "2"){
+
+  modo = "usb";
+
+}else{
+
+  modo = "camera";
+
+}
+  
 // ======================================================
 // RACE READY
 // ======================================================
@@ -388,6 +436,24 @@ const resultEl =
 let scanning = true;
 
 
+// ======================================================
+// MOSTRAR MODO
+// ======================================================
+
+if(modo === "usb"){
+
+  resultEl.innerHTML =
+
+    "⌨️ MODO LEITOR USB<br><br>Aguardando leitura...";
+
+}else{
+
+  resultEl.innerHTML =
+
+    "📷 MODO CÂMARA<br><br>Aguardando scan...";
+
+}
+  
 // ======================================================
 // LOAD STATS
 // ======================================================
@@ -720,6 +786,46 @@ function onScanSuccess(decodedText){
   validarQR(decodedText);
 }
 
+ // ======================================================
+// LEITOR USB
+// ======================================================
+
+if(modo === "usb"){
+
+  const usbReader =
+    document.getElementById("usbReader");
+
+  usbReader.focus();
+
+  document.addEventListener("click",()=>{
+
+    usbReader.focus();
+
+  });
+
+  usbReader.addEventListener("keydown",function(e){
+
+    if(e.key !== "Enter")
+      return;
+
+    e.preventDefault();
+
+    const codigo =
+      usbReader.value.trim();
+
+    usbReader.value="";
+
+    usbReader.focus();
+
+    if(codigo){
+
+      validarQR(codigo);
+
+    }
+
+  });
+
+} 
 
 // ======================================================
 // START
@@ -761,27 +867,40 @@ function startScanner(){
 // CAMERA
 // ======================================================
 
-navigator.mediaDevices
-.getUserMedia({ video:true })
+// ======================================================
+// INICIAR
+// ======================================================
 
-.then(stream=>{
+if(modo === "camera"){
 
-  stream.getTracks()
-  .forEach(track=>track.stop());
+  navigator.mediaDevices
+  .getUserMedia({ video:true })
 
-  startScanner();
+  .then(stream=>{
+
+    stream.getTracks()
+    .forEach(track=>track.stop());
+
+    startScanner();
+
+    loadStats();
+
+  })
+
+  .catch(err=>{
+
+    console.error(err);
+
+    resultEl.innerHTML =
+      "Permissão negada";
+
+  });
+
+}else{
 
   loadStats();
 
-})
-
-.catch(err=>{
-
-  console.error(err);
-
-  resultEl.innerHTML =
-    "Permissão negada";
-});
+}
 
 </script>
 
