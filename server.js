@@ -232,8 +232,16 @@ if(
 
   return res.json({
 
-    status:"valid"
-  });
+    status:"valid",
+
+    cliente: ticket.cliente || "Sem Nome",
+
+    usadas: used.length,
+
+    total: mealLimit
+
+});
+  
 }
 
    // ======================================================
