@@ -130,6 +130,21 @@ Aguardando QR...
 
 </div>
 
+  <div
+id="contadorSessao"
+style="
+margin-top:20px;
+padding:15px;
+background:#e8f5e9;
+border-radius:10px;
+font-size:24px;
+font-weight:bold;
+color:#2e7d32;
+">
+
+✅ Bilhetes ativados nesta sessão: 0
+
+</div>
 
 <button
 class="orange"
@@ -221,6 +236,8 @@ const resultEl =
 
 let scanning = true;
 
+  let ativadosSessao = 0;
+
 
 // ======================================================
 // ATIVAR
@@ -274,6 +291,16 @@ if (texto.includes("/t/")) {
 
 
     if(data.status === "activated"){
+
+      ativadosSessao++;
+
+      document.getElementById(
+      "contadorSessao"
+       ).innerHTML =
+
+"✅ Bilhetes ativados nesta sessão: " +
+
+ativadosSessao;
 
       resultEl.innerHTML =
 
