@@ -663,44 +663,97 @@ if (texto.includes("/t/")) {
 
    // VALID
 
-   if(data.status === "valid"){
+  if(data.status === "valid"){
+
+let lista = "";
+
+const todas = [
+
+["dia1_almoco","Dia 1 Almoço"],
+
+["dia1_jantar","Dia 1 Jantar"],
+
+["dia2_almoco","Dia 2 Almoço"],
+
+["dia2_jantar","Dia 2 Jantar"],
+
+["dia3_almoco","Dia 3 Almoço"]
+
+];
+
+// Apenas ODS tem refeições extra
+
+if(grupo === "ods"){
+
+    todas.push(
+
+        ["dia3_jantar","Dia 3 Jantar"],
+
+        ["dia4_almoco","Dia 4 Almoço"],
+
+        ["dia4_jantar","Dia 4 Jantar"]
+
+    );
+
+}
+
+todas.forEach(r=>{
+
+    if(data.refeicoes.includes(r[0])){
+
+        lista += "🟢 " + r[1] + "<br>";
+
+    }else{
+
+        lista += "⚪ " + r[1] + "<br>";
+
+    }
+
+});
 
   resultEl.innerHTML =
 
-    `
-    <div style="color:green;font-size:32px;font-weight:bold;line-height:1.3;">
+  `
+  <div style="color:green;font-size:30px;font-weight:bold;line-height:1.3;">
 
-      BEM VINDO!!!<br>
+  BEM VINDO!!!<br>
 
-      YOU ARE WELCOME!!!<br>
+  YOU ARE WELCOME!!!<br>
 
-      BIENVENIDO!!!
+  BIEN VENIDO!!!
 
-    </div>
+  </div>
 
-    <br>
+  <br>
 
-    <div style="font-size:26px;font-weight:bold;color:#000;">
+  <div style="font-size:24px;font-weight:bold;color:black;">
 
-      👤 ${data.cliente}
+  👤 ${data.cliente}
 
-    </div>
+  </div>
 
-    <br>
+  <br>
 
-    <div style="font-size:24px;color:#000;">
+  <div style="font-size:22px;color:black;">
 
-      🍽️ ${data.usadas} / ${data.total} refeições/meals/comidas
+  🍽️ ${data.usadas}/${data.total} refeições
 
-    </div>
-    `;
+  </div>
 
-  resultEl.style.color = "green";
+  <br>
+
+  <div style="text-align:left;font-size:18px;color:black;">
+
+  ${lista}
+
+  </div>
+  `;
+
+  resultEl.style.color="green";
 
   loadStats();
 
-} 
-
+}
 
 // USED
 else if(data.status === "used"){
