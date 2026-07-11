@@ -1060,6 +1060,59 @@ async function aumentarRefeicoes(){
 
     if(!password) return;
 
+   const res = await fetch(
+
+"/api/add-meals",
+
+{
+
+method:"POST",
+
+headers:{
+
+"Content-Type":"application/json"
+
+},
+
+body:JSON.stringify({
+
+ticket,
+
+quantidade,
+
+password
+
+})
+
+}
+
+);
+
+const data = await res.json();
+
+if(data.success){
+
+alert(
+
+"✅ Refeições adicionadas com sucesso.\n\nNovo total: " +
+
+data.novoTotal
+
+);
+
+}else{
+
+alert(
+
+"❌ " +
+
+data.message
+
+);
+
+}
+
+}
 
 // ======================================================
 // SUBSTITUIR TICKET
