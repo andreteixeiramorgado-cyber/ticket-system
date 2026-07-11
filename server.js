@@ -2380,44 +2380,99 @@ app.get("/logout",(req,res)=>{
 // AUMENTAR REFEIÇÕES
 // ======================================================
 
-async function aumentarRefeicoes(){
+app.post(
 
-    const ticket = prompt(
+"/api/add-meals",
 
-        "Número do ticket\n\nEx: ODS-ABC12345"
+checkAuth,
 
-    );
+async(req,res)=>{
 
-    if(!ticket) return;
+try{
 
-    const quantidade = prompt(
+const{
 
-        "Quantas refeições pretende adicionar?"
+ticket,
 
-    );
+quantidade,
 
-    if(!quantidade) return;
+password
 
-    const password = prompt(
+}=req.body;
 
-        "Password de Administrador"
+// PASSWORD ADMIN
 
-    );
+if(password!=="ADMIN123"){
 
-    if(!password) return;
+return res.json({
 
-    alert(
+success:false,
 
-        "Ticket: " + ticket +
+message:"Password inválida"
 
-        "\nAdicionar: " + quantidade +
-
-        "\n\nNo próximo passo será enviada a confirmação ao servidor."
-
-    );
+});
 
 }
 
+const docRef=
+
+db.collection("tickets").doc(ticket);
+
+const doc=
+
+await docRef.get();
+
+if(!doc.exists){
+
+return res.json({
+
+success:false,
+
+message:"Ticket inexistente"
+
+});
+
+}
+
+const dados=doc.data();
+
+const atual=
+
+dados.meal_limit || 0;
+
+await docRef.update({
+
+meal_limit:
+
+atual + Number(quantidade)
+
+});
+
+return res.json({
+
+success:true,
+
+novoTotal:
+
+atual + Number(quantidade)
+
+});
+
+}
+
+catch(err){
+
+console.error(err);
+
+res.status(500).json({
+
+success:false
+
+});
+
+}
+
+});
 // ======================================================
 // SERVER
 // ======================================================
