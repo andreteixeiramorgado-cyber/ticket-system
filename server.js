@@ -77,6 +77,235 @@ function checkAuth(req,res,next){
 }
 
 // ======================================================
+// VALIDAR QR - admin
+// ======================================================
+
+app.get(
+
+  "/api/check-admin/:id",
+
+  checkAuth,
+
+async(req,res)=>{
+
+  try{
+
+    const id =
+      req.params.id;
+
+    const refeicao =
+      req.query.refeicao || null;
+
+    const isODS = id.startsWith("ODS-");
+
+    const docRef =
+      db.collection("tickets")
+      .doc(id);
+
+    const doc =
+      await docRef.get();
+
+    if(!doc.exists){
+
+      return res.json({
+        status:"invalid"
+      });
+    }
+
+    const ticket =
+      doc.data();
+
+    if(!ticket.active){
+
+      return res.json({
+        status:"not_active"
+      });
+    }
+
+    const rsProm =
+      id.includes("RSprom");
+
+    const boss =
+      id.includes("BOSS");
+
+    const entradas =
+      ticket.entradas || 0;
+
+
+// EVT / RSC / ODS
+
+if(
+  !rsProm &&
+  !boss
+){
+
+  const mealLimit =
+    ticket.meal_limit || 1;
+
+  const used =
+    ticket.used_meals || [];
+
+  const lastMeal =
+    ticket.last_meal_time || null;
+
+
+  // refeição repetida
+
+  if(
+
+    used.includes(
+      refeicao
+    )
+
+  ){
+
+    return res.json({
+
+      status:"meal_used"
+    });
+  }
+
+
+  // limite atingido
+
+  if(
+
+    used.length >=
+    mealLimit
+
+  ){
+
+    return res.json({
+
+      status:"limit"
+    });
+  }
+
+
+
+  used.push(refeicao);
+
+  await docRef.update({
+
+    used_meals:used,
+
+    last_meal_time:
+      new Date()
+  });
+
+  return res.json({
+
+    status:"valid",
+
+    cliente: ticket.cliente || "Sem Nome",
+
+    usadas: used.length,
+
+    total: mealLimit
+
+});
+  
+}
+
+   // ======================================================
+// RSPROM
+// ======================================================
+
+if(rsProm){
+
+  const mealLimit =
+    ticket.meal_limit || 3;
+
+  const used =
+    ticket.used_meals || [];
+
+  if(
+
+    used.length >=
+    mealLimit
+
+  ){
+
+    return res.json({
+
+      status:"limit"
+    });
+  }
+
+  used.push(refeicao);
+
+  await docRef.update({
+
+    used_meals:
+      used,
+
+    last_meal_time:
+      new Date()
+  });
+
+  return res.json({
+
+    status:"valid"
+  });
+}
+
+// ======================================================
+// BOSS
+// ======================================================
+
+const mealLimit =
+  ticket.meal_limit || 999;
+
+const used =
+  ticket.used_meals || [];
+
+if(
+
+  used.length >=
+  mealLimit
+
+){
+
+  return res.json({
+
+    status:"limit"
+  });
+}
+
+used.push(refeicao);
+
+await docRef.update({
+
+  used_meals:
+    used,
+
+  last_meal_time:
+    new Date()
+});
+
+return res.json({
+
+  status:"valid"
+});
+
+      }
+
+  catch(err){
+
+    console.error(err);
+
+    res.status(500).json({
+
+      status:"error"
+
+    });
+
+  }
+
+});
+
+
+// ======================================================
 // VALIDAR QR
 // ======================================================
 
@@ -340,7 +569,8 @@ return res.json({
   }
 
 });
- 
+
+
 // ======================================================
 // ATIVAR BILHETE
 // ======================================================
