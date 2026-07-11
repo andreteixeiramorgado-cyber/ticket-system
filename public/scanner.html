@@ -998,7 +998,82 @@ if(modo === "camera"){
 
 }
 
-</script>
+// ======================================================
+// AUMENTAR REFEIÇÕES
+// ======================================================
 
+async function aumentarRefeicoes(){
+
+    const ticket = prompt(
+
+        "Número do ticket\n\nEx: ODS-ABC12345"
+
+    );
+
+    if(!ticket) return;
+
+    const quantidade = prompt(
+
+        "Quantas refeições pretende adicionar?"
+
+    );
+
+    if(!quantidade) return;
+
+    const password = prompt(
+
+        "Password de Administrador"
+
+    );
+
+    if(!password) return;
+
+    alert(
+
+        "Ticket: " + ticket +
+
+        "\nAdicionar: " + quantidade +
+
+        "\n\nNo próximo passo será enviada a confirmação ao servidor."
+
+    );
+
+}
+  
+</script>
+<hr style="margin-top:50px;">
+
+<h2>🔧 Ferramentas de Administração</h2>
+
+<button
+id="btnExtra"
+
+onclick="aumentarRefeicoes()"
+
+style="
+padding:15px 25px;
+font-size:22px;
+margin-top:15px;
+">
+
+➕ Aumentar refeições
+
+</button>
+
+<br><br>
+
+<button
+id="btnClone"
+
+onclick="substituirTicket()"
+
+style="
+padding:15px 25px;
+font-size:22px;
+">
+
+🔄 Substituir Ticket
+
+</button>
 </body>
 </html>
