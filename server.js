@@ -2473,6 +2473,136 @@ success:false
 }
 
 });
+
+// ======================================================
+// SUBSTITUIR TICKET
+// ======================================================
+
+app.post(
+
+"/api/replace-ticket",
+
+checkAuth,
+
+async(req,res)=>{
+
+try{
+
+const{
+
+antigo,
+
+novo,
+
+password
+
+}=req.body;
+
+// PASSWORD ADMIN
+
+if(password!=="ADMIN123"){
+
+return res.json({
+
+success:false,
+
+message:"Password inválida"
+
+});
+
+}
+
+const antigoRef=
+
+db.collection("tickets").doc(antigo);
+
+const novoRef=
+
+db.collection("tickets").doc(novo);
+
+const antigoDoc=
+
+await antigoRef.get();
+
+const novoDoc=
+
+await novoRef.get();
+
+if(!antigoDoc.exists){
+
+return res.json({
+
+success:false,
+
+message:"Ticket antigo inexistente"
+
+});
+
+}
+
+if(!novoDoc.exists){
+
+return res.json({
+
+success:false,
+
+message:"Ticket novo inexistente"
+
+});
+
+}
+
+const dados=
+
+antigoDoc.data();
+
+// Copiar todos os dados para o novo ticket
+
+await novoRef.set({
+
+...dados,
+
+active:true,
+
+substitui:antigo
+
+});
+
+// Desativar o antigo
+
+await antigoRef.update({
+
+active:false,
+
+substituido:true,
+
+novoTicket:novo
+
+});
+
+return res.json({
+
+success:true
+
+});
+
+}
+
+catch(err){
+
+console.error(err);
+
+res.status(500).json({
+
+success:false
+
+});
+
+}
+
+});
+
+
 // ======================================================
 // SERVER
 // ======================================================
