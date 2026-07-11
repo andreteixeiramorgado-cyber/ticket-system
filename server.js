@@ -2377,6 +2377,48 @@ app.get("/logout",(req,res)=>{
 
 
 // ======================================================
+// AUMENTAR REFEIÇÕES
+// ======================================================
+
+async function aumentarRefeicoes(){
+
+    const ticket = prompt(
+
+        "Número do ticket\n\nEx: ODS-ABC12345"
+
+    );
+
+    if(!ticket) return;
+
+    const quantidade = prompt(
+
+        "Quantas refeições pretende adicionar?"
+
+    );
+
+    if(!quantidade) return;
+
+    const password = prompt(
+
+        "Password de Administrador"
+
+    );
+
+    if(!password) return;
+
+    alert(
+
+        "Ticket: " + ticket +
+
+        "\nAdicionar: " + quantidade +
+
+        "\n\nNo próximo passo será enviada a confirmação ao servidor."
+
+    );
+
+}
+
+// ======================================================
 // SERVER
 // ======================================================
 
