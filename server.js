@@ -461,7 +461,7 @@ if(
       new Date()
   });
 
-  return res.json({
+ return res.json({
 
     status:"valid",
 
@@ -469,7 +469,9 @@ if(
 
     usadas: used.length,
 
-    total: mealLimit
+    total: mealLimit,
+
+    refeicoes: used
 
 });
   
