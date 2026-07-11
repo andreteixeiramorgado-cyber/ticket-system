@@ -1172,11 +1172,55 @@ async function substituirTicket(){
 
     if(!confirmar) return;
 
+   const res = await fetch(
+
+    "/api/replace-ticket",
+
+    {
+
+        method:"POST",
+
+        headers:{
+
+            "Content-Type":"application/json"
+
+        },
+
+        body:JSON.stringify({
+
+            antigo,
+
+            novo,
+
+            password
+
+        })
+
+    }
+
+);
+
+const data = await res.json();
+
+if(data.success){
+
     alert(
 
-        "No próximo passo será enviada a substituição ao servidor."
+        "✅ Ticket substituído com sucesso."
 
     );
+
+}else{
+
+    alert(
+
+        "❌ " +
+
+        data.message
+
+    );
+
+}
 
 }
   
