@@ -163,6 +163,38 @@ opacity:0;
 
 
   <!-- BOTÕES -->
+
+<button
+id="btnExtra"
+
+onclick="aumentarRefeicoes()"
+
+style="
+padding:15px 25px;
+font-size:22px;
+margin-top:15px;
+">
+
+➕ Aumentar refeições
+
+</button>
+
+<br><br>
+
+<button
+id="btnClone"
+
+onclick="substituirTicket()"
+
+style="
+padding:15px 25px;
+font-size:22px;
+">
+
+🔄 Substituir Ticket
+
+</button>
+  
   <button
     class="orange"
     onclick="window.location='/ativar.html'"
@@ -1028,105 +1060,6 @@ async function aumentarRefeicoes(){
 
     if(!password) return;
 
-  // ======================================================
-// AUMENTAR REFEIÇÕES
-// ======================================================
-
-app.post(
-
-"/api/add-meals",
-
-checkAuth,
-
-async(req,res)=>{
-
-try{
-
-const{
-
-ticket,
-
-quantidade,
-
-password
-
-}=req.body;
-
-// PASSWORD ADMIN
-
-if(password!=="ADMIN123"){
-
-return res.json({
-
-success:false,
-
-message:"Password inválida"
-
-});
-
-}
-
-const docRef=
-
-db.collection("tickets").doc(ticket);
-
-const doc=
-
-await docRef.get();
-
-if(!doc.exists){
-
-return res.json({
-
-success:false,
-
-message:"Ticket inexistente"
-
-});
-
-}
-
-const dados=doc.data();
-
-const atual=
-
-dados.meal_limit || 0;
-
-await docRef.update({
-
-meal_limit:
-
-atual + Number(quantidade)
-
-});
-
-return res.json({
-
-success:true,
-
-novoTotal:
-
-atual + Number(quantidade)
-
-});
-
-}
-
-catch(err){
-
-console.error(err);
-
-res.status(500).json({
-
-success:false
-
-});
-
-}
-
-});
-
-}
 
 // ======================================================
 // SUBSTITUIR TICKET
@@ -1227,37 +1160,6 @@ if(data.success){
   <hr style="margin-top:50px;">
 
 <h2>🔧 Ferramentas de Administração</h2>
-
-<button
-id="btnExtra"
-
-onclick="aumentarRefeicoes()"
-
-style="
-padding:15px 25px;
-font-size:22px;
-margin-top:15px;
-">
-
-➕ Aumentar refeições
-
-</button>
-
-<br><br>
-
-<button
-id="btnClone"
-
-onclick="substituirTicket()"
-
-style="
-padding:15px 25px;
-font-size:22px;
-">
-
-🔄 Substituir Ticket
-
-</button>
 
   
 </script>
