@@ -1293,6 +1293,114 @@ function fecharModal(){
 
 }
 
+  // ======================================================
+// CONSULTAR TICKET
+// ======================================================
+
+async function consultarTicket(){
+
+    const id = document
+        .getElementById("ticketConsulta")
+        .value
+        .trim();
+
+    if(!id) return;
+
+    const res = await fetch(
+
+        "/api/ticket-info/" + id
+
+    );
+
+    const data = await res.json();
+
+    if(!data.success){
+
+        document.getElementById("ticketInfo").innerHTML =
+
+        "<span style='color:red;font-size:22px;'>❌ Ticket não encontrado</span>";
+
+        return;
+
+    }
+
+    let lista = "";
+
+    const todas = [
+
+        ["dia1_almoco","Dia 1 Almoço"],
+
+        ["dia1_jantar","Dia 1 Jantar"],
+
+        ["dia2_almoco","Dia 2 Almoço"],
+
+        ["dia2_jantar","Dia 2 Jantar"],
+
+        ["dia3_almoco","Dia 3 Almoço"],
+
+        ["dia3_jantar","Dia 3 Jantar"],
+
+        ["dia4_almoco","Dia 4 Almoço"],
+
+        ["dia4_jantar","Dia 4 Jantar"]
+
+    ];
+
+    todas.forEach(r=>{
+
+        if(data.used_meals.includes(r[0])){
+
+            lista += "🟢 " + r[1] + "<br>";
+
+        }else{
+
+            lista += "⚪ " + r[1] + "<br>";
+
+        }
+
+    });
+
+    document.getElementById("ticketInfo").innerHTML =
+
+    `
+    <div style="text-align:left;font-size:18px;">
+
+    <b>👤 Cliente:</b><br>
+
+    ${data.cliente}
+
+    <br><br>
+
+    <b>🎟️ Ticket:</b><br>
+
+    ${data.ticket}
+
+    <br><br>
+
+    <b>Estado:</b>
+
+    ${data.ativo ? "🟢 Ativado" : "🟡 Não ativado"}
+
+    <br><br>
+
+    <b>🍽️ Refeições:</b>
+
+    ${data.used_meals.length}/${data.meal_limit}
+
+    <br><br>
+
+    ${lista}
+
+    <br>
+
+    <b>🕒 Última refeição:</b><br>
+
+    ${data.last_meal_time || "Sem registos"}
+
+    </div>
+    `;
+
+}
   
 </script>
 
