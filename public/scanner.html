@@ -102,6 +102,54 @@
       font-size:22px;
     }
 
+/* ==========================
+   MODAL
+========================== */
+
+.modal{
+
+display:none;
+
+position:fixed;
+
+z-index:9999;
+
+left:0;
+
+top:0;
+
+width:100%;
+
+height:100%;
+
+background:rgba(0,0,0,.65);
+
+}
+
+.modal-content{
+
+background:white;
+
+width:90%;
+
+max-width:650px;
+
+margin:5% auto;
+
+padding:30px;
+
+border-radius:15px;
+
+box-shadow:0 0 20px rgba(0,0,0,.3);
+
+text-align:center;
+
+max-height:85vh;
+
+overflow:auto;
+
+}
+    
   </style>
 
 </head>
@@ -164,6 +212,22 @@ opacity:0;
 
   <!-- BOTÕES -->
 
+<button
+
+id="btnConsultar"
+
+onclick="abrirModal()"
+
+style="
+padding:15px 25px;
+font-size:22px;
+margin-bottom:15px;
+">
+
+🔍 Consultar Ticket
+
+</button>
+  
 <button
 id="btnExtra"
 
@@ -1211,7 +1275,76 @@ if(data.success){
 
 }
 
+// ======================================================
+// MODAL
+// ======================================================
+
+function abrirModal(){
+
+    document.getElementById("ticketModal").style.display="block";
+
+    document.getElementById("ticketConsulta").focus();
+
+}
+
+function fecharModal(){
+
+    document.getElementById("ticketModal").style.display="none";
+
+}
+
   
 </script>
+
+<!-- MODAL CONSULTAR TICKET -->
+
+<div id="ticketModal" class="modal">
+
+<div class="modal-content">
+
+<h2>🔍 Consultar Ticket</h2>
+
+<input
+id="ticketConsulta"
+type="text"
+placeholder="Número do Ticket"
+style="
+width:90%;
+padding:12px;
+font-size:18px;
+">
+
+<br><br>
+
+<button
+onclick="consultarTicket()"
+class="orange">
+
+Consultar
+
+</button>
+
+<hr>
+
+<div id="ticketInfo">
+
+Nenhum ticket consultado.
+
+</div>
+
+<br>
+
+<button
+onclick="fecharModal()"
+class="dark">
+
+Fechar
+
+</button>
+
+</div>
+
+</div>
+  
 </body>
 </html>
