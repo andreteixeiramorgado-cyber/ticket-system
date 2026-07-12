@@ -2602,6 +2602,76 @@ success:false
 
 });
 
+// ======================================================
+// CONSULTAR TICKET
+// ======================================================
+
+app.get(
+
+"/api/ticket-info/:id",
+
+checkAuth,
+
+async(req,res)=>{
+
+try{
+
+const id = req.params.id;
+
+const doc = await db.collection("tickets").doc(id).get();
+
+if(!doc.exists){
+
+return res.json({
+
+success:false,
+
+message:"Ticket não encontrado"
+
+});
+
+}
+
+const t = doc.data();
+
+return res.json({
+
+success:true,
+
+ticket:id,
+
+cliente:t.cliente || "Sem Nome",
+
+ativo:t.active || false,
+
+meal_limit:t.meal_limit || 0,
+
+used_meals:t.used_meals || [],
+
+last_meal_time:t.last_meal_time || null,
+
+substituido:t.substituido || false,
+
+novoTicket:t.novoTicket || ""
+
+});
+
+}
+
+catch(err){
+
+console.error(err);
+
+res.status(500).json({
+
+success:false
+
+});
+
+}
+
+});
+
 
 // ======================================================
 // SERVER
