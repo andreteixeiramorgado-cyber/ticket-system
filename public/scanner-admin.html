@@ -981,5 +981,55 @@ if(modo === "camera"){
 
 </script>
 
+<!-- MODAL CONSULTAR TICKET -->
+
+<div id="ticketModal" class="modal">
+
+<div class="modal-content">
+
+<h2>🔍 Consultar Ticket</h2>
+
+<input
+id="ticketConsulta"
+type="text"
+placeholder="Número do Ticket"
+style="
+width:90%;
+padding:12px;
+font-size:18px;
+">
+
+<br><br>
+
+<button
+onclick="consultarTicket()"
+class="orange">
+
+Consultar
+
+</button>
+
+<hr>
+
+<div id="ticketInfo">
+
+Nenhum ticket consultado.
+
+</div>
+
+<br>
+
+<button
+onclick="fecharModal()"
+class="dark">
+
+Fechar
+
+</button>
+
+</div>
+
+</div>
+  
 </body>
 </html>
